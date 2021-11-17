@@ -1,8 +1,5 @@
 package com.brokes6.cloudmusic.repository
 
-import com.brokes6.cloudmusic.api.ApiClient
-import com.brokes6.cloudmusic.model.LoginModel
-
 /**
  * Author: 付鑫博
  * Version: 1.0.0
@@ -17,8 +14,5 @@ class MainRepository private constructor() {
         val instance: MainRepository by lazy(LazyThreadSafetyMode.SYNCHRONIZED) { MainRepository() }
     }
 
-    suspend fun login(phone: String, password: String): LoginModel {
-        return ApiClient.instance.api().login(phone, password)
-    }
 
 }

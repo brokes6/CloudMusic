@@ -1,4 +1,4 @@
-package com.brokes6.cloudmusic
+package com.brokes6.cloudmusic.view.activity
 
 import android.os.Bundle
 import com.brokes6.cloudmusic.databinding.ActivityMainBinding

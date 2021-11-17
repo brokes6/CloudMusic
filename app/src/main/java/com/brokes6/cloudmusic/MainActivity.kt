@@ -1,11 +1,19 @@
 package com.brokes6.cloudmusic
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.brokes6.cloudmusic.databinding.ActivityMainBinding
+import com.brokes6.cloudmusic.viewmodel.MainViewModel
+import com.laboratory.baseclasslib.base.BaseActivity
 
-class MainActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
+
+    override val binding: ActivityMainBinding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+
+    override fun initView(savedInstanceState: Bundle?) {
+
+    }
+
+    override fun initData() {
+
     }
 }

@@ -1,6 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/tv_tab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_10"
+        android:layout_marginTop="@dimen/dp_10"
+        android:drawablePadding="@dimen/dp_10"
+        android:gravity="center"
+        android:text="@string/login_phone_login"
+        android:textSize="@dimen/sp_15"
+        android:textStyle="bold"
+        app:drawableStartCompat="@drawable/ic_login_close"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_login_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_10"
+        android:layout_marginTop="@dimen/dp_40"
+        android:text="@string/login_login_title"
+        android:textSize="@dimen/sp_15"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_tab" />
+
+    <TextView
+        android:id="@+id/tv_86"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp_10"
+        android:layout_marginTop="@dimen/dp_30"
+        android:text="@string/login_86"
+        android:textColor="@color/text_color_1"
+        android:textSize="@dimen/sp_16"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_login_title" />
+
+    <EditText
+        android:id="@+id/et_phones"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_10"
+        android:layout_marginEnd="@dimen/dp_30"
+        android:ellipsize="end"
+        android:hint="@string/ed_hint"
+        android:inputType="number"
+        android:maxLength="11"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:textColor="@color/ed_color_1"
+        android:textColorHint="#c9c9c9"
+        android:textSize="@dimen/sp_16"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_86"
+        app:layout_constraintLeft_toRightOf="@+id/tv_86"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_86" />
+
+    <TextView
+        android:id="@+id/tv_next"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_30"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:background="@drawable/login_shape_login_bg"
+        android:gravity="center"
+        android:paddingTop="@dimen/dp_7"
+        android:paddingBottom="@dimen/dp_7"
+        android:text="@string/login_next"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_15"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_phones" />
+
+    <EditText
+        android:id="@+id/et_passwords"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_10"
+        android:layout_marginTop="@dimen/dp_40"
+        android:layout_marginEnd="@dimen/dp_30"
+        android:ellipsize="end"
+        android:hint="@string/ed_hint"
+        android:inputType="number"
+        android:maxLength="11"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:textColor="@color/ed_color_1"
+        android:textColorHint="#c9c9c9"
+        android:textSize="@dimen/sp_16"
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_tab" />
+
+    <TextView
+        android:id="@+id/tv_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:background="@drawable/login_shape_login_bg"
+        android:gravity="center"
+        android:paddingTop="@dimen/dp_7"
+        android:paddingBottom="@dimen/dp_7"
+        android:text="@string/login"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_15"
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_passwords" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

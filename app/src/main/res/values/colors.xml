@@ -7,4 +7,14 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="login_red">#DC2C1F</color>
+    <color name="login_frame">#E66B63</color>
+    <color name="login_text_color">#F8AFAB</color>
+    <color name="login_2">#FE3A3B</color>
+
+
+    <color name="text_color_1">#4A4949</color>
+
+
+    <color name="ed_color_1">#333333</color>
 </resources>

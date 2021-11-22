@@ -3,6 +3,7 @@ package com.brokes6.cloudmusic
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
+import com.brokes6.cloudmusic.manager.MusicManager
 
 /**
  * Author: 付鑫博
@@ -22,5 +23,10 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         mContext = this
+        initComponent()
+    }
+
+    private fun initComponent() {
+        MusicManager.instance.init(this)
     }
 }

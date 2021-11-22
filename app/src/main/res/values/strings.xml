@@ -1,3 +1,13 @@
 <resources>
-    <string name="app_name">CloudMusic</string>
+    <string name="app_name">云音乐</string>
+    <string name="login_phone_login">手机号登陆</string>
+    <string name="login_experience">立即体验</string>
+    <string name="login_privacy_agreement">登陆即已同意《用户协议》《隐私政策》《儿童隐私政策》</string>
+    <string name="login_login_title">登陆体验更多精彩</string>
+    <string name="login_86">+86</string>
+    <string name="login_next">下一步</string>
+    <string name="ed_hint">请输入手机号</string>
+    <string name="login">登陆</string>
+    <string name="login_phone_error">账号不能为空</string>
+    <string name="login_password_error">密码不能为空</string>
 </resources>

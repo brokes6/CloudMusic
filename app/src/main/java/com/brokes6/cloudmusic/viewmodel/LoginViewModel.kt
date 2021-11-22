@@ -18,6 +18,8 @@ class LoginViewModel : BaseViewModel() {
 
     val mLoginInfo: MutableLiveData<LoginModel> = MutableLiveData()
 
+    val mError: MutableLiveData<String> = MutableLiveData()
+
     private val mRepository: LoginRepository by lazy(LazyThreadSafetyMode.NONE) { LoginRepository.instance }
 
     fun login(phone: String, password: String) {
@@ -26,7 +28,7 @@ class LoginViewModel : BaseViewModel() {
         }, {
             mLoginInfo.postValue(it)
         }, {
-
+            mError.postValue(it.message)
         })
     }
 

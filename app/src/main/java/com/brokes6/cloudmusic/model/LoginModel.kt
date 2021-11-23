@@ -6,18 +6,18 @@ package com.brokes6.cloudmusic.model
  * Date: 2021/11/17
  * Mender:
  * Modify:
- * Description:
+ * Description: 登陆返回数据实体
  */
 data class LoginModel(
     val loginType: Int,
     val code: Int,
-    val account: AccountInfo,
-    val token: String,
-    val profile: Profile
+    val account: AccountInfo?,
+    val token: String?,
+    val profile: Profile?
 ) {
     data class AccountInfo(
         val id: Long,
-        val userName: String,
+        val userName: String?,
         val type: Int,
         val status: Int,
         val createTime: Long,
@@ -26,13 +26,13 @@ data class LoginModel(
     )
 
     data class Profile(
-        val backgroundUrl: String,
-        val detailDescription: String,
+        val backgroundUrl: String?,
+        val detailDescription: String?,
         val userId: Long,
-        val nickname: String, // 名字
+        val nickname: String?, // 名字
         val birthday: Long, // 生日
-        val avatarUrl: String, // 头像
-        val province: String, // 省份
+        val avatarUrl: String?, // 头像
+        val province: String?, // 省份
         val followeds: Int,
         val follows: Int,
         val playlistCount: Int

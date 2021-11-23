@@ -5,13 +5,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 30
     buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "com.brokes6.cloudmusic"
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0.0"
 
@@ -49,8 +49,6 @@ dependencies {
     // retrofit
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
     implementation "com.squareup.retrofit2:converter-moshi:2.9.0"
-    // moshi
-    implementation "com.squareup.moshi:moshi-kotlin:1.12.0"
     // 协程
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0'
     // adapter
@@ -77,4 +75,6 @@ dependencies {
     implementation 'com.github.brokes6:BaseClass:2.0.7'
     // StarrySky
     implementation 'com.github.EspoirX:StarrySky:v2.6.5'
+    // MMKV
+    implementation 'com.tencent:mmkv:1.2.11'
 }

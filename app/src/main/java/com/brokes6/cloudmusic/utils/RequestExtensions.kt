@@ -1,5 +1,6 @@
 package com.brokes6.cloudmusic.utils
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.laboratory.baseclasslib.base.BaseViewModel
 import com.laboratory.baseclasslib.throwable.ResponseThrowable
@@ -35,6 +36,7 @@ fun <T> BaseViewModel.request(
             }
             .catch {
                 val exception = if (it is Exception) it else IOException()
+                Log.e("Request", "出现异常 --> ${exception.message}")
                 error(ResponseThrowable(-100, exception.message))
             }
             .collect {

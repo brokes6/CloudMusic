@@ -1,8 +1,9 @@
 package com.brokes6.cloudmusic.viewmodel
 
 import androidx.lifecycle.MutableLiveData
-import com.brokes6.cloudmusic.model.LoginModel
+import com.brokes6.cloudmusic.bean.UserInfo
 import com.brokes6.cloudmusic.repository.LoginRepository
+import com.brokes6.cloudmusic.utils.SpUserInfoUtils
 import com.brokes6.cloudmusic.utils.request
 import com.laboratory.baseclasslib.base.BaseViewModel
 
@@ -16,7 +17,7 @@ import com.laboratory.baseclasslib.base.BaseViewModel
  */
 class LoginViewModel : BaseViewModel() {
 
-    val mLoginInfo: MutableLiveData<LoginModel> = MutableLiveData()
+    val mLoginInfo: MutableLiveData<UserInfo?> = MutableLiveData()
 
     val mError: MutableLiveData<String> = MutableLiveData()
 
@@ -30,6 +31,35 @@ class LoginViewModel : BaseViewModel() {
         }, {
             mError.postValue(it.message)
         })
+    }
+
+    /**
+     * 保存用户数据
+     *
+     * @param data
+     */
+    fun saveUserInfo(data: UserInfo) {
+        request({
+            mRepository.saveUserInfo(data)
+        })
+    }
+
+    /**
+     * 是否登陆
+     *
+     * @return
+     */
+    fun isLogin(): Boolean {
+        return SpUserInfoUtils.isLogin()
+    }
+
+    /**
+     * 保存登陆状态
+     *
+     * @param isLogin
+     */
+    fun saveLoginState(isLogin: Boolean) {
+        SpUserInfoUtils.saveLoginState(isLogin)
     }
 
 }

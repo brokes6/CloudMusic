@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import com.brokes6.cloudmusic.manager.MusicManager
+import com.tencent.mmkv.MMKV
 
 /**
  * Author: 付鑫博
@@ -17,7 +18,7 @@ class App : Application() {
 
     companion object {
         @SuppressLint("StaticFieldLeak")
-        var mContext: Context? = null
+        lateinit var mContext: Context
     }
 
     override fun onCreate() {
@@ -28,5 +29,6 @@ class App : Application() {
 
     private fun initComponent() {
         MusicManager.instance.init(this)
+        MMKV.initialize(this)
     }
 }

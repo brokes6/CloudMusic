@@ -5,20 +5,28 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
+    <ImageView
+        android:id="@+id/iv_back"
+        android:layout_width="@dimen/dp_24"
+        android:layout_height="@dimen/dp_24"
+        android:layout_marginStart="@dimen/dp_10"
+        android:layout_marginTop="@dimen/dp_10"
+        android:src="@drawable/ic_login_close"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/tv_tab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_10"
-        android:layout_marginTop="@dimen/dp_10"
-        android:drawablePadding="@dimen/dp_10"
         android:gravity="center"
         android:text="@string/login_phone_login"
-        android:textSize="@dimen/sp_15"
+        android:textSize="@dimen/sp_17"
         android:textStyle="bold"
-        app:drawableStartCompat="@drawable/ic_login_close"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toBottomOf="@+id/iv_back"
+        app:layout_constraintLeft_toRightOf="@+id/iv_back"
+        app:layout_constraintTop_toTopOf="@+id/iv_back" />
 
     <TextView
         android:id="@+id/tv_login_title"
@@ -35,8 +43,9 @@
         android:id="@+id/tv_86"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/dp_10"
+        android:layout_marginStart="@dimen/dp_10"
         android:layout_marginTop="@dimen/dp_30"
+        android:layout_marginBottom="@dimen/dp_10"
         android:text="@string/login_86"
         android:textColor="@color/text_color_1"
         android:textSize="@dimen/sp_16"
@@ -50,7 +59,7 @@
         android:layout_marginStart="@dimen/dp_10"
         android:layout_marginEnd="@dimen/dp_30"
         android:ellipsize="end"
-        android:hint="@string/ed_hint"
+        android:hint="@string/ed_phone_hint"
         android:inputType="number"
         android:maxLength="11"
         android:maxLines="1"
@@ -89,9 +98,7 @@
         android:layout_marginTop="@dimen/dp_40"
         android:layout_marginEnd="@dimen/dp_30"
         android:ellipsize="end"
-        android:hint="@string/ed_hint"
-        android:inputType="number"
-        android:maxLength="11"
+        android:hint="@string/ed_password_hint"
         android:maxLines="1"
         android:singleLine="true"
         android:textColor="@color/ed_color_1"

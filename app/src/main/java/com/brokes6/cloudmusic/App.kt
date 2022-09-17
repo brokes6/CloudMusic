@@ -31,6 +31,6 @@ class App : Application() {
     private fun initComponent() {
         MusicManager.instance.init(this)
         MMKV.initialize(this)
-        DataBaseManager.instance.db(this)
+        DataBaseManager.instance.init(this)
     }
 }

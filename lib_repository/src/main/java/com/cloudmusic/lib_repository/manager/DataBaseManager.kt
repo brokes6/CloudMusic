@@ -14,13 +14,13 @@ import com.cloudmusic.lib_repository.db.AppDataBase
  */
 class DataBaseManager private constructor() {
 
-    private var db: AppDataBase? = null
-
     companion object {
         val instance: DataBaseManager by lazy { DataBaseManager() }
+
+        var db: AppDataBase? = null
     }
 
-    fun db(context: Context): AppDataBase? {
+    fun init(context: Context): AppDataBase? {
         return db ?: synchronized(this) {
             val dataBase = Room.databaseBuilder(
                 context,

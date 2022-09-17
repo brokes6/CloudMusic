@@ -58,7 +58,7 @@ class LoginRepository private constructor() : BaseRepository() {
      * @param data
      */
     suspend fun saveUserInfo(data: UserInfo) {
-        DataBaseManager.instance.db()?.userDao?.insertAll(data)
+        DataBaseManager.db?.userDao?.insertAll(data)
     }
 
     /**
@@ -67,6 +67,6 @@ class LoginRepository private constructor() : BaseRepository() {
      * @return
      */
     suspend fun getUserInfo(): UserInfo? {
-        return DataBaseManager.instance.db()?.userDao?.getAllUserInfo()?.get(0)
+        return DataBaseManager.db?.userDao?.getAllUserInfo()?.get(0)
     }
 }

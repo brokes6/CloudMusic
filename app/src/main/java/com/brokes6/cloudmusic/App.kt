@@ -3,7 +3,8 @@ package com.brokes6.cloudmusic
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
-import com.brokes6.cloudmusic.manager.MusicManager
+import com.cloudmusic.home.manager.MusicManager
+import com.cloudmusic.lib_repository.manager.DataBaseManager
 import com.tencent.mmkv.MMKV
 
 /**
@@ -30,5 +31,6 @@ class App : Application() {
     private fun initComponent() {
         MusicManager.instance.init(this)
         MMKV.initialize(this)
+        DataBaseManager.instance.db(this)
     }
 }

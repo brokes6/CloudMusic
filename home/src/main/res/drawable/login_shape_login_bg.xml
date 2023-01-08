@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item>
-        <shape>
-            <corners android:radius="@dimen/dp_30" />
-            <solid android:color="@color/login_2" />
-        </shape>
-    </item>
-</selector>

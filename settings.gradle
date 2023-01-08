@@ -1,6 +1,0 @@
-rootProject.name = "CloudMusic"
-include ':app'
-include ':lib_base'
-include ':lib_net'
-include ':lib_repository'
-include ':home'

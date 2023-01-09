@@ -15,5 +15,7 @@
     - StarrySky
 6. API
     - NeteaseCloudMusicApi
+> 整体UI图则采用”即时设计“中的开源UI设计图 </br>
+> https://js.design/community?category=detail&type=resource&id=6288a7ac555ed21fe570c692
 
 

@@ -1,6 +1,8 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
+        maven { url "https://kotlin.bintray.com/kotlinx" }
+        maven { url 'https://jitpack.io' }
         google()
         mavenCentral()
     }
@@ -8,6 +10,23 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        maven { url 'https://jitpack.io' }
+        maven {
+            url 'http://maven.aliyun.com/nexus/content/groups/public/'
+            allowInsecureProtocol = true
+        }
+        maven {
+            url 'http://maven.aliyun.com/nexus/content/repositories/jcenter'
+            allowInsecureProtocol = true
+        }
+        maven {
+            url 'http://maven.aliyun.com/nexus/content/repositories/google'
+            allowInsecureProtocol = true
+        }
+        maven {
+            url 'http://maven.aliyun.com/nexus/content/repositories/gradle-plugin'
+            allowInsecureProtocol = true
+        }
         google()
         mavenCentral()
     }
@@ -15,3 +34,4 @@ dependencyResolutionManagement {
 rootProject.name = "CloudMusic"
 include ':app'
 include ':net'
+include ':repository'

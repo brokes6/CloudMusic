@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CloudMusic</string>
+    <string name="description">描述</string>
 </resources>

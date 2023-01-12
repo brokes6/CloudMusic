@@ -20,3 +20,11 @@ fun Modifier.paddingTop(value: Dp): Modifier {
 fun Modifier.paddingBottom(value: Dp): Modifier {
     return this.padding(0.dp, 0.dp, 0.dp, value)
 }
+
+fun Modifier.paddingStart(value: Dp): Modifier {
+    return this.padding(value, 0.dp, 0.dp, 0.dp)
+}
+
+fun Modifier.paddingEnd(value: Dp): Modifier {
+    return this.padding(0.dp, 0.dp, value, 0.dp)
+}

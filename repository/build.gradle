@@ -15,6 +15,12 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
+
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas")
+            }
+        }
     }
 
     buildTypes {
@@ -35,6 +41,10 @@ android {
 dependencies {
     // kotlin-serialization
     api "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1"
+    // room
+    api 'androidx.room:room-runtime:2.4.2'
+    kapt "androidx.room:room-compiler:2.4.2"
+    api "androidx.room:room-ktx:2.4.2"
     //net
     api project(':net')
 

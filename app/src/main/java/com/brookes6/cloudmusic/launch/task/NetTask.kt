@@ -31,12 +31,12 @@ class NetTask(val content : Application) : BaseTask() {
 
     override fun run() {
         // 当前使用的是本地服务
-        NetConfig.initialize("http://localhost:3000", content) {
+        NetConfig.initialize("http:///192.168.137.1:3000", content) {
             // 超时配置, 默认是10秒, 设置太长时间会导致用户等待过久
             setDebug(BuildConfig.DEBUG)
             setRequestInterceptor(object : RequestInterceptor {
                 override fun interceptor(request: BaseRequest) {
-                    request.param("cookie",cookie)
+                    if (cookie.isNotEmpty()) request.param("cookie",cookie)
                 }
             })
             addInterceptor(LogRecordInterceptor(BuildConfig.DEBUG))

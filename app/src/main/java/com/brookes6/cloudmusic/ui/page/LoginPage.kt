@@ -10,6 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,18 +46,19 @@ fun LoginPage(navController : NavController? = null) {
             contentDescription = stringResource(id = R.string.description),
             modifier = Modifier
                 .constrainAs(imgTop) {
-                    top.linkTo(parent.top, 40.dp)
+                    top.linkTo(parent.top, 45.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                     width = Dimension.fillToConstraints
-                }
+                },
+            contentScale = ContentScale.Crop
         )
         Column(
             modifier = Modifier
                 .background(secondaryBackground, RoundedCornerShape(40.dp))
                 .padding(20.dp, 0.dp, 20.dp, 0.dp)
                 .constrainAs(bottomBox) {
-                    bottom.linkTo(parent.bottom, 30.dp)
+                    bottom.linkTo(parent.bottom, 10.dp)
                     start.linkTo(parent.start, 11.dp)
                     end.linkTo(parent.end)
                     width = Dimension.fillToConstraints
@@ -66,7 +68,7 @@ fun LoginPage(navController : NavController? = null) {
             Text(text = stringResource(id = R.string.app_name), fontSize = 10.sp, color = minTitleColor)
             Spacer(modifier = Modifier.height(20.dp))
             Text(
-                text = "Welcome toElexto App",
+                text = "Welcome ${stringResource(id = R.string.app_name)} App",
                 modifier = Modifier.width(179.dp),
                 fontSize = 28.sp,
                 color = titleColor
@@ -80,19 +82,29 @@ fun LoginPage(navController : NavController? = null) {
                 fontSize = 14.sp,
                 color = titleColor
             )
-            Button(
-                onClick = {
-                    navController?.navigate(RouteConstant.PHONE_LOGIN_PAGE)
-                },
+            LoginButton(
+                "手机号登陆",
                 modifier = Modifier
                     .padding(0.dp, 32.dp, 0.dp, 24.dp)
                     .fillMaxWidth()
                     .height(70.dp),
-                shape = RoundedCornerShape(20.dp),
-                colors = ButtonDefaults.buttonColors(mainButtonColor)
             ) {
-                Text(text = "登陆", fontSize = 14.sp, color = titleColor)
+                navController?.navigate(RouteConstant.PHONE_LOGIN_PAGE)
             }
         }
+    }
+}
+
+@Composable
+fun LoginButton(text: String, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
+    Button(
+        onClick = {
+            onClick.invoke()
+        },
+        modifier = modifier,
+        shape = RoundedCornerShape(20.dp),
+        colors = ButtonDefaults.buttonColors(mainButtonColor)
+    ) {
+        Text(text = text, fontSize = 14.sp, color = titleColor)
     }
 }

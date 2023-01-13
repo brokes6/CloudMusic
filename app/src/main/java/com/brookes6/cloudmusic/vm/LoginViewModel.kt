@@ -39,22 +39,28 @@ class LoginViewModel : ViewModel() {
      * @param phone 手机号
      * @param password 账号密码
      */
-    private fun login(phone: Int, password: String) {
+    private fun login(phone: String, password: String) {
         scopeNetLife {
             Get<LoginModel>(Api.PHONE_LOGIN) {
-                param("phone", "${phone}")
+                param("phone", phone)
                 param("password", password)
             }.await().also {
                 if (it.code == 200) {
                     serialize("cookie" to it.cookie)
+                    state.code.value = it.code
                     state.isLogin.value = true
+                    state.isError.value = false
+                }else{
+                    state.code.value = it.code
+                    state.isError.value = true
+                    state.message.value = it.message
                 }
             }
         }
     }
 
     sealed class LoginAction {
-        class PhoneLogin(val phone: Int, val password: String) : LoginAction()
+        class PhoneLogin(val phone: String, val password: String) : LoginAction()
     }
 
 }

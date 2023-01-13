@@ -11,5 +11,8 @@ import androidx.compose.runtime.mutableStateOf
  * Description:
  */
 data class LoginState(
-    val isLogin : MutableState<Boolean> = mutableStateOf(false)
+    val isLogin : MutableState<Boolean> = mutableStateOf(false),
+    val isError : MutableState<Boolean> = mutableStateOf(false),
+    val code : MutableState<Int> = mutableStateOf(0),
+    val message : MutableState<String> = mutableStateOf(""),
 )

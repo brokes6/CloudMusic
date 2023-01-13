@@ -31,3 +31,7 @@ val minTitleColor = Color(0xFFFF5753)
  * 标题文字
  */
 val titleColor = Color(0xFFFFFFFF)
+val hintText = Color(0xFFBCBAC6)
+
+val normalText = Color(0xFF000000)
+val normalDivider = Color(0xFFF4F6FC)

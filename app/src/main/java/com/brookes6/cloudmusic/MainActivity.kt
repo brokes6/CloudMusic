@@ -3,6 +3,7 @@ package com.brookes6.cloudmusic
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -10,6 +11,7 @@ import com.brookes6.cloudmusic.constant.RouteConstant
 import com.brookes6.cloudmusic.ui.page.HomePage
 import com.brookes6.cloudmusic.ui.page.LoginPage
 import com.brookes6.cloudmusic.ui.page.PhoneLoginPage
+import com.drake.serialize.serialize.deserialize
 import com.drake.statusbar.immersive
 
 /**
@@ -24,16 +26,20 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         immersive(darkMode = false)
+        val isLogin: Boolean = deserialize("isLogin",false)
         setContent {
             val navController = rememberNavController()
-            NavHost(navController = navController, startDestination = RouteConstant.LOGIN_PAGE){
-                composable(RouteConstant.LOGIN_PAGE){
+            NavHost(
+                navController = navController,
+                startDestination = if (isLogin) RouteConstant.HOME_PAGE else RouteConstant.LOGIN_PAGE
+            ) {
+                composable(RouteConstant.LOGIN_PAGE) {
                     LoginPage(navController)
                 }
-                composable(RouteConstant.PHONE_LOGIN_PAGE){
+                composable(RouteConstant.PHONE_LOGIN_PAGE) {
                     PhoneLoginPage(navController)
                 }
-                composable(RouteConstant.HOME_PAGE){
+                composable(RouteConstant.HOME_PAGE) {
                     HomePage(navController)
                 }
             }

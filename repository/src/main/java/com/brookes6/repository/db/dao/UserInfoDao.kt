@@ -2,6 +2,7 @@ package com.brookes6.repository.db.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.brookes6.repository.model.LoginModel
 
@@ -15,10 +16,10 @@ import com.brookes6.repository.model.LoginModel
 @Dao
 interface UserInfoDao {
 
-    @Insert
-    fun install(data : LoginModel)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun install(data: LoginModel)
 
     @Query("SELECT * FROM loginmodel")
-    fun getUserInfo() : LoginModel
+    fun getUserInfo(): LoginModel
 
 }

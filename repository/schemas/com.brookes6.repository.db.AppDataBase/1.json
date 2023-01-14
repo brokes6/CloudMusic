@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "4b40b006c60d33a8916f3f5dae508af1",
+    "identityHash": "b3c217431066baf1ac06e8282a8c6294",
     "entities": [
       {
         "tableName": "LoginModel",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `loginType` INTEGER NOT NULL, `code` INTEGER NOT NULL, `message` TEXT NOT NULL, `account` TEXT NOT NULL, `token` TEXT NOT NULL, `profile` TEXT NOT NULL, `cookie` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `loginType` INTEGER NOT NULL, `code` INTEGER NOT NULL, `message` TEXT NOT NULL, `account` TEXT, `token` TEXT NOT NULL, `profile` TEXT, `cookie` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -36,7 +36,7 @@
             "fieldPath": "account",
             "columnName": "account",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "token",
@@ -48,7 +48,7 @@
             "fieldPath": "profile",
             "columnName": "profile",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "cookie",
@@ -70,7 +70,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4b40b006c60d33a8916f3f5dae508af1')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b3c217431066baf1ac06e8282a8c6294')"
     ]
   }
 }

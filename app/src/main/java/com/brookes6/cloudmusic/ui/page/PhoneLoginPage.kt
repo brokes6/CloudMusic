@@ -118,11 +118,6 @@ fun PhoneLoginPage(navController: NavController? = null) {
                                         color = Color.Red
                                     )
                                     return@BasicTextField
-                                } else if (viewModel.state.isLogin.value) {
-                                    navController?.navigate(RouteConstant.HOME_PAGE) {
-                                        popUpTo(RouteConstant.LOGIN_PAGE) { inclusive = true }
-                                    }
-                                    return@Row
                                 }
                                 if (password.isEmpty()) {
                                     Text(text = "请输入密码", fontSize = 15.sp, color = hintText)
@@ -152,7 +147,7 @@ fun PhoneLoginPage(navController: NavController? = null) {
                         width = Dimension.fillToConstraints
                     },
             ) {
-                viewModel.dispatch(LoginViewModel.LoginAction.PhoneLogin(phone, password))
+                viewModel.dispatch(LoginViewModel.LoginAction.PhoneLogin(phone, password,navController))
             }
         }
     }

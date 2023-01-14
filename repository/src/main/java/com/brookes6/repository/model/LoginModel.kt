@@ -16,38 +16,39 @@ import kotlinx.serialization.json.Json
  * Description: 登陆返回数据实体类
  */
 @Entity
-@TypeConverters(AccountInfoConverter::class,UserInfoConverter::class)
+@TypeConverters(AccountInfoConverter::class, UserInfoConverter::class)
 @kotlinx.serialization.Serializable
 data class LoginModel(
     @PrimaryKey
-    val id : Int = 1001,
-    val loginType : Int,
-    val code : Int,
-    val message : String,
-    val account : AccountInfo,
-    val token : String,
-    val profile : UserInfo,
-    val cookie : String
-){
+    val id: Int = 1001,
+    val loginType: Int = -1,
+    val code: Int = -1,
+    val message: String = "",
+    val account: AccountInfo? = null,
+    val token: String = "",
+    val profile: UserInfo? = null,
+    val cookie: String = ""
+) {
     @kotlinx.serialization.Serializable
     data class AccountInfo(
-        val id : Int,
-        val createTime : Int,
+        val id: Long,
+        val userName: String = "",
+        val createTime: Long,
     )
 
     @kotlinx.serialization.Serializable
     data class UserInfo(
-        val followed : Boolean,
-        val backgroundUrl : String,
-        val vipType : Int,
-        val userType : Int,
-        val nickname : String,
-        val birthday : Int,
-        val avatarUrl : String,
+        val followed: Boolean,
+        val backgroundUrl: String = "",
+        val vipType: Int = -1,
+        val userType: Int = -1,
+        val nickname: String = "",
+        val birthday: Int = -1,
+        val avatarUrl: String = "",
     )
 }
 
-class AccountInfoConverter{
+class AccountInfoConverter {
     @TypeConverter
     fun jsonToModel(json: String): LoginModel.AccountInfo {
         return Json.decodeFromString(json)
@@ -59,7 +60,7 @@ class AccountInfoConverter{
     }
 }
 
-class UserInfoConverter{
+class UserInfoConverter {
     @TypeConverter
     fun jsonToModel(json: String): LoginModel.UserInfo {
         return Json.decodeFromString(json)

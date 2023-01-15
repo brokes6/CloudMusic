@@ -34,7 +34,7 @@ class LoginViewModel : ViewModel() {
      */
     fun dispatch(action: LoginAction) {
         when (action) {
-            is LoginAction.PhoneLogin -> login(action.phone, action.password,action.navController)
+            is LoginAction.PhoneLogin -> login(action.phone, action.password,action.onNavController)
         }
     }
 
@@ -47,7 +47,7 @@ class LoginViewModel : ViewModel() {
     private fun login(
         phone: String,
         password: String,
-        navController: NavController? = null
+        onNavController: (String) -> Unit = {}
     ) {
         scopeNetLife {
             Get<LoginModel>(Api.PHONE_LOGIN) {
@@ -63,9 +63,7 @@ class LoginViewModel : ViewModel() {
                     viewModelScope.launch {
                         DataBaseManager.db?.userDao?.install(it)
                     }
-                    navController?.navigate(RouteConstant.HOME_PAGE) {
-                        popUpTo(RouteConstant.LOGIN_PAGE) { inclusive = true }
-                    }
+                    onNavController(RouteConstant.HOME_PAGE)
                 } else {
                     serialize("isLogin" to false)
                     state.code.value = it.code
@@ -80,7 +78,7 @@ class LoginViewModel : ViewModel() {
         class PhoneLogin(
             val phone: String,
             val password: String,
-            val navController: NavController? = null
+            val onNavController: (String) -> Unit = {}
         ) : LoginAction()
     }
 

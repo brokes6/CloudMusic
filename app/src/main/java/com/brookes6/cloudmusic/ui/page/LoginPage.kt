@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.navigation.NavController
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.constant.RouteConstant
 import com.brookes6.cloudmusic.extensions.paddingEnd
@@ -33,7 +32,7 @@ import com.brookes6.cloudmusic.ui.theme.*
  */
 @Preview(showSystemUi = true)
 @Composable
-fun LoginPage(navController : NavController? = null) {
+fun LoginPage(onNavController : (String) -> Unit = {}) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -65,7 +64,11 @@ fun LoginPage(navController : NavController? = null) {
                 }
         ) {
             Spacer(modifier = Modifier.height(48.dp))
-            Text(text = stringResource(id = R.string.app_name), fontSize = 10.sp, color = minTitleColor)
+            Text(
+                text = stringResource(id = R.string.app_name),
+                fontSize = 10.sp,
+                color = minTitleColor
+            )
             Spacer(modifier = Modifier.height(20.dp))
             Text(
                 text = "Welcome ${stringResource(id = R.string.app_name)} App",
@@ -89,7 +92,7 @@ fun LoginPage(navController : NavController? = null) {
                     .fillMaxWidth()
                     .height(70.dp),
             ) {
-                navController?.navigate(RouteConstant.PHONE_LOGIN_PAGE)
+                onNavController.invoke(RouteConstant.PHONE_LOGIN_PAGE)
             }
         }
     }

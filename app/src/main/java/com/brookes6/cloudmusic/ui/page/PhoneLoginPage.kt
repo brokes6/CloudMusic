@@ -10,6 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.InputMode.Companion.Keyboard
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -19,9 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import com.brookes6.cloudmusic.R
-import com.brookes6.cloudmusic.constant.RouteConstant
 import com.brookes6.cloudmusic.ui.theme.*
 import com.brookes6.cloudmusic.vm.LoginViewModel
 
@@ -35,7 +34,7 @@ import com.brookes6.cloudmusic.vm.LoginViewModel
 
 @Preview(showSystemUi = true)
 @Composable
-fun PhoneLoginPage(navController: NavController? = null) {
+fun PhoneLoginPage(onNavController: (String) -> Unit = {}) {
     val viewModel: LoginViewModel = viewModel()
     var phone by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -147,7 +146,13 @@ fun PhoneLoginPage(navController: NavController? = null) {
                         width = Dimension.fillToConstraints
                     },
             ) {
-                viewModel.dispatch(LoginViewModel.LoginAction.PhoneLogin(phone, password,navController))
+                viewModel.dispatch(
+                    LoginViewModel.LoginAction.PhoneLogin(
+                        phone,
+                        password,
+                        onNavController
+                    )
+                )
             }
         }
     }

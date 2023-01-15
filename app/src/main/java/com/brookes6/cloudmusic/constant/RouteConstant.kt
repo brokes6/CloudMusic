@@ -9,10 +9,14 @@ package com.brookes6.cloudmusic.constant
  */
 object RouteConstant {
 
-    const val LOGIN_PAGE = "loginPage"
+    const val LOGIN = "LOGIN"
 
-    const val PHONE_LOGIN_PAGE = "phoneLoginPage"
+    const val LOGIN_PAGE = LOGIN + "loginPage"
 
-    const val HOME_PAGE = "homePage"
+    const val PHONE_LOGIN_PAGE = LOGIN + "phoneLoginPage"
+
+    const val HOME = "HOME"
+
+    const val HOME_PAGE = HOME + "homePage"
 
 }

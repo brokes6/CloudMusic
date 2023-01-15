@@ -13,6 +13,7 @@ import com.brookes6.net.api.Api
 import com.brookes6.repository.model.LoginModel
 import com.drake.net.Get
 import com.drake.serialize.serialize.serialize
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
@@ -60,7 +61,7 @@ class LoginViewModel : ViewModel() {
                     state.code.value = it.code
                     state.isLogin.value = true
                     state.isError.value = false
-                    viewModelScope.launch {
+                    viewModelScope.launch(Dispatchers.IO) {
                         DataBaseManager.db?.userDao?.install(it)
                     }
                     onNavController(RouteConstant.HOME_PAGE)

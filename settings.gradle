@@ -3,8 +3,8 @@ pluginManagement {
         gradlePluginPortal()
         maven { url "https://kotlin.bintray.com/kotlinx" }
         maven { url 'https://jitpack.io' }
-        google()
         mavenCentral()
+        google()
     }
 }
 dependencyResolutionManagement {
@@ -27,8 +27,8 @@ dependencyResolutionManagement {
             url 'http://maven.aliyun.com/nexus/content/repositories/gradle-plugin'
             allowInsecureProtocol = true
         }
-        google()
         mavenCentral()
+        google()
     }
 }
 rootProject.name = "CloudMusic"

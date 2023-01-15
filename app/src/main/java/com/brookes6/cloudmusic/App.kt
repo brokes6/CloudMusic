@@ -19,18 +19,18 @@ class App : Application() {
 
     companion object {
         @SuppressLint("StaticFieldLeak")
-        lateinit var scopeNet: Context
+        lateinit var content: Context
     }
 
     override fun onCreate() {
         super.onCreate()
-        scopeNet = this
+        content = this
         AppStartUtil.Instance
             .addTask(MmkvTask(this))
             .addTask(NetTask(this))
             .addTask(RoomTask(this))
             .addTask(MusicTask(this))
-            .addTask(LoginStatusTask())
+//            .addTask(LoginStatusTask())
             .startTask()
         AppStartUtil.Instance.startLockMainThread()
     }

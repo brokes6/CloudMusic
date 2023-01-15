@@ -10,4 +10,8 @@
     <color name="white_70">#B3FFFFFF</color>
 
     <color name="forget_password">#FF465180</color>
+    <color name="bottomTabSelect">#FFE8BCD3</color>
+    <color name="song_controller">#33000000</color>
+
+    <color name="song_author">#FFFF5753</color>
 </resources>

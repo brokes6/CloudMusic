@@ -28,3 +28,8 @@ fun Modifier.paddingStart(value: Dp): Modifier {
 fun Modifier.paddingEnd(value: Dp): Modifier {
     return this.padding(0.dp, 0.dp, value, 0.dp)
 }
+
+fun Modifier.paddingIf(justify: Boolean, start: Dp, top: Dp, end: Dp, bottom: Dp): Modifier {
+    if (!justify) return this
+    return this.padding(start, top, end, bottom)
+}

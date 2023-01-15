@@ -1,9 +1,6 @@
 package com.brookes6.repository.model
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
-import androidx.room.TypeConverters
+import androidx.room.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -29,6 +26,9 @@ data class LoginModel(
     val profile: UserInfo? = null,
     val cookie: String = ""
 ) {
+    @Ignore
+    constructor() : this(1001)
+
     @kotlinx.serialization.Serializable
     data class AccountInfo(
         val id: Long,
@@ -43,7 +43,7 @@ data class LoginModel(
         val vipType: Int = -1,
         val userType: Int = -1,
         val nickname: String = "",
-        val birthday: Int = -1,
+        val birthday: Long = 1,
         val avatarUrl: String = "",
     )
 }

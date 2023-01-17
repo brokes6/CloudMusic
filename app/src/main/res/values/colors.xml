@@ -14,4 +14,7 @@
     <color name="song_controller">#33000000</color>
 
     <color name="song_author">#FFFF5753</color>
+
+    <color name="search_transparent">#5B000000</color>
+    <color name="song_info">#B2000000</color>
 </resources>

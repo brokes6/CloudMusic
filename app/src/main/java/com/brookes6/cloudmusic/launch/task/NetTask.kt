@@ -4,8 +4,10 @@ import android.app.Application
 import com.brookes6.cloudmusic.BuildConfig
 import com.brookes6.cloudmusic.launch.BaseTask
 import com.brookes6.cloudmusic.launch.IBaseTask
+import com.brookes6.cloudmusic.utils.LogUtils
 import com.brookes6.repository.converter.SerializationConverter
 import com.drake.net.NetConfig
+import com.drake.net.cookie.PersistentCookieJar
 import com.drake.net.interceptor.LogRecordInterceptor
 import com.drake.net.interceptor.RequestInterceptor
 import com.drake.net.okhttp.setConverter
@@ -35,9 +37,11 @@ class NetTask(val content : Application) : BaseTask() {
             setDebug(BuildConfig.DEBUG)
             setRequestInterceptor(object : RequestInterceptor {
                 override fun interceptor(request: BaseRequest) {
-                    if (cookie.isNotEmpty()) request.param("cookie",cookie)
+                    LogUtils.d("cookie --> $cookie")
+                    if (cookie.isNotEmpty()) request.param("cookie",cookie,true)
                 }
             })
+            cookieJar(PersistentCookieJar(content))
             addInterceptor(LogRecordInterceptor(BuildConfig.DEBUG))
             setConverter(SerializationConverter())
         }

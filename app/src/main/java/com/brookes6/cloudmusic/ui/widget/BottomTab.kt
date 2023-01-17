@@ -1,4 +1,4 @@
-package com.brookes6.cloudmusic.ui.page
+package com.brookes6.cloudmusic.ui.widget
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
@@ -12,10 +12,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.imageResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,7 +32,8 @@ import com.brookes6.cloudmusic.ui.theme.secondaryBackground
 @Composable
 fun BottomTab(
     modifier: Modifier = Modifier,
-    tabList: MutableList<BottomTabBean> = mutableListOf()
+    tabList: MutableList<BottomTabBean> = mutableListOf(),
+    onNavController : (String) -> Unit = {}
 ) {
     var mSelectItemIndex by remember { mutableStateOf(0) }
     Row(
@@ -50,6 +49,7 @@ fun BottomTab(
                     )
                     .clickable {
                         mSelectItemIndex = index
+                        onNavController.invoke(bean.route)
                     }
                     .animateContentSize(),
                 verticalAlignment = Alignment.CenterVertically,

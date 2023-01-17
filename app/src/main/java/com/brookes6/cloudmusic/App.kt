@@ -7,6 +7,8 @@ import com.brookes6.cloudmusic.launch.AppStartUtil
 import com.brookes6.cloudmusic.launch.task.*
 import com.drake.net.scope.NetCoroutineScope
 import com.drake.net.utils.scopeNet
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 
 /**
  * Author: fuxinbo
@@ -20,6 +22,9 @@ class App : Application() {
     companion object {
         @SuppressLint("StaticFieldLeak")
         lateinit var content: Context
+
+        @OptIn(DelicateCoroutinesApi::class)
+        val scope by lazy { GlobalScope }
     }
 
     override fun onCreate() {
@@ -30,7 +35,6 @@ class App : Application() {
             .addTask(NetTask(this))
             .addTask(RoomTask(this))
             .addTask(MusicTask(this))
-//            .addTask(LoginStatusTask())
             .startTask()
         AppStartUtil.Instance.startLockMainThread()
     }

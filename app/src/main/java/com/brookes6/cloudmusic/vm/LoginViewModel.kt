@@ -1,12 +1,12 @@
 package com.brookes6.cloudmusic.vm
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.scopeNetLife
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import com.brookes6.cloudmusic.constant.RouteConstant
-import com.brookes6.cloudmusic.launch.task.NetTask
 import com.brookes6.cloudmusic.manager.DataBaseManager
 import com.brookes6.cloudmusic.state.LoginState
 import com.brookes6.net.api.Api

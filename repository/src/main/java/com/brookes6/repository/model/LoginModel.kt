@@ -18,8 +18,8 @@ import kotlinx.serialization.json.Json
 data class LoginModel(
     @PrimaryKey
     val id: Int = 1001,
-    val loginType: Int = -1,
-    val code: Int = -1,
+    val loginType: Int = 0,
+    val code: Int = 0,
     val message: String = "",
     val account: AccountInfo? = null,
     val token: String = "",
@@ -40,10 +40,10 @@ data class LoginModel(
     data class UserInfo(
         val followed: Boolean,
         val backgroundUrl: String = "",
-        val vipType: Int = -1,
-        val userType: Int = -1,
+        val vipType: Int = 0,
+        val userType: Int = 0,
         val nickname: String = "",
-        val birthday: Long = 1,
+        val birthday: Long = 0,
         val avatarUrl: String = "",
     )
 }

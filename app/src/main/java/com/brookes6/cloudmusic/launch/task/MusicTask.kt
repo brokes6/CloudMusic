@@ -1,9 +1,10 @@
 package com.brookes6.cloudmusic.launch.task
 
 import android.app.Application
-import com.brookes6.cloudmusic.launch.BaseTask
-import com.brookes6.cloudmusic.manager.MusicManager
 import com.brookes6.cloudmusic.BuildConfig
+import com.brookes6.cloudmusic.launch.BaseTask
+import com.lzx.starrysky.StarrySkyInstall
+import com.lzx.starrysky.notification.INotification
 
 
 /**
@@ -16,7 +17,11 @@ import com.brookes6.cloudmusic.BuildConfig
 class MusicTask(val context: Application) : BaseTask() {
 
     override fun run() {
-        MusicManager.instance.init(context, BuildConfig.DEBUG)
+        StarrySkyInstall.init(context).setDebug(BuildConfig.DEBUG)
+            .setNotificationSwitch(true)
+            .setNotificationType(INotification.SYSTEM_NOTIFICATION)
+            .setAutoManagerFocus(true)
+            .apply()
     }
 
     override fun isRunImmediately(): Boolean {
@@ -24,8 +29,6 @@ class MusicTask(val context: Application) : BaseTask() {
     }
 
     override fun isOnMainThread(): Boolean {
-        return false
+        return true
     }
-
-
 }

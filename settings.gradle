@@ -1,9 +1,9 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
+        mavenCentral()
         maven { url "https://kotlin.bintray.com/kotlinx" }
         maven { url 'https://jitpack.io' }
-        mavenCentral()
         google()
     }
 }
@@ -11,6 +11,7 @@ dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         maven { url 'https://jitpack.io' }
+        mavenCentral()
         maven {
             url 'http://maven.aliyun.com/nexus/content/groups/public/'
             allowInsecureProtocol = true
@@ -27,7 +28,6 @@ dependencyResolutionManagement {
             url 'http://maven.aliyun.com/nexus/content/repositories/gradle-plugin'
             allowInsecureProtocol = true
         }
-        mavenCentral()
         google()
     }
 }
@@ -35,3 +35,4 @@ rootProject.name = "CloudMusic"
 include ':app'
 include ':net'
 include ':repository'
+include ':starrysky'

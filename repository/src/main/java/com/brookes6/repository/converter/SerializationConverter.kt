@@ -1,5 +1,6 @@
 package com.brookes6.repository.converter
 
+import android.util.Log
 import com.drake.net.convert.NetConverter
 import com.drake.net.exception.ConvertException
 import com.drake.net.exception.RequestParamsException
@@ -44,6 +45,8 @@ class SerializationConverter : NetConverter {
                         val json = JSONObject(bodyString) // 获取JSON中后端定义的错误码和错误信息
                         json.getString("data").parseBody<R>(kType)
                     } catch (e: java.lang.Exception) { // 固定格式JSON分析失败直接解析JSON
+                        Log.e("Json", " 固定格式JSON分析失败:" + e.message )
+                        e.printStackTrace()
                         bodyString.parseBody<R>(kType)
                     }
                 }
@@ -57,7 +60,7 @@ class SerializationConverter : NetConverter {
         }
     }
 
-    fun <R> String.parseBody(succeed: KType): R? {
+    private fun <R> String.parseBody(succeed: KType): R? {
         return jsonDecoder.decodeFromString(Json.serializersModule.serializer(succeed), this) as R
     }
 }

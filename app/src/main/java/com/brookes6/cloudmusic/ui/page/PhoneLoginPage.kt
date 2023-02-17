@@ -1,6 +1,8 @@
 package com.brookes6.cloudmusic.ui.page
 
+import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -20,7 +22,9 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.brookes6.cloudmusic.App
 import com.brookes6.cloudmusic.R
+import com.brookes6.cloudmusic.constant.RouteConstant.PHONE_CODE_PAGE
 import com.brookes6.cloudmusic.ui.theme.*
 import com.brookes6.cloudmusic.vm.LoginViewModel
 
@@ -46,7 +50,7 @@ fun PhoneLoginPage(onNavController: (String) -> Unit = {}) {
                 .background(secondaryBackground, RoundedCornerShape(39.dp))
                 .padding(20.dp, 0.dp, 20.dp, 0.dp)
         ) {
-            val (title, secondaryTitle, edit, login) = remember { createRefs() }
+            val (title, secondaryTitle, edit, code, login) = remember { createRefs() }
             Text(text = "Let’s Gooooo!", fontSize = 28.sp, color = titleColor,
                 modifier = Modifier.constrainAs(title) {
                     top.linkTo(parent.top, 47.dp)
@@ -135,6 +139,14 @@ fun PhoneLoginPage(onNavController: (String) -> Unit = {}) {
                     maxLines = 1
                 )
             }
+            Text(text = "验证码登录", color = Color.White, fontSize = 12.sp, modifier = Modifier
+                .clickable {
+                    onNavController(PHONE_CODE_PAGE)
+                }
+                .constrainAs(code) {
+                    start.linkTo(edit.start)
+                    top.linkTo(edit.bottom, 10.dp)
+                })
             LoginButton(
                 "登陆",
                 modifier = Modifier
@@ -146,6 +158,14 @@ fun PhoneLoginPage(onNavController: (String) -> Unit = {}) {
                         width = Dimension.fillToConstraints
                     },
             ) {
+                if (phone.isEmpty()) {
+                    Toast.makeText(App.content, "手机号不可为空", Toast.LENGTH_SHORT).show()
+                    return@LoginButton
+                }
+                if (password.isEmpty()){
+                    Toast.makeText(App.content, "请输入验密码", Toast.LENGTH_SHORT).show()
+                    return@LoginButton
+                }
                 viewModel.dispatch(
                     LoginViewModel.LoginAction.PhoneLogin(
                         phone,

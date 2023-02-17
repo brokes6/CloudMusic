@@ -29,6 +29,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.ui.theme.titleColor
+import com.brookes6.cloudmusic.ui.widget.SongItem
 import com.brookes6.cloudmusic.vm.HomeViewModel
 import com.brookes6.cloudmusic.vm.MainViewModel
 import com.skydoves.landscapist.glide.GlideImage

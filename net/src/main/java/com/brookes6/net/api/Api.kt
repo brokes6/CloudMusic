@@ -15,6 +15,20 @@ object Api {
     const val PHONE_LOGIN = "/login/cellphone"
 
     /**
+     * 发送验证码
+     *
+     * 说明 : 调用此接口 ,传入手机号码, 可发送验证码
+     */
+    const val SEND_PHONE_CODE = "/captcha/sent"
+
+    /**
+     * 验证验证码
+     *
+     * 说明 : 调用此接口 ,传入手机号码和验证码, 可校验验证码是否正确
+     */
+    const val VERIFY_PHONE_CODE = "/captcha/verify"
+
+    /**
      * 登录状态
      *
      * 说明 : 调用此接口,可获取登录状态

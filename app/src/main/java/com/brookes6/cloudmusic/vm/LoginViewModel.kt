@@ -15,6 +15,7 @@ import com.drake.net.Get
 import com.drake.serialize.serialize.serialize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.Response
 
 /**
  * Author: fuxinbo
@@ -35,7 +36,13 @@ class LoginViewModel : ViewModel() {
      */
     fun dispatch(action: LoginAction) {
         when (action) {
-            is LoginAction.PhoneLogin -> login(action.phone, action.password,action.onNavController)
+            is LoginAction.PhoneLogin -> login(
+                action.phone,
+                action.password,
+                action.captcha,
+                action.onNavController
+            )
+            is LoginAction.SendPhoneCode -> sendPhoneCode(action.phone)
         }
     }
 
@@ -48,12 +55,18 @@ class LoginViewModel : ViewModel() {
     private fun login(
         phone: String,
         password: String,
+        captcha : String = "",
         onNavController: (String) -> Unit = {}
     ) {
         scopeNetLife {
             Get<LoginModel>(Api.PHONE_LOGIN) {
                 param("phone", phone)
-                param("password", password)
+                if (password.isNotEmpty()){
+                    param("password", password)
+                }
+                if (captcha.isNotEmpty()){
+                    param("captcha",captcha)
+                }
             }.await().also {
                 if (it.code == 200) {
                     serialize("isLogin" to true)
@@ -75,12 +88,28 @@ class LoginViewModel : ViewModel() {
         }
     }
 
+    private fun sendPhoneCode(phone: String) {
+        scopeNetLife {
+            Get<Response>(Api.SEND_PHONE_CODE) {
+                param("phone", phone)
+            }.await().also {
+                if (it.code == 200) {
+                    state.isShowPhoneCode.value = true
+                }
+            }
+        }
+    }
+
     sealed class LoginAction {
         class PhoneLogin(
             val phone: String,
             val password: String,
-            val onNavController: (String) -> Unit = {}
+            val onNavController: (String) -> Unit = {},
+            val captcha : String = ""
+        ) : LoginAction()
+
+        class SendPhoneCode(
+            val phone: String
         ) : LoginAction()
     }
-
 }

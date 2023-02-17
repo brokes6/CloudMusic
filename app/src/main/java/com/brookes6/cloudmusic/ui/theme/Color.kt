@@ -16,6 +16,7 @@ val mainBackground = Color(0xFF262345)
  * 次要背景
  */
 val secondaryBackground = Color(0xFF383676)
+val secondaryBackground_2 =Color(0xFF414079)
 
 /**
  * 主要按钮颜色

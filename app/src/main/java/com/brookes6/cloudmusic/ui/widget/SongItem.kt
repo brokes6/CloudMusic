@@ -1,4 +1,4 @@
-package com.brookes6.cloudmusic.ui.page
+package com.brookes6.cloudmusic.ui.widget
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.brookes6.cloudmusic.R
-import com.brookes6.cloudmusic.extensions.paddingStart
 import com.brookes6.cloudmusic.ui.theme.titleColor
 import com.bumptech.glide.request.RequestOptions
 import com.lzx.starrysky.SongInfo

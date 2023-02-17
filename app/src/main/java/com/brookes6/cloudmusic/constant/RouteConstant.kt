@@ -15,6 +15,8 @@ object RouteConstant {
 
     const val PHONE_LOGIN_PAGE = LOGIN + "phoneLoginPage"
 
+    const val PHONE_CODE_PAGE = LOGIN + "phoneCodePage"
+
     const val HOME = "HOME"
 
     const val HOME_PAGE = HOME + "homePage"

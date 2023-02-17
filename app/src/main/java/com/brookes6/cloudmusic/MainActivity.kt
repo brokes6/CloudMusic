@@ -99,13 +99,24 @@ class MainActivity : ComponentActivity() {
             composable(RouteConstant.LOGIN_PAGE) {
                 LoginPage(onNavController = { page -> navController.navigate(page) })
             }
+            composable(RouteConstant.PHONE_CODE_PAGE){
+                PhoneCodePage(onNavController = { page -> navController.navigate(page) })
+            }
             composable(RouteConstant.PHONE_LOGIN_PAGE) {
                 PhoneLoginPage(onNavController = { page ->
-                    viewModel.state.isShowBottomTab.value = true
-                    viewModel.state.isLogin.value = true
-                    navController.navigate(page) {
-                        popUpTo(RouteConstant.LOGIN_PAGE) { inclusive = true }
+                    when(page){
+                        RouteConstant.PHONE_CODE_PAGE ->{
+                            navController.navigate(page)
+                        }
+                        RouteConstant.HOME_PAGE ->{
+                            viewModel.state.isShowBottomTab.value = true
+                            viewModel.state.isLogin.value = true
+                            navController.navigate(page) {
+                                popUpTo(RouteConstant.LOGIN_PAGE) { inclusive = true }
+                            }
+                        }
                     }
+
                 })
             }
         }

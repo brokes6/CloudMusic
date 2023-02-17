@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -32,7 +33,7 @@ import com.brookes6.cloudmusic.ui.theme.*
  */
 @Preview(showSystemUi = true)
 @Composable
-fun LoginPage(onNavController : (String) -> Unit = {}) {
+fun LoginPage(onNavController: (String) -> Unit = {}) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -99,14 +100,19 @@ fun LoginPage(onNavController : (String) -> Unit = {}) {
 }
 
 @Composable
-fun LoginButton(text: String, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
+fun LoginButton(
+    text: String,
+    modifier: Modifier = Modifier,
+    colors: ButtonColors = ButtonDefaults.buttonColors(mainButtonColor),
+    onClick: () -> Unit = {}
+) {
     Button(
         onClick = {
             onClick.invoke()
         },
         modifier = modifier,
         shape = RoundedCornerShape(20.dp),
-        colors = ButtonDefaults.buttonColors(mainButtonColor)
+        colors = colors
     ) {
         Text(text = text, fontSize = 14.sp, color = titleColor)
     }

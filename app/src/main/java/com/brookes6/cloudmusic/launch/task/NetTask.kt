@@ -33,7 +33,7 @@ class NetTask(val content : Application) : BaseTask() {
 
     override fun run() {
         // 当前使用的是本地服务
-        NetConfig.initialize("http://192.168.31.168:3000", content) {
+        NetConfig.initialize("http://192.168.0.106:3000", content) {
             setDebug(BuildConfig.DEBUG)
             setRequestInterceptor(object : RequestInterceptor {
                 override fun interceptor(request: BaseRequest) {

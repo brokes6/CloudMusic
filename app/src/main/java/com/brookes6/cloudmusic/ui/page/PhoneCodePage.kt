@@ -34,8 +34,7 @@ import com.brookes6.cloudmusic.vm.LoginViewModel
  * Description:
  */
 @Composable
-fun PhoneCodePage(onNavController: (String) -> Unit = {}) {
-    val viewModel: LoginViewModel = viewModel()
+fun PhoneCodePage(viewModel: LoginViewModel = viewModel(),onNavController: (String) -> Unit = {}) {
     var phone by remember { mutableStateOf("") }
     var mPhoneCode = ""
     Box(Modifier.background(mainBackground)) {

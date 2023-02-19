@@ -135,27 +135,28 @@ fun SongController(
             progress = currPos.toFloat() / duration.toFloat()
         }
     })
-    StarrySky.with().playbackState().observe(activity!!) {
-        when (it.stage) {
-            PlaybackStage.IDLE -> {
-                if (!it.isStop) {
-                    progress = 0f
+    activity?.let {
+        StarrySky.with().playbackState().observe(it) { play ->
+            when (play.stage) {
+                PlaybackStage.IDLE -> {
+                    if (!play.isStop) {
+                        progress = 0f
+                    }
+                }
+                PlaybackStage.SWITCH -> {
+                    viewModel.dispatch(MainViewModel.MainAction.GetCurrentSong)
+                }
+                PlaybackStage.PAUSE -> {
+
+                }
+                PlaybackStage.PLAYING -> {
+
+                }
+                PlaybackStage.ERROR -> {
+
                 }
             }
-            PlaybackStage.SWITCH -> {
-                viewModel.dispatch(MainViewModel.MainAction.GetCurrentSong)
-            }
-            PlaybackStage.PAUSE -> {
-
-            }
-            PlaybackStage.PLAYING -> {
-
-            }
-            PlaybackStage.ERROR -> {
-
-            }
         }
-
     }
     LaunchedEffect(key1 = viewModel.state.currentPlayIndex.value) {
         viewModel.dispatch(MainViewModel.MainAction.GetCurrentSong)

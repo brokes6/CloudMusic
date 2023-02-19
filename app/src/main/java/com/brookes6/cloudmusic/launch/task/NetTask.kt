@@ -5,6 +5,7 @@ import com.brookes6.cloudmusic.BuildConfig
 import com.brookes6.cloudmusic.launch.BaseTask
 import com.brookes6.cloudmusic.launch.IBaseTask
 import com.brookes6.cloudmusic.utils.LogUtils
+import com.brookes6.net.api.Api
 import com.brookes6.repository.converter.SerializationConverter
 import com.drake.net.NetConfig
 import com.drake.net.cookie.PersistentCookieJar
@@ -33,7 +34,7 @@ class NetTask(val content : Application) : BaseTask() {
 
     override fun run() {
         // 当前使用的是本地服务
-        NetConfig.initialize("http://192.168.0.106:3000", content) {
+        NetConfig.initialize(Api.BASE_URL, content) {
             setDebug(BuildConfig.DEBUG)
             setRequestInterceptor(object : RequestInterceptor {
                 override fun interceptor(request: BaseRequest) {

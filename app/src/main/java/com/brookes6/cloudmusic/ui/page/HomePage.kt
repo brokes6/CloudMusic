@@ -44,8 +44,11 @@ import com.skydoves.landscapist.glide.GlideImage
 
 @Preview
 @Composable
-fun HomePage(navController: NavController? = null,viewModel: HomeViewModel = viewModel()) {
-    val mainViewModel: MainViewModel = viewModel()
+fun HomePage(
+    navController: NavController? = null,
+    viewModel: HomeViewModel = viewModel(),
+    mainViewModel: MainViewModel = viewModel()
+) {
     var searchText by remember { mutableStateOf("") }
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
         val (bg, search, recommendTitle, recommend, video, music) = createRefs()
@@ -94,7 +97,7 @@ fun HomePage(navController: NavController? = null,viewModel: HomeViewModel = vie
                     }
                 }
                 GlideImage(
-                    imageModel = {viewModel.userInfo.value?.profile?.avatarUrl},
+                    imageModel = { viewModel.userInfo.value?.profile?.avatarUrl },
                     modifier = Modifier
                         .padding(0.dp, 20.dp, 0.dp, 20.dp)
                         .clip(CircleShape)

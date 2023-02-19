@@ -9,6 +9,8 @@ package com.brookes6.net.api
  */
 object Api {
 
+    const val BASE_URL = "http://192.168.31.133:3000"
+
     /**
      * 手机登录
      */
@@ -27,6 +29,31 @@ object Api {
      * 说明 : 调用此接口 ,传入手机号码和验证码, 可校验验证码是否正确
      */
     const val VERIFY_PHONE_CODE = "/captcha/verify"
+
+    /**
+     * 二维码 key 生成接口
+     *
+     * 说明: 调用此接口可生成一个 key
+     */
+    const val GENERATE_RQCODE_KEY = "/login/qr/key"
+
+    /**
+     * 二维码生成接口
+     *
+     * 说明: 调用此接口传入上一个接口生成的 key 可生成二维码图片的 base64 和二维码信息,
+     * 可使用 base64 展示图片,或者使用二维码信息内容自行使用第三方二维码生成库渲染二维码
+     * - 必选参数: key,由第一个接口生成
+     * - 可选参数: qrimg 传入后会额外返回二维码图片 base64 编码
+     */
+    const val CREATE_RQCODE = "/login/qr/create"
+
+    /**
+     * 二维码检测扫码状态接口
+     *
+     * 说明: 轮询此接口可获取二维码扫码状态,800 为二维码过期,801
+     * 为等待扫码,802 为待确认,803 为授权登录成功(803 状态码下会返回 cookies)
+     */
+    const val VERIFY_QRCODE = "/login/qr/check"
 
     /**
      * 登录状态

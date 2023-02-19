@@ -70,6 +70,7 @@ class MainViewModel : ViewModel() {
     }
 
     private fun playSong(index: Int) {
+        LogUtils.d("开始播放:${index}")
         state.currentPlayIndex.value = index
         state.isShowSongController.value = true
         MusicManager.instance.play(StarrySky.with().getPlayList()[index])

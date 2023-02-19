@@ -8,12 +8,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.InputMode.Companion.Keyboard
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,6 +29,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.brookes6.cloudmusic.App
 import com.brookes6.cloudmusic.R
+import com.brookes6.cloudmusic.constant.RouteConstant
 import com.brookes6.cloudmusic.constant.RouteConstant.PHONE_CODE_PAGE
 import com.brookes6.cloudmusic.ui.theme.*
 import com.brookes6.cloudmusic.vm.LoginViewModel
@@ -38,8 +44,10 @@ import com.brookes6.cloudmusic.vm.LoginViewModel
 
 @Preview(showSystemUi = true)
 @Composable
-fun PhoneLoginPage(onNavController: (String) -> Unit = {}) {
-    val viewModel: LoginViewModel = viewModel()
+fun PhoneLoginPage(
+    viewModel: LoginViewModel = viewModel(),
+    onNavController: (String) -> Unit = {}
+) {
     var phone by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     Box(modifier = Modifier.background(mainBackground)) {
@@ -49,8 +57,22 @@ fun PhoneLoginPage(onNavController: (String) -> Unit = {}) {
                 .fillMaxSize()
                 .background(secondaryBackground, RoundedCornerShape(39.dp))
                 .padding(20.dp, 0.dp, 20.dp, 0.dp)
+                .clip(RoundedCornerShape(39.dp))
         ) {
-            val (title, secondaryTitle, edit, code, login) = remember { createRefs() }
+            val (qrCode, title, secondaryTitle, edit, code, login) = remember { createRefs() }
+            IconButton(onClick = {
+                onNavController(RouteConstant.PHONE_QRCODE_PAGE)
+            }, modifier = Modifier.constrainAs(qrCode) {
+                top.linkTo(parent.top, 5.dp)
+                end.linkTo(parent.end)
+            }) {
+                Icon(
+                    bitmap = ImageBitmap.imageResource(R.mipmap.ic_qrcode),
+                    contentDescription = stringResource(id = R.string.description),
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
             Text(text = "Let’s Gooooo!", fontSize = 28.sp, color = titleColor,
                 modifier = Modifier.constrainAs(title) {
                     top.linkTo(parent.top, 47.dp)
@@ -162,7 +184,7 @@ fun PhoneLoginPage(onNavController: (String) -> Unit = {}) {
                     Toast.makeText(App.content, "手机号不可为空", Toast.LENGTH_SHORT).show()
                     return@LoginButton
                 }
-                if (password.isEmpty()){
+                if (password.isEmpty()) {
                     Toast.makeText(App.content, "请输入验密码", Toast.LENGTH_SHORT).show()
                     return@LoginButton
                 }

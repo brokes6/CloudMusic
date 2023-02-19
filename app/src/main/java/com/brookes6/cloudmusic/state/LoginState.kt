@@ -16,4 +16,6 @@ data class LoginState(
     val code : MutableState<Int> = mutableStateOf(0),
     val message : MutableState<String> = mutableStateOf(""),
     val isShowPhoneCode : MutableState<Boolean> = mutableStateOf(false),
+    val mQRCodeStatus : MutableState<Boolean> = mutableStateOf(false),
+    val mQRCodeMessage : MutableState<String> = mutableStateOf("")
 )

@@ -7,11 +7,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.scopeNetLife
 import androidx.lifecycle.viewModelScope
 import com.brookes6.cloudmusic.constant.RouteConstant
+import com.brookes6.cloudmusic.extensions.toast
 import com.brookes6.cloudmusic.manager.DataBaseManager
 import com.brookes6.cloudmusic.state.LoginState
 import com.brookes6.net.api.Api
 import com.brookes6.repository.model.LoginModel
-import com.drake.net.Get
+import com.brookes6.repository.model.QRImageModel
+import com.brookes6.repository.model.QRKeyModel
+import com.brookes6.repository.model.VerifyQRCodeModel
+import com.drake.net.Post
 import com.drake.serialize.serialize.serialize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,6 +33,8 @@ class LoginViewModel : ViewModel() {
     var state by mutableStateOf(LoginState())
         private set
 
+    private var mQRCodeKey: String = ""
+
     /**
      * 分发事件
      *
@@ -43,6 +49,8 @@ class LoginViewModel : ViewModel() {
                 action.onNavController
             )
             is LoginAction.SendPhoneCode -> sendPhoneCode(action.phone)
+            is LoginAction.CreateQRCode -> createQRCode(action.onQRCodeCallback)
+            is LoginAction.JudgeQRCodeState -> judgeQRCode(action.onNavController)
         }
     }
 
@@ -55,17 +63,17 @@ class LoginViewModel : ViewModel() {
     private fun login(
         phone: String,
         password: String,
-        captcha : String = "",
+        captcha: String = "",
         onNavController: (String) -> Unit = {}
     ) {
         scopeNetLife {
-            Get<LoginModel>(Api.PHONE_LOGIN) {
+            Post<LoginModel>(Api.PHONE_LOGIN) {
                 param("phone", phone)
-                if (password.isNotEmpty()){
+                if (password.isNotEmpty()) {
                     param("password", password)
                 }
-                if (captcha.isNotEmpty()){
-                    param("captcha",captcha)
+                if (captcha.isNotEmpty()) {
+                    param("captcha", captcha)
                 }
             }.await().also {
                 if (it.code == 200) {
@@ -90,11 +98,52 @@ class LoginViewModel : ViewModel() {
 
     private fun sendPhoneCode(phone: String) {
         scopeNetLife {
-            Get<Response>(Api.SEND_PHONE_CODE) {
+            Post<Response>(Api.SEND_PHONE_CODE) {
                 param("phone", phone)
             }.await().also {
                 if (it.code == 200) {
+                    toast("验证码已发送")
                     state.isShowPhoneCode.value = true
+                }
+            }
+        }
+    }
+
+    /**
+     * 创建登录二维码
+     *
+     * @param onQRCodeCallback
+     * @receiver
+     */
+    private fun createQRCode(onQRCodeCallback: (imgSrc: String) -> Unit = {}) {
+        scopeNetLife {
+            Post<QRKeyModel>(Api.GENERATE_RQCODE_KEY).await().also {
+                Post<QRImageModel>(Api.CREATE_RQCODE) {
+                    if (it.code != 200) {
+                        toast("二维码生成失败，请重试~")
+                        return@Post
+                    }
+                    mQRCodeKey = it.unikey
+                    param("key", it.unikey)
+                    param("qrimg", 1)
+                }.await().also {
+                    onQRCodeCallback.invoke(it.qrimg)
+                }
+            }
+        }
+    }
+
+    private fun judgeQRCode(
+        onNavController: (String) -> Unit = {}
+    ) {
+        scopeNetLife {
+            Post<VerifyQRCodeModel>(Api.VERIFY_QRCODE) {
+                param("key", mQRCodeKey)
+            }.await().also {
+                if (it.code == 803) {
+                    state.mQRCodeStatus.value = true
+                    serialize("cookie" to it.cookie)
+                    onNavController(RouteConstant.HOME_PAGE)
                 }
             }
         }
@@ -105,11 +154,15 @@ class LoginViewModel : ViewModel() {
             val phone: String,
             val password: String,
             val onNavController: (String) -> Unit = {},
-            val captcha : String = ""
+            val captcha: String = ""
         ) : LoginAction()
 
         class SendPhoneCode(
             val phone: String
         ) : LoginAction()
+
+        class CreateQRCode(val onQRCodeCallback: (imgSrc: String) -> Unit = {}) : LoginAction()
+
+        class JudgeQRCodeState(val onNavController: (String) -> Unit = {}) : LoginAction()
     }
 }

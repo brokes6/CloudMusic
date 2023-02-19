@@ -21,7 +21,7 @@ import com.brookes6.cloudmusic.ui.theme.mainBackground
 import com.brookes6.cloudmusic.ui.theme.secondaryBackground
 import com.brookes6.cloudmusic.ui.widget.BottomTab
 import com.brookes6.cloudmusic.ui.widget.SongController
-import com.brookes6.cloudmusic.vm.HomeViewModel
+import com.brookes6.cloudmusic.vm.LoginViewModel
 import com.brookes6.cloudmusic.vm.MainViewModel
 import com.drake.statusbar.immersive
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -44,6 +44,7 @@ class MainActivity : ComponentActivity() {
         immersive(darkMode = false)
         setContent {
             val viewModel: MainViewModel = viewModel()
+            val loginViewModel: LoginViewModel = viewModel()
             val navController = rememberAnimatedNavController()
             Column(Modifier.background(mainBackground)) {
                 AnimatedNavHost(
@@ -54,7 +55,7 @@ class MainActivity : ComponentActivity() {
                         .fillMaxWidth()
                 ) {
                     composable(RouteConstant.SPLASH_PAGE) { SplashPage(navController, viewModel) }
-                    loginGraph(navController, viewModel)
+                    loginGraph(navController, viewModel, loginViewModel)
                     homeGraph(navController, viewModel)
                 }
                 AnimatedVisibility(visible = viewModel.state.isShowSongController.value) {
@@ -94,29 +95,50 @@ class MainActivity : ComponentActivity() {
      * @param navController
      */
     @OptIn(ExperimentalAnimationApi::class)
-    private fun NavGraphBuilder.loginGraph(navController: NavController, viewModel: MainViewModel) {
+    private fun NavGraphBuilder.loginGraph(
+        navController: NavController,
+        viewModel: MainViewModel,
+        loginViewModel: LoginViewModel
+    ) {
         navigation(startDestination = RouteConstant.LOGIN_PAGE, route = RouteConstant.LOGIN) {
             composable(RouteConstant.LOGIN_PAGE) {
                 LoginPage(onNavController = { page -> navController.navigate(page) })
             }
-            composable(RouteConstant.PHONE_CODE_PAGE){
-                PhoneCodePage(onNavController = { page -> navController.navigate(page) })
+            composable(RouteConstant.PHONE_CODE_PAGE) {
+                PhoneCodePage(
+                    loginViewModel,
+                    onNavController = { page ->
+                        navController.navigate(page) {
+                            viewModel.state.isShowBottomTab.value = true
+                            viewModel.state.isLogin.value = true
+                            popUpTo(RouteConstant.LOGIN_PAGE) { inclusive = true }
+                        }
+                    })
+            }
+            composable(RouteConstant.PHONE_QRCODE_PAGE) {
+                QRCodePage(loginViewModel,
+                    onNavController = { page ->
+                        navController.navigate(page) {
+                            viewModel.state.isShowBottomTab.value = true
+                            viewModel.state.isLogin.value = true
+                            popUpTo(RouteConstant.LOGIN_PAGE) { inclusive = true }
+                        }
+                    })
             }
             composable(RouteConstant.PHONE_LOGIN_PAGE) {
-                PhoneLoginPage(onNavController = { page ->
-                    when(page){
-                        RouteConstant.PHONE_CODE_PAGE ->{
-                            navController.navigate(page)
-                        }
-                        RouteConstant.HOME_PAGE ->{
+                PhoneLoginPage(loginViewModel, onNavController = { page ->
+                    when (page) {
+                        RouteConstant.HOME_PAGE -> {
                             viewModel.state.isShowBottomTab.value = true
                             viewModel.state.isLogin.value = true
                             navController.navigate(page) {
                                 popUpTo(RouteConstant.LOGIN_PAGE) { inclusive = true }
                             }
                         }
+                        else -> {
+                            navController.navigate(page)
+                        }
                     }
-
                 })
             }
         }
@@ -131,7 +153,7 @@ class MainActivity : ComponentActivity() {
     private fun NavGraphBuilder.homeGraph(navController: NavController, viewModel: MainViewModel) {
         navigation(startDestination = RouteConstant.HOME_PAGE, route = RouteConstant.HOME) {
             composable(RouteConstant.HOME_PAGE) {
-                HomePage(navController, viewModel<HomeViewModel>())
+                HomePage(navController, viewModel(), viewModel)
             }
             composable(RouteConstant.HOME_SONG_PAGE) {
                 SongPage()

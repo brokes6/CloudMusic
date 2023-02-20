@@ -48,6 +48,7 @@ fun BottomTab(
                         RoundedCornerShape(16.dp)
                     )
                     .clickable {
+                        if (mSelectItemIndex == index) return@clickable
                         mSelectItemIndex = index
                         onNavController.invoke(bean.route)
                     }

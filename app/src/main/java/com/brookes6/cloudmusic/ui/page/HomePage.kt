@@ -1,11 +1,13 @@
 package com.brookes6.cloudmusic.ui.page
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -30,8 +32,10 @@ import androidx.navigation.NavController
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.ui.theme.titleColor
 import com.brookes6.cloudmusic.ui.widget.SongItem
+import com.brookes6.cloudmusic.utils.LogUtils
 import com.brookes6.cloudmusic.vm.HomeViewModel
 import com.brookes6.cloudmusic.vm.MainViewModel
+import com.lzx.starrysky.SongInfo
 import com.skydoves.landscapist.glide.GlideImage
 
 /**
@@ -50,6 +54,27 @@ fun HomePage(
     mainViewModel: MainViewModel = viewModel()
 ) {
     var searchText by remember { mutableStateOf("") }
+    val lazyListState = rememberLazyListState()
+    var lastFirstVisibleItemIndex by remember { mutableStateOf(lazyListState.firstVisibleItemIndex) }
+    if (lazyListState.isScrollInProgress) {
+        //进入组合后只会启动一次
+        DisposableEffect(Unit) {
+            LogUtils.d("开始滑动")
+            onDispose {
+                LogUtils.d("停止滑动")
+            }
+        }
+        run {
+            val currentFirstVisibleItemIndex = lazyListState.firstVisibleItemIndex
+            //第一个可见的item改变了
+            if (currentFirstVisibleItemIndex != lastFirstVisibleItemIndex) {
+                //更新记录的值，退出run代码块
+                lastFirstVisibleItemIndex = currentFirstVisibleItemIndex
+                return@run
+            }
+        }
+    }
+
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
         val (bg, search, recommendTitle, recommend, video, music) = createRefs()
         // bg
@@ -117,31 +142,27 @@ fun HomePage(
                     bottom.linkTo(recommend.bottom)
                 })
 
-        LazyRow(modifier = Modifier.constrainAs(recommend) {
-            top.linkTo(search.bottom, 35.dp)
-            start.linkTo(recommendTitle.end)
-            end.linkTo(parent.end)
-            width = Dimension.fillToConstraints
-        }, horizontalArrangement = Arrangement.spacedBy(15.dp)) {
-            itemsIndexed(viewModel.recommendSong.value, key = { index, item ->
-                item.songId
-            }) { index, item ->
-//                if (index == 0) {
-//                    SongItem(
-//                        modifier = Modifier.size(
-//                            animateSize.value.width.dp,
-//                            animateSize.value.height.dp
-//                        ), item
-//                    )
-//                } else {
-                SongItem(
-                    modifier = Modifier
-                        .size(136.dp)
-                        .clickable {
-                            mainViewModel.dispatch(MainViewModel.MainAction.PlaySong(index))
-                        }, item
-                )
-//                }
+        LazyRow(
+            state = lazyListState,
+            modifier = Modifier
+                .height(168.dp)
+                .constrainAs(recommend) {
+                    top.linkTo(search.bottom, 35.dp)
+                    start.linkTo(recommendTitle.end)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
+                },
+            horizontalArrangement = Arrangement.spacedBy(15.dp),
+            verticalAlignment = Alignment.Bottom
+        ) {
+            itemsIndexed(viewModel.recommendSong.value,
+                key = { _, item ->
+                    item.songId
+                }) { index, item ->
+                LogUtils.d("LazyRow发生重组 : ${index},头部index:${lastFirstVisibleItemIndex}")
+                ChangerItems(index, lastFirstVisibleItemIndex, item) {
+                    mainViewModel.dispatch(MainViewModel.MainAction.PlaySong(index))
+                }
             }
         }
     }
@@ -149,4 +170,21 @@ fun HomePage(
         viewModel.dispatch(HomeViewModel.HomeAction.GetUserInfo)
         viewModel.dispatch(HomeViewModel.HomeAction.GetRecommendSong)
     })
+}
+
+@Composable
+fun ChangerItems(
+    currentIndex: Int,
+    firstIndex: Int,
+    item: SongInfo,
+    callback: (index: Int) -> Unit = {}
+) {
+    val animateSize by animateDpAsState(targetValue = if (firstIndex == currentIndex) 168.dp else 136.dp)
+    SongItem(
+        modifier = Modifier
+            .size(animateSize)
+            .clickable {
+                callback.invoke(currentIndex)
+            }, item
+    )
 }

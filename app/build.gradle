@@ -5,6 +5,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        test {
+        storePassword '121300'
+            keyAlias 'test'
+            keyPassword '121300'
+            storeFile file('/Users/fuxinbo/AndroidStudioProjects/Key/testKey.properties')
+        }
+    }
     namespace 'com.brookes6.cloudmusic'
     compileSdk 33
 
@@ -25,6 +33,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.test
         }
     }
     compileOptions {

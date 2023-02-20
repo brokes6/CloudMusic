@@ -40,7 +40,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun getHomeBottomTabList(): MutableList<BottomTabBean> = mutableListOf(
-        BottomTabBean(RouteConstant.HOME, "主页", R.mipmap.ic_home_normal, R.mipmap.ic_home_select),
+        BottomTabBean(RouteConstant.HOME_PAGE, "主页", R.mipmap.ic_home_normal, R.mipmap.ic_home_select),
         BottomTabBean(
             RouteConstant.HOME_SONG_PAGE,
             "歌单",

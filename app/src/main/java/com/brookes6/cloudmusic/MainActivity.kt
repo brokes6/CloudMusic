@@ -77,11 +77,14 @@ class MainActivity : ComponentActivity() {
                         viewModel.getHomeBottomTabList()
                     ) { route ->
                         navController.navigate(route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
+                            if (route != viewModel.state.currentRoute.value){
+                                viewModel.state.currentRoute.value = route
+                                launchSingleTop = true
+                                restoreState = true
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
                             }
-                            launchSingleTop = true
-                            restoreState = true
                         }
                     }
                 }

@@ -9,7 +9,7 @@ package com.brookes6.net.api
  */
 object Api {
 
-    const val BASE_URL = "http://192.168.31.133:3000"
+    const val BASE_URL = "http://192.168.0.105:3000"
 
     /**
      * 手机登录

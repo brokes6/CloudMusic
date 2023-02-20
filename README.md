@@ -4,7 +4,7 @@
 
 ## 整体思路
 1. 网络请求
-    - Retrofit + 协程 + Flow + moshi
+    - Net(https://github.com/liangjingkanji/Net) + 协程 + Flow + kotlin-serialization
 2. 整体框架
     - MVI
 3. 屏幕适配

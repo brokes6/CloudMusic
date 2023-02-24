@@ -38,7 +38,7 @@ class NetTask(val content : Application) : BaseTask() {
             setDebug(BuildConfig.DEBUG)
             setRequestInterceptor(object : RequestInterceptor {
                 override fun interceptor(request: BaseRequest) {
-                    LogUtils.d("cookie --> $cookie")
+                    LogUtils.i("当前使用的cookie --> $cookie")
                     if (cookie.isNotEmpty()) request.param("cookie",cookie,true)
                 }
             })

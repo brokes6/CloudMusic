@@ -8,6 +8,7 @@ import com.brookes6.cloudmusic.constant.RouteConstant
 import com.brookes6.cloudmusic.manager.MusicManager
 import com.brookes6.cloudmusic.state.MainState
 import com.brookes6.cloudmusic.state.PAGE_TYPE
+import com.brookes6.cloudmusic.ui.widget.BottomSheetDialogValue
 import com.brookes6.cloudmusic.utils.LogUtils
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
@@ -34,13 +35,19 @@ class MainViewModel : ViewModel() {
         when (action) {
             is MainAction.GoHomePage -> goHomePage()
             is MainAction.GoLoginPage -> goLoginPage()
-            is MainAction.PlaySong -> playSong(action.index)
+            is MainAction.PlaySong -> playSong(action.index, action.list)
             is MainAction.GetCurrentSong -> getCurrentSongInfo()
+            is MainAction.ChangerSongDetailPage -> changerSongDetailPage()
         }
     }
 
     fun getHomeBottomTabList(): MutableList<BottomTabBean> = mutableListOf(
-        BottomTabBean(RouteConstant.HOME_PAGE, "主页", R.mipmap.ic_home_normal, R.mipmap.ic_home_select),
+        BottomTabBean(
+            RouteConstant.HOME_PAGE,
+            "主页",
+            R.mipmap.ic_home_normal,
+            R.mipmap.ic_home_select
+        ),
         BottomTabBean(
             RouteConstant.HOME_SONG_PAGE,
             "歌单",
@@ -69,21 +76,37 @@ class MainViewModel : ViewModel() {
         state.goPageType.value = PAGE_TYPE.LOGIN
     }
 
-    private fun playSong(index: Int) {
+    private fun playSong(index: Int, list: List<SongInfo>) {
         LogUtils.d("开始播放:${index}")
+        MusicManager.instance.setPlayList(list.toMutableList())
         state.currentPlayIndex.value = index
         state.isShowSongController.value = true
         MusicManager.instance.play(StarrySky.with().getPlayList()[index])
     }
 
+    private fun changerSongDetailPage() {
+        when (state.isShowSongDetailPage.value) {
+            BottomSheetDialogValue.Collapsed -> {
+                state.isShowSongDetailPage.value = BottomSheetDialogValue.Expanded
+            }
+            BottomSheetDialogValue.Expanded -> {
+                state.isShowSongDetailPage.value = BottomSheetDialogValue.Collapsed
+            }
+            else -> {
+                state.isShowSongDetailPage.value = BottomSheetDialogValue.Expanded
+            }
+        }
+    }
 
     sealed class MainAction {
         object GoHomePage : MainAction()
 
         object GoLoginPage : MainAction()
 
-        class PlaySong(val index: Int) : MainAction()
+        class PlaySong(val index: Int, val list: List<SongInfo>) : MainAction()
 
         object GetCurrentSong : MainAction()
+
+        object ChangerSongDetailPage : MainAction()
     }
 }

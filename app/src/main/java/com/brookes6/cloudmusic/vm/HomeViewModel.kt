@@ -13,6 +13,7 @@ import com.brookes6.repository.model.LoginModel
 import com.brookes6.repository.model.RecommendSongModel
 import com.brookes6.repository.model.SongModel
 import com.drake.net.Get
+import com.drake.net.Post
 import com.lzx.starrysky.SongInfo
 
 /**
@@ -47,6 +48,7 @@ class HomeViewModel : ViewModel() {
         request({
             DataBaseManager.db?.userDao?.getUserInfo()
         }, {
+            LogUtils.d("获取本地用户数据成功:${it?.account?.userName}","DAO")
             _userInfo.value = it
         }, {
             LogUtils.e("获取用户数据出现异常！->${it}")
@@ -68,7 +70,6 @@ class HomeViewModel : ViewModel() {
                         recommendSong.al?.picUrl ?: "",
                     )
                 }.also {
-                    _recommendSong.value = songMap.values.toList()
                     Get<List<SongModel>>(Api.GET_MUSIC_URL) {
                         param("id", musicId, true)
                         param("level", "exhigh")
@@ -79,7 +80,7 @@ class HomeViewModel : ViewModel() {
                                 duration = songInfo.time
                             }
                         }.also {
-                            MusicManager.instance.setPlayList(songMap.values.toMutableList())
+                            _recommendSong.value = songMap.values.toList()
                         }
                     }
                 }

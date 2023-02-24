@@ -1,19 +1,20 @@
 package com.brookes6.cloudmusic.ui.widget
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
@@ -24,13 +25,14 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.ui.theme.titleColor
 import com.brookes6.cloudmusic.vm.MainViewModel
 import com.lzx.starrysky.OnPlayProgressListener
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.manager.PlaybackStage
-import com.skydoves.landscapist.glide.GlideImage
 
 /**
  * @Author fuxinbo
@@ -47,17 +49,27 @@ fun SongController(
 ) {
     var progress by remember { mutableStateOf(0f) }
     ConstraintLayout(
-        modifier = modifier
+        modifier = Modifier
             .padding(20.dp, 0.dp, 20.dp, 0.dp)
             .fillMaxWidth()
             .background(
                 colorResource(id = R.color.song_controller),
                 RoundedCornerShape(20.dp)
             )
+            .clickable {
+                viewModel.dispatch(MainViewModel.MainAction.ChangerSongDetailPage)
+            }
             .padding(4.dp)
     ) {
         val (songImage, songName, songAuthor, songProgress, songPlayType, songPlayStatus) = createRefs()
-        GlideImage(imageModel = { viewModel.song.value?.songCover },
+        Image(
+            painter = rememberAsyncImagePainter(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(viewModel.song.value?.songCover)
+                    .size(43)
+                    .build()
+            ),
+            stringResource(id = R.string.description),
             modifier = Modifier
                 .size(43.dp)
                 .clip(CircleShape)

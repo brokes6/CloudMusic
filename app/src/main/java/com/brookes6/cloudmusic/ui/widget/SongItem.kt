@@ -1,5 +1,6 @@
 package com.brookes6.cloudmusic.ui.widget
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -8,27 +9,34 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.ui.theme.titleColor
-import com.bumptech.glide.request.RequestOptions
 import com.lzx.starrysky.SongInfo
-import com.skydoves.landscapist.glide.GlideImage
 
 
+@Deprecated("由Android View RecyclerView代替")
 @Preview
 @Composable
 fun SongItem(modifier: Modifier = Modifier, item: SongInfo? = null) {
     Box(modifier = modifier) {
-        GlideImage(
-            imageModel = { item?.songCover },
+        Image(
+            painter = rememberAsyncImagePainter(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(item?.songCover)
+                    .build()
+            ),
+            stringResource(id = R.string.description),
             modifier = Modifier
                 .fillMaxSize()
                 .clip(RoundedCornerShape(20.dp)),
-            requestOptions = { RequestOptions().override(136).centerCrop() }
         )
         Column(
             modifier = Modifier

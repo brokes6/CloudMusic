@@ -5,12 +5,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -19,10 +22,11 @@ import com.brookes6.cloudmusic.constant.RouteConstant
 import com.brookes6.cloudmusic.ui.page.*
 import com.brookes6.cloudmusic.ui.theme.mainBackground
 import com.brookes6.cloudmusic.ui.theme.secondaryBackground
-import com.brookes6.cloudmusic.ui.widget.BottomTab
-import com.brookes6.cloudmusic.ui.widget.SongController
+import com.brookes6.cloudmusic.ui.widget.*
+import com.brookes6.cloudmusic.utils.LogUtils
 import com.brookes6.cloudmusic.vm.LoginViewModel
 import com.brookes6.cloudmusic.vm.MainViewModel
+import com.drake.brv.utils.BRV
 import com.drake.statusbar.immersive
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -41,43 +45,90 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        BRV.modelId = BR.data
         immersive(darkMode = false)
         setContent {
             val viewModel: MainViewModel = viewModel()
             val loginViewModel: LoginViewModel = viewModel()
             val navController = rememberAnimatedNavController()
-            Column(Modifier.background(mainBackground)) {
+            val state =
+                rememberBottomSheetDialogState(initialValue = BottomSheetDialogValue.Expanded)//初始状态，这里设为折叠
+            ConstraintLayout(
+                Modifier
+                    .background(mainBackground)
+                    .fillMaxSize()
+            ) {
+                val (content, songDetail, songController, bottomTab) = createRefs()
                 AnimatedNavHost(
                     navController = navController,
                     startDestination = RouteConstant.SPLASH_PAGE,
                     modifier = Modifier
-                        .weight(1f)
                         .fillMaxWidth()
+                        .constrainAs(content) {
+                            top.linkTo(parent.top)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            bottom.linkTo(bottomTab.top)
+                            height = Dimension.fillToConstraints
+                        }
                 ) {
                     composable(RouteConstant.SPLASH_PAGE) { SplashPage(navController, viewModel) }
                     loginGraph(navController, viewModel, loginViewModel)
                     homeGraph(navController, viewModel)
                 }
-                AnimatedVisibility(visible = viewModel.state.isShowSongController.value) {
+                AnimatedVisibility(
+                    visible = viewModel.state.isShowSongController.value,
+                    modifier = Modifier.constrainAs(songController) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(bottomTab.top)
+                    }
+                ) {
                     SongController(
                         modifier = Modifier,
+                        viewModel = viewModel,
                         activity = this@MainActivity
                     )
                 }
+                BottomSheetDialog(
+                    modifier = Modifier
+                        .systemBarsPadding()
+                        .padding(20.dp, 8.dp, 20.dp, 0.dp)
+                        .constrainAs(songDetail) {
+                            top.linkTo(parent.top)
+                            bottom.linkTo(bottomTab.top)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            height = Dimension.fillToConstraints
+                        },
+                    bottomSheetDialogState = state,
+                    sheetPeekHeight = 0.dp,//折叠状态下高度
+                    sheetBackgroundColor = colorResource(id = R.color.song_detail),
+                    sheetShape = RoundedCornerShape(20.dp),
+                    sheetGesturesEnabled = true,
+                    sheetContent = {
+                        SongDetailPage()
+                    },
+                )
                 if (viewModel.state.isShowBottomTab.value) {
                     BottomTab(
                         modifier = Modifier
-                            .padding(20.dp, 0.dp, 20.dp, 14.dp)
+                            .padding(20.dp, 0.dp, 20.dp, 0.dp)
                             .fillMaxWidth()
                             .background(
                                 secondaryBackground,
                                 RoundedCornerShape(20.dp)
                             )
-                            .padding(4.dp),
+                            .padding(4.dp)
+                            .constrainAs(bottomTab) {
+                                bottom.linkTo(parent.bottom)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                            },
                         viewModel.getHomeBottomTabList()
                     ) { route ->
                         navController.navigate(route) {
-                            if (route != viewModel.state.currentRoute.value){
+                            if (route != viewModel.state.currentRoute.value) {
                                 viewModel.state.currentRoute.value = route
                                 launchSingleTop = true
                                 restoreState = true
@@ -89,6 +140,15 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+            LaunchedEffect(key1 = viewModel.state.isShowSongDetailPage.value, block = {
+                if (state.isExpanded) {
+                    LogUtils.d("折叠音乐详情页")
+                    state.collapse()
+                } else {
+                    LogUtils.d("展开音乐详情页")
+                    state.expand()
+                }
+            })
         }
     }
 

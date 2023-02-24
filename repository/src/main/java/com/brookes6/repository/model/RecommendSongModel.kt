@@ -29,7 +29,7 @@ data class RecommendSongModel(
         val alg: String = "",
         val ar: List<Author?>? = null,
         val al: SongImage? = null,
-        val mark: Int = 0,
+        val mark: Long = 0,
     )
 
     @Serializable

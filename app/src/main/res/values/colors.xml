@@ -16,5 +16,6 @@
     <color name="song_author">#FFFF5753</color>
 
     <color name="search_transparent">#5B000000</color>
+    <color name="song_detail">#CC000000</color>
     <color name="song_info">#B2000000</color>
 </resources>

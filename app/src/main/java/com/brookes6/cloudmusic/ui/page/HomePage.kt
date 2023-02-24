@@ -1,13 +1,13 @@
 package com.brookes6.cloudmusic.ui.page
 
-import androidx.compose.animation.core.animateDpAsState
+import android.view.View
+import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.widget.ImageView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -19,24 +19,34 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.recyclerview.widget.RecyclerView
+import coil.compose.rememberAsyncImagePainter
+import coil.load
+import coil.request.ImageRequest
+import coil.size.Size
+import coil.transform.RoundedCornersTransformation
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.ui.theme.titleColor
-import com.brookes6.cloudmusic.ui.widget.SongItem
-import com.brookes6.cloudmusic.utils.LogUtils
+import com.brookes6.cloudmusic.ui.view.FocusLayoutManager
+import com.brookes6.cloudmusic.ui.view.FocusLayoutManager.Companion.dp2px
 import com.brookes6.cloudmusic.vm.HomeViewModel
 import com.brookes6.cloudmusic.vm.MainViewModel
+import com.drake.brv.utils.models
+import com.drake.brv.utils.setup
 import com.lzx.starrysky.SongInfo
-import com.skydoves.landscapist.glide.GlideImage
 
 /**
  * Author: fuxinbo
@@ -54,27 +64,6 @@ fun HomePage(
     mainViewModel: MainViewModel = viewModel()
 ) {
     var searchText by remember { mutableStateOf("") }
-    val lazyListState = rememberLazyListState()
-    var lastFirstVisibleItemIndex by remember { mutableStateOf(lazyListState.firstVisibleItemIndex) }
-    if (lazyListState.isScrollInProgress) {
-        //进入组合后只会启动一次
-        DisposableEffect(Unit) {
-            LogUtils.d("开始滑动")
-            onDispose {
-                LogUtils.d("停止滑动")
-            }
-        }
-        run {
-            val currentFirstVisibleItemIndex = lazyListState.firstVisibleItemIndex
-            //第一个可见的item改变了
-            if (currentFirstVisibleItemIndex != lastFirstVisibleItemIndex) {
-                //更新记录的值，退出run代码块
-                lastFirstVisibleItemIndex = currentFirstVisibleItemIndex
-                return@run
-            }
-        }
-    }
-
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
         val (bg, search, recommendTitle, recommend, video, music) = createRefs()
         // bg
@@ -121,8 +110,14 @@ fun HomePage(
                         innerTextField()
                     }
                 }
-                GlideImage(
-                    imageModel = { viewModel.userInfo.value?.profile?.avatarUrl },
+                Image(
+                    painter = rememberAsyncImagePainter(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(viewModel.userInfo.value?.profile?.avatarUrl)
+                            .size(Size(32, 32))
+                            .build()
+                    ),
+                    stringResource(id = R.string.description),
                     modifier = Modifier
                         .padding(0.dp, 20.dp, 0.dp, 20.dp)
                         .clip(CircleShape)
@@ -141,9 +136,7 @@ fun HomePage(
                     top.linkTo(recommend.top)
                     bottom.linkTo(recommend.bottom)
                 })
-
-        LazyRow(
-            state = lazyListState,
+        Box(
             modifier = Modifier
                 .height(168.dp)
                 .constrainAs(recommend) {
@@ -151,18 +144,17 @@ fun HomePage(
                     start.linkTo(recommendTitle.end)
                     end.linkTo(parent.end)
                     width = Dimension.fillToConstraints
-                },
-            horizontalArrangement = Arrangement.spacedBy(15.dp),
-            verticalAlignment = Alignment.Bottom
+                }, contentAlignment = Alignment.CenterStart
         ) {
-            itemsIndexed(viewModel.recommendSong.value,
-                key = { _, item ->
-                    item.songId
-                }) { index, item ->
-                LogUtils.d("LazyRow发生重组 : ${index},头部index:${lastFirstVisibleItemIndex}")
-                ChangerItems(index, lastFirstVisibleItemIndex, item) {
-                    mainViewModel.dispatch(MainViewModel.MainAction.PlaySong(index))
-                }
+            AndroidRecyclerView(
+                viewModel.recommendSong.value
+            ) { index ->
+                mainViewModel.dispatch(
+                    MainViewModel.MainAction.PlaySong(
+                        index,
+                        viewModel.recommendSong.value
+                    )
+                )
             }
         }
     }
@@ -172,19 +164,43 @@ fun HomePage(
     })
 }
 
+/**
+ * 由于Compose LazyRow性能过差，还是使用Android View中的RecyclerView
+ * @param item 数据
+ */
 @Composable
-fun ChangerItems(
-    currentIndex: Int,
-    firstIndex: Int,
-    item: SongInfo,
-    callback: (index: Int) -> Unit = {}
+fun AndroidRecyclerView(
+    item: List<SongInfo>,
+    modifier: Modifier = Modifier,
+    onClickCallback: (index: Int) -> Unit = {}
 ) {
-    val animateSize by animateDpAsState(targetValue = if (firstIndex == currentIndex) 168.dp else 136.dp)
-    SongItem(
-        modifier = Modifier
-            .size(animateSize)
-            .clickable {
-                callback.invoke(currentIndex)
-            }, item
-    )
+    AndroidView(factory = { context ->
+        RecyclerView(context).apply {
+            overScrollMode = View.OVER_SCROLL_NEVER
+            layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+            layoutManager = FocusLayoutManager.Builder()
+                .layerPadding(dp2px(context, 15f))
+                .focusOrientation(FocusLayoutManager.FOCUS_LEFT)
+                .isAutoSelect(true)
+                .maxLayerCount(3)
+                .build()
+            this.setup {
+                addType<SongInfo>(R.layout.item_home_recommend_song)
+                onBind {
+                    getModel<SongInfo>(modelPosition).let { song ->
+                        findView<ImageView>(R.id.imageCover).load(song.songCover) {
+                            transformations(RoundedCornersTransformation(20f))
+                        }
+                    }
+                }
+                onClick(R.id.roots) {
+                    onClickCallback.invoke(modelPosition)
+                }
+            }
+        }
+    },
+        modifier = modifier,
+        update = {
+            it.models = item
+        })
 }

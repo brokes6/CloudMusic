@@ -10,17 +10,22 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.constant.RouteConstant
+import com.brookes6.cloudmusic.manager.DataBaseManager
 import com.brookes6.cloudmusic.state.PAGE_TYPE
 import com.brookes6.cloudmusic.utils.LogUtils
 import com.brookes6.cloudmusic.vm.MainViewModel
 import com.brookes6.net.api.Api
 import com.brookes6.repository.model.LoginModel
 import com.drake.net.Get
+import com.drake.net.Post
 import com.drake.net.utils.scopeNet
 import com.drake.serialize.serialize.serialize
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * @Author fuxinbo
@@ -39,9 +44,13 @@ fun SplashPage(navController: NavController? = null, viewModel: MainViewModel? =
     }
     LaunchedEffect(true) {
         scopeNet {
-            Get<LoginModel>(Api.LOGIN_STATUS).await().also {
+            Post<LoginModel>(Api.LOGIN_STATUS).await().also {
                 LogUtils.d("账号状态为 -> $it")
                 if (it.profile != null) {
+                    // 登录状态为已登录
+                    this@LaunchedEffect.launch(Dispatchers.IO) {
+                        DataBaseManager.db?.userDao?.install(it)
+                    }
                     viewModel?.state?.let {state ->
                         state.isLogin.value = true
                         state.isShowBottomTab.value = true
@@ -51,6 +60,7 @@ fun SplashPage(navController: NavController? = null, viewModel: MainViewModel? =
                         popUpTo(RouteConstant.SPLASH_PAGE) { inclusive = true }
                     }
                 } else {
+                    // 登录状态为未登录
                     viewModel?.state?.let {state ->
                         state.goPageType.value = PAGE_TYPE.LOGIN
                     }

@@ -9,7 +9,7 @@ package com.brookes6.net.api
  */
 object Api {
 
-    const val BASE_URL = "http://192.168.0.105:3000"
+    const val BASE_URL = "http://192.168.0.106:3000"
 
     /**
      * 手机登录
@@ -61,6 +61,13 @@ object Api {
      * 说明 : 调用此接口,可获取登录状态
      */
     const val LOGIN_STATUS = "/login/status"
+
+    /**
+     * 获取账号信息
+     *
+     * 说明 : 登录后调用此接口 ,可获取用户账号信息
+     */
+    const val ACCOUNT_INFO = "/user/account"
 
     /**
      * 获取每日推荐歌曲

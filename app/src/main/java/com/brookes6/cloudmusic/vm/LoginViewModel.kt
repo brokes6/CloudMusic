@@ -1,5 +1,8 @@
 package com.brookes6.cloudmusic.vm
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,6 +13,7 @@ import com.brookes6.cloudmusic.constant.RouteConstant
 import com.brookes6.cloudmusic.extensions.toast
 import com.brookes6.cloudmusic.manager.DataBaseManager
 import com.brookes6.cloudmusic.state.LoginState
+import com.brookes6.cloudmusic.utils.LogUtils
 import com.brookes6.net.api.Api
 import com.brookes6.repository.model.LoginModel
 import com.brookes6.repository.model.QRImageModel
@@ -20,6 +24,7 @@ import com.drake.serialize.serialize.serialize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.Response
+
 
 /**
  * Author: fuxinbo
@@ -115,7 +120,7 @@ class LoginViewModel : ViewModel() {
      * @param onQRCodeCallback
      * @receiver
      */
-    private fun createQRCode(onQRCodeCallback: (imgSrc: String) -> Unit = {}) {
+    private fun createQRCode(onQRCodeCallback: (imgSrc: ByteArray) -> Unit = {}) {
         scopeNetLife {
             Post<QRKeyModel>(Api.GENERATE_RQCODE_KEY).await().also {
                 Post<QRImageModel>(Api.CREATE_RQCODE) {
@@ -127,7 +132,9 @@ class LoginViewModel : ViewModel() {
                     param("key", it.unikey)
                     param("qrimg", 1)
                 }.await().also {
-                    onQRCodeCallback.invoke(it.qrimg)
+                    val decodedString: ByteArray = Base64.decode(it.qrimg.split(",")[1], Base64.DEFAULT)
+                    LogUtils.d("二维码 Byte[] --> ${decodedString},size --> ${decodedString.size}")
+                    onQRCodeCallback.invoke(decodedString)
                 }
             }
         }
@@ -142,10 +149,17 @@ class LoginViewModel : ViewModel() {
             }.await().also {
                 if (it.code == 803) {
                     state.mQRCodeStatus.value = true
+                    LogUtils.i("保存的Cookie为:${it.cookie}")
                     serialize("cookie" to it.cookie)
                     onNavController(RouteConstant.HOME_PAGE)
                 }
             }
+        }
+    }
+
+    private fun getAccountInfo(){
+        scopeNetLife {
+            Post<LoginModel>(Api.ACCOUNT_INFO).await()
         }
     }
 
@@ -161,7 +175,7 @@ class LoginViewModel : ViewModel() {
             val phone: String
         ) : LoginAction()
 
-        class CreateQRCode(val onQRCodeCallback: (imgSrc: String) -> Unit = {}) : LoginAction()
+        class CreateQRCode(val onQRCodeCallback: (imgSrc: ByteArray) -> Unit = {}) : LoginAction()
 
         class JudgeQRCodeState(val onNavController: (String) -> Unit = {}) : LoginAction()
     }

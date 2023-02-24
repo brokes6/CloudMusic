@@ -1,9 +1,9 @@
 package com.brookes6.cloudmusic.state
 
 import androidx.annotation.IntDef
-import androidx.annotation.StringDef
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import com.brookes6.cloudmusic.ui.widget.BottomSheetDialogValue
 
 
 /**
@@ -14,7 +14,7 @@ import androidx.compose.runtime.mutableStateOf
  * Description:
  */
 data class MainState(
-    val goPageType : MutableState<Int> = mutableStateOf(PAGE_TYPE.SPLASH),
+    val goPageType: MutableState<Int> = mutableStateOf(PAGE_TYPE.SPLASH),
     /**
      * 是否展示底部导航栏
      */
@@ -26,15 +26,22 @@ data class MainState(
     /**
      * 当前播放索引
      */
-    val currentPlayIndex : MutableState<Int> = mutableStateOf(0),
+    val currentPlayIndex: MutableState<Int> = mutableStateOf(0),
     /**
      * 是否登录
      */
-    val isLogin : MutableState<Boolean> = mutableStateOf(true),
+    val isLogin: MutableState<Boolean> = mutableStateOf(true),
     /**
      * 当前展示的页面
      */
-    val currentRoute : MutableState<String> = mutableStateOf("")
+    val currentRoute: MutableState<String> = mutableStateOf(""),
+
+    /**
+     * 是否展示音乐详情页
+     */
+    val isShowSongDetailPage: MutableState<BottomSheetDialogValue> = mutableStateOf(
+        BottomSheetDialogValue.Collapsed
+    ),
 )
 
 @IntDef(PAGE_TYPE.SPLASH, PAGE_TYPE.LOGIN, PAGE_TYPE.HOME)

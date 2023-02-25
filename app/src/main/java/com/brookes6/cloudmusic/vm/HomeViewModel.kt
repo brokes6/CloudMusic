@@ -48,7 +48,7 @@ class HomeViewModel : ViewModel() {
         request({
             DataBaseManager.db?.userDao?.getUserInfo()
         }, {
-            LogUtils.d("获取本地用户数据成功:${it?.account?.userName}","DAO")
+            LogUtils.i("获取本地用户数据成功:${it?.account?.userName}", "DAO")
             _userInfo.value = it
         }, {
             LogUtils.e("获取用户数据出现异常！->${it}")
@@ -56,6 +56,10 @@ class HomeViewModel : ViewModel() {
     }
 
     private fun getRecommendSong() {
+        if (_recommendSong.value.isNotEmpty()) {
+            LogUtils.i("缓存中还有数据，则不进行网络请求，使用缓存数据:${_recommendSong.value.size}")
+            return
+        }
         val songMap = hashMapOf<Long, SongInfo>()
         var musicId = ""
         scopeNetLife {

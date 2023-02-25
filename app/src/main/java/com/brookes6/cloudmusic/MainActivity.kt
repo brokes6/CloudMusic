@@ -7,10 +7,11 @@ import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.BottomSheetScaffold
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -24,6 +25,7 @@ import com.brookes6.cloudmusic.ui.theme.mainBackground
 import com.brookes6.cloudmusic.ui.theme.secondaryBackground
 import com.brookes6.cloudmusic.ui.widget.*
 import com.brookes6.cloudmusic.utils.LogUtils
+import com.brookes6.cloudmusic.vm.HomeViewModel
 import com.brookes6.cloudmusic.vm.LoginViewModel
 import com.brookes6.cloudmusic.vm.MainViewModel
 import com.drake.brv.utils.BRV
@@ -42,98 +44,92 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
  */
 class MainActivity : ComponentActivity() {
 
-    @OptIn(ExperimentalAnimationApi::class)
-    override fun onCreate(savedInstanceState: Bundle?) {
+    @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialApi::class)
+    public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         BRV.modelId = BR.data
         immersive(darkMode = false)
         setContent {
             val viewModel: MainViewModel = viewModel()
             val loginViewModel: LoginViewModel = viewModel()
+
             val navController = rememberAnimatedNavController()
-            val state =
-                rememberBottomSheetDialogState(initialValue = BottomSheetDialogValue.Expanded)//初始状态，这里设为折叠
-            ConstraintLayout(
-                Modifier
-                    .background(mainBackground)
-                    .fillMaxSize()
+            val state = rememberBottomSheetScaffoldState()
+            BottomSheetScaffold(
+                sheetContent = {
+                    SongDetailPage(viewModel = viewModel)
+                },
+                scaffoldState = state,
+                sheetPeekHeight = 0.dp,
+                sheetShape = RoundedCornerShape(20.dp, 20.dp, 0.dp, 0.dp)
             ) {
-                val (content, songDetail, songController, bottomTab) = createRefs()
-                AnimatedNavHost(
-                    navController = navController,
-                    startDestination = RouteConstant.SPLASH_PAGE,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .constrainAs(content) {
-                            top.linkTo(parent.top)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                            bottom.linkTo(bottomTab.top)
-                            height = Dimension.fillToConstraints
-                        }
+                ConstraintLayout(
+                    Modifier
+                        .background(mainBackground)
+                        .fillMaxSize()
                 ) {
-                    composable(RouteConstant.SPLASH_PAGE) { SplashPage(navController, viewModel) }
-                    loginGraph(navController, viewModel, loginViewModel)
-                    homeGraph(navController, viewModel)
-                }
-                AnimatedVisibility(
-                    visible = viewModel.state.isShowSongController.value,
-                    modifier = Modifier.constrainAs(songController) {
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        bottom.linkTo(bottomTab.top)
-                    }
-                ) {
-                    SongController(
-                        modifier = Modifier,
-                        viewModel = viewModel,
-                        activity = this@MainActivity
-                    )
-                }
-                BottomSheetDialog(
-                    modifier = Modifier
-                        .systemBarsPadding()
-                        .padding(20.dp, 8.dp, 20.dp, 0.dp)
-                        .constrainAs(songDetail) {
-                            top.linkTo(parent.top)
-                            bottom.linkTo(bottomTab.top)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                            height = Dimension.fillToConstraints
-                        },
-                    bottomSheetDialogState = state,
-                    sheetPeekHeight = 0.dp,//折叠状态下高度
-                    sheetBackgroundColor = colorResource(id = R.color.song_detail),
-                    sheetShape = RoundedCornerShape(20.dp),
-                    sheetGesturesEnabled = true,
-                    sheetContent = {
-                        SongDetailPage()
-                    },
-                )
-                if (viewModel.state.isShowBottomTab.value) {
-                    BottomTab(
+                    val (content, songController, bottomTab) = createRefs()
+                    AnimatedNavHost(
+                        navController = navController,
+                        startDestination = RouteConstant.SPLASH_PAGE,
                         modifier = Modifier
-                            .padding(20.dp, 0.dp, 20.dp, 0.dp)
                             .fillMaxWidth()
-                            .background(
-                                secondaryBackground,
-                                RoundedCornerShape(20.dp)
-                            )
-                            .padding(4.dp)
-                            .constrainAs(bottomTab) {
-                                bottom.linkTo(parent.bottom)
+                            .constrainAs(content) {
+                                top.linkTo(parent.top)
                                 start.linkTo(parent.start)
                                 end.linkTo(parent.end)
-                            },
-                        viewModel.getHomeBottomTabList()
-                    ) { route ->
-                        navController.navigate(route) {
-                            if (route != viewModel.state.currentRoute.value) {
-                                viewModel.state.currentRoute.value = route
-                                launchSingleTop = true
-                                restoreState = true
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
+                                bottom.linkTo(bottomTab.top)
+                                height = Dimension.fillToConstraints
+                            }
+                    ) {
+                        composable(RouteConstant.SPLASH_PAGE) {
+                            SplashPage(
+                                navController,
+                                viewModel
+                            )
+                        }
+                        loginGraph(navController, viewModel, loginViewModel)
+                        homeGraph(navController, viewModel)
+                    }
+                    AnimatedVisibility(
+                        visible = viewModel.state.isShowSongController.value,
+                        modifier = Modifier.constrainAs(songController) {
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            bottom.linkTo(bottomTab.top)
+                        }
+                    ) {
+                        SongController(
+                            modifier = Modifier,
+                            viewModel = viewModel,
+                            activity = this@MainActivity
+                        )
+                    }
+                    if (viewModel.state.isShowBottomTab.value) {
+                        BottomTab(
+                            modifier = Modifier
+                                .padding(20.dp, 0.dp, 20.dp, 14.dp)
+                                .fillMaxWidth()
+                                .background(
+                                    secondaryBackground,
+                                    RoundedCornerShape(20.dp)
+                                )
+                                .padding(4.dp)
+                                .constrainAs(bottomTab) {
+                                    bottom.linkTo(parent.bottom)
+                                    start.linkTo(parent.start)
+                                    end.linkTo(parent.end)
+                                },
+                            viewModel.getHomeBottomTabList()
+                        ) { route ->
+                            navController.navigate(route) {
+                                if (route != viewModel.state.currentRoute.value) {
+                                    viewModel.state.currentRoute.value = route
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
                             }
                         }
@@ -141,12 +137,16 @@ class MainActivity : ComponentActivity() {
                 }
             }
             LaunchedEffect(key1 = viewModel.state.isShowSongDetailPage.value, block = {
-                if (state.isExpanded) {
+                if (viewModel.state.isInitPage.value) {
+                    viewModel.state.isInitPage.value = false
+                    return@LaunchedEffect
+                }
+                if (state.bottomSheetState.isExpanded) {
                     LogUtils.d("折叠音乐详情页")
-                    state.collapse()
+                    state.bottomSheetState.collapse()
                 } else {
                     LogUtils.d("展开音乐详情页")
-                    state.expand()
+                    state.bottomSheetState.expand()
                 }
             })
         }
@@ -213,10 +213,14 @@ class MainActivity : ComponentActivity() {
      * @param navController
      */
     @OptIn(ExperimentalAnimationApi::class)
-    private fun NavGraphBuilder.homeGraph(navController: NavController, viewModel: MainViewModel) {
+    private fun NavGraphBuilder.homeGraph(
+        navController: NavController,
+        viewModel: MainViewModel
+    ) {
         navigation(startDestination = RouteConstant.HOME_PAGE, route = RouteConstant.HOME) {
             composable(RouteConstant.HOME_PAGE) {
-                HomePage(navController, viewModel(), viewModel)
+                val homeViewModel: HomeViewModel = viewModel()
+                HomePage(navController, homeViewModel, viewModel)
             }
             composable(RouteConstant.HOME_SONG_PAGE) {
                 SongPage()

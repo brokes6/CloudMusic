@@ -95,6 +95,8 @@ dependencies {
     implementation 'com.github.liangjingkanji:Serialize:1.3.2'
     // 状态栏
     implementation 'com.github.liangjingkanji:StatusBar:2.0.2'
+    // 高斯模糊效果
+    implementation 'com.github.skydoves:cloudy:0.1.2'
     // repository
     implementation project(':repository')
 }

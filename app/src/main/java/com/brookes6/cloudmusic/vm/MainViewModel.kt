@@ -8,7 +8,6 @@ import com.brookes6.cloudmusic.constant.RouteConstant
 import com.brookes6.cloudmusic.manager.MusicManager
 import com.brookes6.cloudmusic.state.MainState
 import com.brookes6.cloudmusic.state.PAGE_TYPE
-import com.brookes6.cloudmusic.ui.widget.BottomSheetDialogValue
 import com.brookes6.cloudmusic.utils.LogUtils
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
@@ -85,17 +84,7 @@ class MainViewModel : ViewModel() {
     }
 
     private fun changerSongDetailPage() {
-        when (state.isShowSongDetailPage.value) {
-            BottomSheetDialogValue.Collapsed -> {
-                state.isShowSongDetailPage.value = BottomSheetDialogValue.Expanded
-            }
-            BottomSheetDialogValue.Expanded -> {
-                state.isShowSongDetailPage.value = BottomSheetDialogValue.Collapsed
-            }
-            else -> {
-                state.isShowSongDetailPage.value = BottomSheetDialogValue.Expanded
-            }
-        }
+        state.isShowSongDetailPage.value = !state.isShowSongDetailPage.value
     }
 
     sealed class MainAction {

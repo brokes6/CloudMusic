@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.provider.MediaStore
 import android.text.TextUtils
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.lzx.starrysky.GlobalPlaybackStageListener
 import com.lzx.starrysky.OnPlayProgressListener
@@ -158,7 +159,10 @@ class PlayerControl(
     }
 
     private fun playMusicImpl(songInfo: SongInfo?) {
-        if (songInfo == null) return
+        if (songInfo == null) {
+            Log.e("Song","准备播放的音频为空！")
+            return
+        }
         playbackManager
             .attachInterceptors(interceptors)
             .onPlayMusicImpl(songInfo, true)

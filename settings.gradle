@@ -35,4 +35,4 @@ rootProject.name = "CloudMusic"
 include ':app'
 include ':net'
 include ':repository'
-include ':starrysky'
+//include ':starrysky'

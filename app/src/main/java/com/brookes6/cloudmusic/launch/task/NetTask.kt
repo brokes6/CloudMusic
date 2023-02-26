@@ -15,6 +15,7 @@ import com.drake.net.okhttp.setConverter
 import com.drake.net.okhttp.setDebug
 import com.drake.net.okhttp.setRequestInterceptor
 import com.drake.net.request.BaseRequest
+import com.drake.serialize.serialize.deserialize
 import com.drake.serialize.serialize.serialLazy
 
 /**
@@ -26,8 +27,6 @@ import com.drake.serialize.serialize.serialLazy
  */
 class NetTask(val content : Application) : BaseTask() {
 
-    private var cookie: String by serialLazy("",name = "cookie")
-
     override fun dependentTaskList(): MutableList<Class<out IBaseTask>> {
         return mutableListOf(MmkvTask::class.java)
     }
@@ -38,7 +37,8 @@ class NetTask(val content : Application) : BaseTask() {
             setDebug(BuildConfig.DEBUG)
             setRequestInterceptor(object : RequestInterceptor {
                 override fun interceptor(request: BaseRequest) {
-                    LogUtils.i("当前使用的cookie --> $cookie")
+                    val cookie = deserialize<String>("cookie")
+                    LogUtils.i("当前使用的cookie --> $cookie}")
                     if (cookie.isNotEmpty()) request.param("cookie",cookie,true)
                 }
             })

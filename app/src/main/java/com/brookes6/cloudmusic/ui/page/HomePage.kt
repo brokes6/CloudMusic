@@ -152,7 +152,7 @@ fun HomePage(
                 mainViewModel.dispatch(
                     MainViewModel.MainAction.PlaySong(
                         index,
-                        viewModel.recommendSong.value
+                        viewModel.recommendSong.value.toMutableList()
                     )
                 )
             }

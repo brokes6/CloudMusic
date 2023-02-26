@@ -52,6 +52,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val viewModel: MainViewModel = viewModel()
             val loginViewModel: LoginViewModel = viewModel()
+            val homeViewModel: HomeViewModel = viewModel()
 
             val navController = rememberAnimatedNavController()
             val state = rememberBottomSheetScaffoldState()
@@ -89,7 +90,7 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         loginGraph(navController, viewModel, loginViewModel)
-                        homeGraph(navController, viewModel)
+                        homeGraph(navController, homeViewModel, viewModel)
                     }
                     AnimatedVisibility(
                         visible = viewModel.state.isShowSongController.value,
@@ -215,11 +216,11 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalAnimationApi::class)
     private fun NavGraphBuilder.homeGraph(
         navController: NavController,
+        homeViewModel: HomeViewModel,
         viewModel: MainViewModel
     ) {
         navigation(startDestination = RouteConstant.HOME_PAGE, route = RouteConstant.HOME) {
             composable(RouteConstant.HOME_PAGE) {
-                val homeViewModel: HomeViewModel = viewModel()
                 HomePage(navController, homeViewModel, viewModel)
             }
             composable(RouteConstant.HOME_SONG_PAGE) {

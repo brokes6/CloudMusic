@@ -1,7 +1,5 @@
 package com.brookes6.cloudmusic.vm
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Base64
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -133,7 +131,6 @@ class LoginViewModel : ViewModel() {
                     param("qrimg", 1)
                 }.await().also {
                     val decodedString: ByteArray = Base64.decode(it.qrimg.split(",")[1], Base64.DEFAULT)
-                    LogUtils.d("二维码 Byte[] --> ${decodedString},size --> ${decodedString.size}")
                     onQRCodeCallback.invoke(decodedString)
                 }
             }
@@ -148,18 +145,31 @@ class LoginViewModel : ViewModel() {
                 param("key", mQRCodeKey)
             }.await().also {
                 if (it.code == 803) {
+                    serialize("cookie" to it.cookie)
+                    getAccountInfo()
                     state.mQRCodeStatus.value = true
                     LogUtils.i("保存的Cookie为:${it.cookie}")
-                    serialize("cookie" to it.cookie)
                     onNavController(RouteConstant.HOME_PAGE)
                 }
             }
         }
     }
 
+    /**
+     * 获取账号信息
+     *
+     */
     private fun getAccountInfo(){
         scopeNetLife {
-            Post<LoginModel>(Api.ACCOUNT_INFO).await()
+            Post<LoginModel>(Api.ACCOUNT_INFO).await().also {
+                serialize("isLogin" to true)
+                state.code.value = it.code
+                state.isLogin.value = true
+                state.isError.value = false
+                viewModelScope.launch(Dispatchers.IO) {
+                    DataBaseManager.db?.userDao?.install(it)
+                }
+            }
         }
     }
 

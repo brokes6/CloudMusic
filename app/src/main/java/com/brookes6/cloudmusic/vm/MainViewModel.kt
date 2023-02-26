@@ -37,6 +37,9 @@ class MainViewModel : ViewModel() {
             is MainAction.PlaySong -> playSong(action.index, action.list)
             is MainAction.GetCurrentSong -> getCurrentSongInfo()
             is MainAction.ChangerSongDetailPage -> changerSongDetailPage()
+            is MainAction.NextSong -> nextSong()
+            is MainAction.PreSong -> preSong()
+            is MainAction.PlayOrPauseSong -> playOrPause()
         }
     }
 
@@ -62,7 +65,6 @@ class MainViewModel : ViewModel() {
     )
 
     private fun getCurrentSongInfo() {
-        state.currentPlayIndex.value = StarrySky.with().getNowPlayingIndex()
         _song.value = StarrySky.with().getPlayList()[state.currentPlayIndex.value]
     }
 
@@ -75,16 +77,34 @@ class MainViewModel : ViewModel() {
         state.goPageType.value = PAGE_TYPE.LOGIN
     }
 
-    private fun playSong(index: Int, list: List<SongInfo>) {
+    private fun playSong(index: Int, list: MutableList<SongInfo>) {
         LogUtils.d("开始播放:${index}")
-        MusicManager.instance.setPlayList(list.toMutableList())
         state.currentPlayIndex.value = index
         state.isShowSongController.value = true
-        MusicManager.instance.play(StarrySky.with().getPlayList()[index])
+        MusicManager.instance.playOnly(list,index)
+        LogUtils.i("播放Url为 --> ${list[index].songUrl}")
     }
 
     private fun changerSongDetailPage() {
         state.isShowSongDetailPage.value = !state.isShowSongDetailPage.value
+    }
+
+    private fun nextSong(){
+        MusicManager.instance.next()
+    }
+
+    private fun preSong(){
+        MusicManager.instance.pre()
+    }
+
+    private fun playOrPause(){
+        StarrySky.with().let {
+            if (it.isPaused()) {
+                it.restoreMusic()
+            } else {
+                it.playMusicById(state.currentPlayIndex.value.toString())
+            }
+        }
     }
 
     sealed class MainAction {
@@ -92,10 +112,16 @@ class MainViewModel : ViewModel() {
 
         object GoLoginPage : MainAction()
 
-        class PlaySong(val index: Int, val list: List<SongInfo>) : MainAction()
+        class PlaySong(val index: Int, val list: MutableList<SongInfo>) : MainAction()
 
         object GetCurrentSong : MainAction()
 
         object ChangerSongDetailPage : MainAction()
+
+        object NextSong : MainAction()
+
+        object PreSong : MainAction()
+
+        object PlayOrPauseSong : MainAction()
     }
 }

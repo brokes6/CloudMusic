@@ -17,14 +17,18 @@ class MusicManager private constructor() {
         val instance: MusicManager by lazy { MusicManager() }
     }
 
-    fun play(songInfo: SongInfo) {
+    fun play(songInfo: MutableList<SongInfo>,index : Int) {
         StarrySky.with().let {
             if (it.isPaused()) {
                 it.restoreMusic()
             } else {
-                it.playMusicByInfo(songInfo)
+                it.playMusic(songInfo,index)
             }
         }
+    }
+
+    fun playOnly(songInfo: MutableList<SongInfo>,index : Int){
+        StarrySky.with().playMusic(songInfo,index)
     }
 
     fun pause() {

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,6 +30,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.ui.theme.titleColor
+import com.brookes6.cloudmusic.utils.LogUtils
 import com.brookes6.cloudmusic.vm.MainViewModel
 import com.lzx.starrysky.OnPlayProgressListener
 import com.lzx.starrysky.StarrySky
@@ -56,7 +58,9 @@ fun SongController(
                 colorResource(id = R.color.song_controller),
                 RoundedCornerShape(20.dp)
             )
-            .clickable {
+            .clickable(interactionSource = remember {
+                MutableInteractionSource()
+            }, indication = null) {
                 viewModel.dispatch(MainViewModel.MainAction.ChangerSongDetailPage)
             }
             .padding(4.dp)
@@ -151,11 +155,13 @@ fun SongController(
         StarrySky.with().playbackState().observe(it) { play ->
             when (play.stage) {
                 PlaybackStage.IDLE -> {
+                    LogUtils.i("音乐：初始状态")
                     if (!play.isStop) {
                         progress = 0f
                     }
                 }
                 PlaybackStage.SWITCH -> {
+                    LogUtils.i("音乐：切歌")
                     viewModel.dispatch(MainViewModel.MainAction.GetCurrentSong)
                 }
                 PlaybackStage.PAUSE -> {
@@ -165,7 +171,7 @@ fun SongController(
 
                 }
                 PlaybackStage.ERROR -> {
-
+                    LogUtils.e("音乐：出错 --> ${play.errorMsg}")
                 }
             }
         }

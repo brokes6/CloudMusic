@@ -39,8 +39,14 @@ data class MainState(
      * 是否展示音乐详情页
      */
     val isShowSongDetailPage: MutableState<Boolean> = mutableStateOf(false),
-
+    /**
+     * 是否为第一次初始化页面
+     */
     val isInitPage: MutableState<Boolean> = mutableStateOf(true),
+    /**
+     * 当前音乐播放进度
+     */
+    val mProgress: MutableState<Float> = mutableStateOf(0f),
 )
 
 @IntDef(PAGE_TYPE.SPLASH, PAGE_TYPE.LOGIN, PAGE_TYPE.HOME)

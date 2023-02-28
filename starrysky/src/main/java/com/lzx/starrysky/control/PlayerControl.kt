@@ -3,15 +3,9 @@ package com.lzx.starrysky.control
 import android.app.Activity
 import android.content.Context
 import android.provider.MediaStore
-import android.text.TextUtils
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.lzx.starrysky.GlobalPlaybackStageListener
-import com.lzx.starrysky.OnPlayProgressListener
-import com.lzx.starrysky.OnPlayerEventListener
-import com.lzx.starrysky.SongInfo
-import com.lzx.starrysky.StarrySky
-import com.lzx.starrysky.StarrySkyInstall
+import com.lzx.starrysky.*
 import com.lzx.starrysky.intercept.InterceptorThread
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.manager.PlaybackManager
@@ -19,14 +13,7 @@ import com.lzx.starrysky.manager.PlaybackStage
 import com.lzx.starrysky.playback.FocusInfo
 import com.lzx.starrysky.queue.MediaSourceProvider
 import com.lzx.starrysky.service.MusicServiceBinder
-import com.lzx.starrysky.utils.StarrySkyConstant
-import com.lzx.starrysky.utils.TimerTaskManager
-import com.lzx.starrysky.utils.data
-import com.lzx.starrysky.utils.duration
-import com.lzx.starrysky.utils.isIndexPlayable
-import com.lzx.starrysky.utils.md5
-import com.lzx.starrysky.utils.orDef
-import com.lzx.starrysky.utils.title
+import com.lzx.starrysky.utils.*
 
 /**
  * 播放控制器
@@ -160,7 +147,7 @@ class PlayerControl(
 
     private fun playMusicImpl(songInfo: SongInfo?) {
         if (songInfo == null) {
-            Log.e("Song","准备播放的音频为空！")
+            Log.e("Song", "准备播放的音频为空！")
             return
         }
         playbackManager
@@ -173,10 +160,15 @@ class PlayerControl(
     /**
      * 添加局部拦截器，执行顺序是先执行局部拦截器再执行全局拦截器，当前Activity结束后局部拦截器会清空
      */
-    fun addInterceptor(interceptor: StarrySkyInterceptor, thread: String = InterceptorThread.UI): PlayerControl {
+    fun addInterceptor(
+        interceptor: StarrySkyInterceptor,
+        thread: String = InterceptorThread.UI
+    ): PlayerControl {
         // 拦截器是否相同，增加拦截位置判断
-        val noSame = interceptors.none { it.first.getTag() == interceptor.getTag()
-                && it.first.getInterceptorPosition() == interceptor.getInterceptorPosition() }
+        val noSame = interceptors.none {
+            it.first.getTag() == interceptor.getTag()
+                    && it.first.getInterceptorPosition() == interceptor.getInterceptorPosition()
+        }
         if (noSame) { //如果没有相同的才添加
             interceptors += Pair(interceptor, thread)
         }
@@ -412,7 +404,7 @@ class PlayerControl(
      * 例如播放VIP内容被拦截，此刻UI需要显示VIP内容信息，此时可以使用该方法
      *
      */
-    fun getNowIndex():Int{
+    fun getNowIndex(): Int {
         return playbackManager.mediaQueue.getCurrIndex()
     }
 
@@ -476,12 +468,14 @@ class PlayerControl(
     /**
      * 判断传入的音乐是否正在播放
      */
-    fun isCurrMusicIsPlaying(songId: String?): Boolean = isCurrMusicIsPlayingMusic(songId) && isPlaying()
+    fun isCurrMusicIsPlaying(songId: String?): Boolean =
+        isCurrMusicIsPlayingMusic(songId) && isPlaying()
 
     /**
      * 判断传入的音乐是否正在暂停
      */
-    fun isCurrMusicIsPaused(songId: String?): Boolean = isCurrMusicIsPlayingMusic(songId) && isPaused()
+    fun isCurrMusicIsPaused(songId: String?): Boolean =
+        isCurrMusicIsPlayingMusic(songId) && isPaused()
 
     /**
      * 判断传入的音乐是否空闲
@@ -491,7 +485,8 @@ class PlayerControl(
     /**
      * 判断传入的音乐是否缓冲
      */
-    fun isCurrMusicIsBuffering(songId: String?): Boolean = isCurrMusicIsPlayingMusic(songId) && isBuffering()
+    fun isCurrMusicIsBuffering(songId: String?): Boolean =
+        isCurrMusicIsPlayingMusic(songId) && isBuffering()
 
     /**
      * 设置音量, 范围 0到1
@@ -534,7 +529,8 @@ class PlayerControl(
             song.songName = cursor.title
             song.duration = cursor.duration
             val songId =
-                if (song.songUrl.isNotEmpty()) song.songUrl.md5() else System.currentTimeMillis().toString().md5()
+                if (song.songUrl.isNotEmpty()) song.songUrl.md5() else System.currentTimeMillis()
+                    .toString().md5()
             song.songId = songId
             songInfos.add(song)
         }
@@ -605,8 +601,11 @@ class PlayerControl(
     /**
      * 设置进度监听
      */
-    fun setOnPlayProgressListener(listener: OnPlayProgressListener,tag:String = StarrySky.getStackTopActivity().toString()) {
-        if(tag != "null"){
+    fun setOnPlayProgressListener(
+        listener: OnPlayProgressListener,
+        tag: String = StarrySky.getStackTopActivity().toString()
+    ) {
+        if (tag != "null") {
             progressListener[tag] = listener
         }
         if (!isRunningTimeTask && isPlaying()) {
@@ -614,7 +613,7 @@ class PlayerControl(
         }
     }
 
-    internal fun removeProgressListener(tag:String) {
+    internal fun removeProgressListener(tag: String) {
         progressListener.remove(tag)
     }
 

@@ -1,10 +1,12 @@
 package com.lzx.starrysky
 
+import android.annotation.SuppressLint
 import android.util.Log
 import com.lzx.starrysky.cache.ICache
 import com.lzx.starrysky.control.PlayerControl
 import com.lzx.starrysky.intercept.StarrySkyInterceptor
 import com.lzx.starrysky.notification.INotification
+import com.lzx.starrysky.service.MusicServiceBinder
 import com.lzx.starrysky.utils.StarrySkyConstant
 
 // StarrySky -> PlayerControl -> PlaybackManager -> player
@@ -13,11 +15,15 @@ object StarrySky {
     //播放控制
     private var playerControl: PlayerControl? = null
 
+    @SuppressLint("StaticFieldLeak")
+    private var binder: MusicServiceBinder? = null
+
     /**
      * 获取全局拦截器集合
      */
     @JvmStatic
-    fun interceptors(): MutableList<Pair<StarrySkyInterceptor, String>> = StarrySkyInstall.interceptors
+    fun interceptors(): MutableList<Pair<StarrySkyInterceptor, String>> =
+        StarrySkyInstall.interceptors
 
     /**
      * 清除全局拦截器
@@ -41,15 +47,18 @@ object StarrySky {
      * 获取操作 api
      */
     @JvmStatic
-    fun with(): PlayerControl {
-        if (playerControl == null) {
-            playerControl = PlayerControl(
-                StarrySkyInstall.interceptors,
-                StarrySkyInstall.globalPlaybackStageListener,
-                getBinder()
-            )
+    fun with(): PlayerControl? {
+        binder = getBinder()
+        binder?.let {
+            if (playerControl == null) {
+                playerControl = PlayerControl(
+                    StarrySkyInstall.interceptors,
+                    StarrySkyInstall.globalPlaybackStageListener,
+                    it
+                )
+            }
         }
-        return playerControl!!
+        return playerControl
     }
 
     /**
@@ -120,8 +129,10 @@ object StarrySky {
      */
     fun effectSwitch(isOpen: Boolean) {
         StarrySkyConstant.keyEffectSwitch = isOpen
-        if (isOpen) {
-            effect().attachAudioEffect(with().getAudioSessionId())
+        with()?.let {
+            if (isOpen) {
+                effect().attachAudioEffect(it.getAudioSessionId())
+            }
         }
     }
 

@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import com.lzx.starrysky.cache.ICache
 import com.lzx.starrysky.control.VoiceEffect
 import com.lzx.starrysky.intercept.InterceptorThread
@@ -258,6 +259,7 @@ object StarrySkyInstall {
                 if (service is MusicServiceBinder) {
                     retryLineService = 0
                     binder = service
+                    Log.e("Song","binder已成功创建 --> ${binder}")
                     binder?.setNotificationConfig(
                         isOpenNotification,
                         notificationType,

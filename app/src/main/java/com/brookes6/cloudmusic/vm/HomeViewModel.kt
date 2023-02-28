@@ -61,13 +61,14 @@ class HomeViewModel : ViewModel() {
             return
         }
         val songMap = hashMapOf<Long, SongInfo>()
-        var musicId = ""
+        val musicId = StringBuffer()
         scopeNetLife {
             Get<RecommendSongModel>(Api.RECOMMEND_SONG).await().also {
                 it.dailySongs?.forEachIndexed { index, recommendSong ->
-                    musicId += if (musicId.isEmpty()) "${recommendSong.id}" else ",${recommendSong.id}"
+                    musicId.append(if (musicId.isEmpty()) "${recommendSong.id}" else ",${recommendSong.id}")
+                    LogUtils.d("当前索引为：:${index},name:${recommendSong.name}")
                     songMap[recommendSong.id] = SongInfo(
-                        "$index",
+                        "${index + 1}",
                         "",
                         recommendSong.name,
                         recommendSong.ar?.getOrNull(0)?.name ?: "未知艺术家",
@@ -75,7 +76,7 @@ class HomeViewModel : ViewModel() {
                     )
                 }.also {
                     Get<List<SongModel>>(Api.GET_MUSIC_URL) {
-                        param("id", musicId, true)
+                        param("id", musicId.toString(), true)
                         param("level", "exhigh")
                     }.await().also { song ->
                         song.forEachIndexed { index, songInfo ->
@@ -84,7 +85,7 @@ class HomeViewModel : ViewModel() {
                                 duration = songInfo.time
                             }
                         }.also {
-                            _recommendSong.value = songMap.values.toList()
+                            _recommendSong.value = songMap.values.toMutableList()
                         }
                     }
                 }

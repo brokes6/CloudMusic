@@ -3,8 +3,9 @@ package com.brookes6.cloudmusic.ui.page
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -18,7 +19,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.brookes6.cloudmusic.R
@@ -27,7 +27,6 @@ import com.brookes6.cloudmusic.utils.LogUtils
 import com.brookes6.cloudmusic.vm.MainViewModel
 import com.lzx.starrysky.OnPlayProgressListener
 import com.lzx.starrysky.StarrySky
-import com.skydoves.cloudy.Cloudy
 
 /**
  * Author: fuxinbo
@@ -43,22 +42,18 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel()) {
         modifier = Modifier
             .fillMaxSize()
     ) {
-        val mProgress = remember { mutableStateOf(0f) }
         val (cover, name, author, lyrics, function, progress, play, next, pre) = createRefs()
-        Cloudy(
-            radius = 25, modifier = Modifier
-                .fillMaxSize(), key1 = viewModel.state.isShowSongDetailPage
-        ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .crossfade(true)
-                    .data(viewModel.song.value?.songCover)
-                    .build(),
-                contentDescription = stringResource(id = R.string.description),
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize(),
-            )
-        }
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .crossfade(true)
+                .data(viewModel.song.value?.songCover)
+                .build(),
+            contentDescription = stringResource(id = R.string.description),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                .blur(60.dp),
+        )
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .crossfade(true)
@@ -95,12 +90,10 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel()) {
                 end.linkTo(parent.end)
             }
         )
-
-        Slider(value = mProgress.value, onValueChange = {
-            MusicManager.instance.seekTo(
-                (((viewModel.song.value?.duration ?: 0) / 1000) * it).toLong()
-            )
-            mProgress.value = it
+        Slider(value = viewModel.state.mProgress.value, onValueChange = {
+            LogUtils.i("拖动的进度为 --> ${((viewModel.song.value?.duration ?: 0) * it).toLong()}")
+            MusicManager.instance.seekTo(((viewModel.song.value?.duration ?: 0) * it).toLong())
+            viewModel.state.mProgress.value = it
         },
             colors = SliderDefaults.colors(
                 thumbColor = colorResource(id = R.color.song_author),
@@ -159,10 +152,9 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel()) {
                 tint = Color.Unspecified,
             )
         }
-        StarrySky.with().setOnPlayProgressListener(object : OnPlayProgressListener {
+        StarrySky.with()?.setOnPlayProgressListener(object : OnPlayProgressListener {
             override fun onPlayProgress(currPos: Long, duration: Long) {
-                LogUtils.i("current -> ${currPos},当前进度为:${currPos.toFloat() / duration.toFloat()},max -> ${duration}")
-                mProgress.value = currPos.toFloat() / duration.toFloat()
+                viewModel.state.mProgress.value = currPos.toFloat() / duration.toFloat()
             }
         })
     }

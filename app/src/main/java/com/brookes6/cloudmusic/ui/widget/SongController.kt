@@ -49,7 +49,6 @@ fun SongController(
     viewModel: MainViewModel = viewModel(),
     activity: LifecycleOwner? = null
 ) {
-    var progress by remember { mutableStateOf(0f) }
     ConstraintLayout(
         modifier = Modifier
             .padding(20.dp, 0.dp, 20.dp, 0.dp)
@@ -110,7 +109,7 @@ fun SongController(
                     end.linkTo(songPlayType.start, 32.dp)
                     width = Dimension.fillToConstraints
                 },
-            progress = progress,
+            progress = viewModel.state.mProgress.value,
             color = colorResource(id = R.color.song_author),
             cornerRadius = 1.dp,
             backgroundColor = Color.White
@@ -146,22 +145,22 @@ fun SongController(
             )
         }
     }
-    StarrySky.with().setOnPlayProgressListener(object : OnPlayProgressListener {
+    StarrySky.with()?.setOnPlayProgressListener(object : OnPlayProgressListener {
         override fun onPlayProgress(currPos: Long, duration: Long) {
-            progress = currPos.toFloat() / duration.toFloat()
+            viewModel.state.mProgress.value = currPos.toFloat() / duration.toFloat()
         }
     })
     activity?.let {
-        StarrySky.with().playbackState().observe(it) { play ->
+        StarrySky.with()?.playbackState()?.observe(it) { play ->
             when (play.stage) {
                 PlaybackStage.IDLE -> {
-                    LogUtils.i("音乐：初始状态")
+                    LogUtils.i("音乐：初始状态", "Song")
                     if (!play.isStop) {
-                        progress = 0f
+                        viewModel.state.mProgress.value = 1f
                     }
                 }
                 PlaybackStage.SWITCH -> {
-                    LogUtils.i("音乐：切歌")
+                    LogUtils.i("音乐：切歌", "Song")
                     viewModel.dispatch(MainViewModel.MainAction.GetCurrentSong)
                 }
                 PlaybackStage.PAUSE -> {
@@ -171,7 +170,7 @@ fun SongController(
 
                 }
                 PlaybackStage.ERROR -> {
-                    LogUtils.e("音乐：出错 --> ${play.errorMsg}")
+                    LogUtils.e("音乐：出错 --> ${play.errorMsg}", "Song")
                 }
             }
         }

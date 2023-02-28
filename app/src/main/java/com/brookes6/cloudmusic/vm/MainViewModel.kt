@@ -2,15 +2,19 @@ package com.brookes6.cloudmusic.vm
 
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.bean.BottomTabBean
 import com.brookes6.cloudmusic.constant.RouteConstant
+import com.brookes6.cloudmusic.extensions.toast
 import com.brookes6.cloudmusic.manager.MusicManager
 import com.brookes6.cloudmusic.state.MainState
 import com.brookes6.cloudmusic.state.PAGE_TYPE
 import com.brookes6.cloudmusic.utils.LogUtils
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.launch
 
 /**
  * @Author fuxinbo
@@ -65,7 +69,14 @@ class MainViewModel : ViewModel() {
     )
 
     private fun getCurrentSongInfo() {
-        _song.value = StarrySky.with().getPlayList()[state.currentPlayIndex.value]
+        viewModelScope.launch(CoroutineExceptionHandler { coroutineContext, throwable ->
+            toast("当前音乐列表为空,请检查网络状态")
+            LogUtils.e("无法获取到当前播放音乐信息，请检查是否成功播放 --> ${throwable.message}")
+        }) {
+            StarrySky.with()?.let {
+                _song.value = it.getPlayList()[it.getNowPlayingIndex()]
+            }
+        }
     }
 
     private fun goHomePage() {
@@ -78,31 +89,41 @@ class MainViewModel : ViewModel() {
     }
 
     private fun playSong(index: Int, list: MutableList<SongInfo>) {
-        LogUtils.d("开始播放:${index}")
-        state.currentPlayIndex.value = index
-        state.isShowSongController.value = true
-        MusicManager.instance.playOnly(list,index)
-        LogUtils.i("播放Url为 --> ${list[index].songUrl}")
+        viewModelScope.launch {
+            LogUtils.d("开始播放:${index}")
+            MusicManager.instance.playMusicByIndex(list, index)
+            state.currentPlayIndex.value = index
+            state.isShowSongController.value = true
+            LogUtils.i(
+                "当前播放的歌曲信息为 --> \n" +
+                        "ID:${list[index].songId}\n" +
+                        "名称:${list[index].songName}\n" +
+                        "作者:${list[index].artist}\n" +
+                        "封面:${list[index].songCover}\n" +
+                        "播放地址:${list[index].songUrl}\n" +
+                        "时长:${list[index].duration}"
+            )
+        }
     }
 
     private fun changerSongDetailPage() {
         state.isShowSongDetailPage.value = !state.isShowSongDetailPage.value
     }
 
-    private fun nextSong(){
+    private fun nextSong() {
         MusicManager.instance.next()
     }
 
-    private fun preSong(){
+    private fun preSong() {
         MusicManager.instance.pre()
     }
 
-    private fun playOrPause(){
-        StarrySky.with().let {
+    private fun playOrPause() {
+        StarrySky.with()?.let {
             if (it.isPaused()) {
                 it.restoreMusic()
             } else {
-                it.playMusicById(state.currentPlayIndex.value.toString())
+                it.pauseMusic()
             }
         }
     }

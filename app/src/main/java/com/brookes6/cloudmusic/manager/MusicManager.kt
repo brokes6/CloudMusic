@@ -18,7 +18,7 @@ class MusicManager private constructor() {
     }
 
     fun play(songInfo: MutableList<SongInfo>,index : Int) {
-        StarrySky.with().let {
+        StarrySky.with()?.let {
             if (it.isPaused()) {
                 it.restoreMusic()
             } else {
@@ -27,26 +27,40 @@ class MusicManager private constructor() {
         }
     }
 
-    fun playOnly(songInfo: MutableList<SongInfo>,index : Int){
-        StarrySky.with().playMusic(songInfo,index)
+    /**
+     * 根据索引来进行播放对对应音乐，但必须先要设置好播放列表
+     *
+     * @param index
+     */
+    fun playOnly(index : Int){
+        StarrySky.with()?.playMusicById(index.toString())
+    }
+
+    fun playMusicForInfo(info : SongInfo){
+        StarrySky.with()?.prepareByInfo(info)
+        StarrySky.with()?.playMusicByInfo(info)
+    }
+
+    fun playMusicByIndex(list : MutableList<SongInfo>,index : Int){
+        StarrySky.with()?.playMusic(list,index)
     }
 
     fun pause() {
-        StarrySky.with().pauseMusic()
+        StarrySky.with()?.pauseMusic()
     }
 
     fun stop() {
-        StarrySky.with().stopMusic()
+        StarrySky.with()?.stopMusic()
     }
 
     fun seekTo(time: Long) {
-        StarrySky.with().seekTo(time)
+        StarrySky.with()?.seekTo(time)
     }
 
     fun next(notNextCallback: () -> Unit = {}) {
-        StarrySky.with().let {
+        StarrySky.with()?.let {
             if (it.isSkipToNextEnabled()) {
-                StarrySky.with().skipToNext()
+                StarrySky.with()?.skipToNext()
             } else {
                 notNextCallback.invoke()
             }
@@ -54,9 +68,9 @@ class MusicManager private constructor() {
     }
 
     fun pre(notPreCallback: () -> Unit = {}) {
-        StarrySky.with().let {
+        StarrySky.with()?.let {
             if (it.isSkipToPreviousEnabled()) {
-                StarrySky.with().skipToPrevious()
+                StarrySky.with()?.skipToPrevious()
             } else {
                 notPreCallback.invoke()
             }
@@ -64,11 +78,14 @@ class MusicManager private constructor() {
     }
 
     fun switchPlayModel(repeatMode: Int, isLoop: Boolean) {
-        StarrySky.with().setRepeatMode(repeatMode, isLoop)
+        StarrySky.with()?.setRepeatMode(repeatMode, isLoop)
     }
 
     fun setPlayList(songList: MutableList<SongInfo>) {
-        StarrySky.with().addPlayList(songList)
+        StarrySky.with()?.let {
+            it.clearPlayList()
+            it.updatePlayList(songList)
+        }
     }
 
     /**
@@ -76,10 +93,10 @@ class MusicManager private constructor() {
      *
      * @return MutableList<SongInfo>
      */
-    fun getPlayList(): MutableList<SongInfo> = StarrySky.with().getPlayList()
+    fun getPlayList(): MutableList<SongInfo>? = StarrySky.with()?.getPlayList()
 
     fun clearPlayList() {
-        StarrySky.with().clearPlayList()
+        StarrySky.with()?.clearPlayList()
     }
 
     fun setVolume() {

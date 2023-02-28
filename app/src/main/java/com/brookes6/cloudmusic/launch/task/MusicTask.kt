@@ -25,10 +25,9 @@ class MusicTask(private val context: Application) : BaseTask() {
             .setNotificationSwitch(true)
             .setNotificationType(INotification.SYSTEM_NOTIFICATION)
             .setAutoManagerFocus(true)
-            .startForegroundByWorkManager(true)
             .connServiceListener(object : ServiceConnection{
                 override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                    LogUtils.i("音乐服务启动成功")
+                    LogUtils.i("音乐服务启动成功 --> $service")
                 }
 
                 override fun onServiceDisconnected(name: ComponentName?) {

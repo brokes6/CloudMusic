@@ -31,9 +31,11 @@ android {
 }
 
 dependencies {
-    // net
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0" // 协程(版本自定)
+    // 协程(版本自定)
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
     api 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0'
-    api 'com.squareup.okhttp3:okhttp:4.10.0' // 要求OkHttp4以上
+    // 要求OkHttp4以上
+    api 'com.squareup.okhttp3:okhttp:4.10.0'
+    // net https://github.com/liangjingkanji/Net
     api 'com.github.liangjingkanji:Net:3.5.3'
 }

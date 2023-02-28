@@ -12,9 +12,11 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -29,11 +31,11 @@ import com.brookes6.cloudmusic.vm.HomeViewModel
 import com.brookes6.cloudmusic.vm.LoginViewModel
 import com.brookes6.cloudmusic.vm.MainViewModel
 import com.drake.brv.utils.BRV
-import com.drake.statusbar.immersive
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 /**
  * Author: fuxinbo
@@ -48,8 +50,12 @@ class MainActivity : ComponentActivity() {
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         BRV.modelId = BR.data
-        immersive(darkMode = false)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
+            rememberSystemUiController().run {
+                setNavigationBarColor(Color.Transparent, false)
+                setSystemBarsColor(Color.Transparent, false)
+            }
             val viewModel: MainViewModel = viewModel()
             val loginViewModel: LoginViewModel = viewModel()
             val homeViewModel: HomeViewModel = viewModel()
@@ -58,7 +64,7 @@ class MainActivity : ComponentActivity() {
             val state = rememberBottomSheetScaffoldState()
             BottomSheetScaffold(
                 sheetContent = {
-                    SongDetailPage(viewModel = viewModel)
+                    SongDetailPage(viewModel = viewModel, activity = this@MainActivity)
                 },
                 scaffoldState = state,
                 sheetPeekHeight = 0.dp,
@@ -102,14 +108,14 @@ class MainActivity : ComponentActivity() {
                     ) {
                         SongController(
                             modifier = Modifier,
-                            viewModel = viewModel,
-                            activity = this@MainActivity
+                            viewModel = viewModel
                         )
                     }
                     if (viewModel.state.isShowBottomTab.value) {
                         BottomTab(
                             modifier = Modifier
-                                .padding(20.dp, 0.dp, 20.dp, 14.dp)
+                                .padding(20.dp, 0.dp, 20.dp, 0.dp)
+                                .navigationBarsPadding()
                                 .fillMaxWidth()
                                 .background(
                                     secondaryBackground,

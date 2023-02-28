@@ -47,6 +47,10 @@ data class MainState(
      * 当前音乐播放进度
      */
     val mProgress: MutableState<Float> = mutableStateOf(0f),
+    /**
+     * 当前播放状态
+     */
+    val mPlayStatus: MutableState<Int> = mutableStateOf(PLAY_STATUS.NOMAL),
 )
 
 @IntDef(PAGE_TYPE.SPLASH, PAGE_TYPE.LOGIN, PAGE_TYPE.HOME)
@@ -59,6 +63,20 @@ annotation class PAGE_TYPE {
         const val LOGIN = 1
 
         const val HOME = 2
+
+    }
+}
+
+@IntDef(PLAY_STATUS.NOMAL, PLAY_STATUS.PLAYING, PLAY_STATUS.PAUSE)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class PLAY_STATUS {
+    companion object {
+
+        const val NOMAL = 1
+
+        const val PLAYING = 2
+
+        const val PAUSE = 3
 
     }
 }

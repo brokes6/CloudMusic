@@ -1,9 +1,12 @@
 package com.brookes6.cloudmusic.ui.page
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
@@ -17,16 +20,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.manager.MusicManager
+import com.brookes6.cloudmusic.state.PLAY_STATUS
 import com.brookes6.cloudmusic.utils.LogUtils
 import com.brookes6.cloudmusic.vm.MainViewModel
 import com.lzx.starrysky.OnPlayProgressListener
 import com.lzx.starrysky.StarrySky
+import com.lzx.starrysky.manager.PlaybackStage
 
 /**
  * Author: fuxinbo
@@ -37,7 +43,9 @@ import com.lzx.starrysky.StarrySky
  */
 
 @Composable
-fun SongDetailPage(viewModel: MainViewModel = viewModel()) {
+fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOwner? = null) {
+    val interationSource = remember { MutableInteractionSource() }
+    val mIsTouch = interationSource.collectIsDraggedAsState()
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -46,6 +54,7 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel()) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .crossfade(true)
+                .placeholder(drawableResId = R.drawable.shape_round_place_holder)
                 .data(viewModel.song.value?.songCover)
                 .build(),
             contentDescription = stringResource(id = R.string.description),
@@ -91,21 +100,26 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel()) {
             }
         )
         Slider(value = viewModel.state.mProgress.value, onValueChange = {
-            LogUtils.i("拖动的进度为 --> ${((viewModel.song.value?.duration ?: 0) * it).toLong()}")
-            MusicManager.instance.seekTo(((viewModel.song.value?.duration ?: 0) * it).toLong())
+            if (mIsTouch.value) {
+                MusicManager.instance.seekTo(
+                    ((viewModel.song.value?.duration ?: 1) * it).toLong()
+                )
+            }
             viewModel.state.mProgress.value = it
         },
+            interactionSource = interationSource,
             colors = SliderDefaults.colors(
                 thumbColor = colorResource(id = R.color.song_author),
                 inactiveTrackColor = Color.White,
                 activeTrackColor = colorResource(id = R.color.song_author)
             ),
-            modifier = Modifier.constrainAs(progress) {
-                start.linkTo(parent.start, 24.dp)
-                end.linkTo(parent.end, 24.dp)
-                bottom.linkTo(play.top, 58.dp)
-                width = Dimension.fillToConstraints
-            }
+            modifier = Modifier
+                .constrainAs(progress) {
+                    start.linkTo(parent.start, 24.dp)
+                    end.linkTo(parent.end, 24.dp)
+                    bottom.linkTo(play.top, 58.dp)
+                    width = Dimension.fillToConstraints
+                }
         )
         IconButton(onClick = {
             viewModel.dispatch(MainViewModel.MainAction.PlayOrPauseSong)
@@ -157,5 +171,30 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel()) {
                 viewModel.state.mProgress.value = currPos.toFloat() / duration.toFloat()
             }
         })
+        activity?.let {
+            StarrySky.with()?.playbackState()?.observe(it) { play ->
+                when (play.stage) {
+                    PlaybackStage.IDLE -> {
+                        if (!play.isStop) {
+                            viewModel.state.mProgress.value = 0f
+                        }
+                        viewModel.state.mPlayStatus.value = PLAY_STATUS.NOMAL
+                    }
+                    PlaybackStage.SWITCH -> {
+                        LogUtils.i("音乐：切歌", "Song")
+                        viewModel.dispatch(MainViewModel.MainAction.GetCurrentSong)
+                    }
+                    PlaybackStage.PAUSE -> {
+                        viewModel.state.mPlayStatus.value = PLAY_STATUS.PAUSE
+                    }
+                    PlaybackStage.PLAYING -> {
+                        viewModel.state.mPlayStatus.value = PLAY_STATUS.PLAYING
+                    }
+                    PlaybackStage.ERROR -> {
+                        LogUtils.e("音乐：出错 --> ${play.errorMsg}", "Song")
+                    }
+                }
+            }
+        }
     }
 }

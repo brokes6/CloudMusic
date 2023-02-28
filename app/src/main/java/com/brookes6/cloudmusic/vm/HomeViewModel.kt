@@ -66,7 +66,6 @@ class HomeViewModel : ViewModel() {
             Get<RecommendSongModel>(Api.RECOMMEND_SONG).await().also {
                 it.dailySongs?.forEachIndexed { index, recommendSong ->
                     musicId.append(if (musicId.isEmpty()) "${recommendSong.id}" else ",${recommendSong.id}")
-                    LogUtils.d("当前索引为：:${index},name:${recommendSong.name}")
                     songMap[recommendSong.id] = SongInfo(
                         "${index + 1}",
                         "",

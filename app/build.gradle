@@ -85,18 +85,17 @@ dependencies {
     implementation 'androidx.compose.material:material:1.3.1'
 
     // 第三方
-    // Coil
+    // Coil https://github.com/coil-kt/coil
     implementation("io.coil-kt:coil-compose:2.2.2")
-    // StarrySky
+    // StarrySky https://github.com/EspoirX/StarrySky
     implementation project(':starrysky')
-    // BRV
+    // BRV https://github.com/liangjingkanji/BRV
     implementation 'com.github.liangjingkanji:BRV:1.3.90'
-    // Android 高性能读写本地数据
+    // Android 高性能读写本地数据 https://github.com/liangjingkanji/Serialize
     implementation 'com.github.liangjingkanji:Serialize:1.3.2'
-    // 状态栏
-    implementation 'com.github.liangjingkanji:StatusBar:2.0.2'
-    // 高斯模糊效果
-    implementation 'com.github.skydoves:cloudy:0.1.2'
+    // 状态栏 https://github.com/google/accompanist
+    implementation "com.google.accompanist:accompanist-insets:0.28.0"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.28.0"
     // repository
     implementation project(':repository')
 }

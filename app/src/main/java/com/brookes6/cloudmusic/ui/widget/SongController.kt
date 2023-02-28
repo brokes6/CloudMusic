@@ -24,17 +24,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.ui.theme.titleColor
-import com.brookes6.cloudmusic.utils.LogUtils
 import com.brookes6.cloudmusic.vm.MainViewModel
-import com.lzx.starrysky.OnPlayProgressListener
-import com.lzx.starrysky.StarrySky
-import com.lzx.starrysky.manager.PlaybackStage
 
 /**
  * @Author fuxinbo
@@ -46,8 +41,7 @@ import com.lzx.starrysky.manager.PlaybackStage
 @Composable
 fun SongController(
     modifier: Modifier = Modifier,
-    viewModel: MainViewModel = viewModel(),
-    activity: LifecycleOwner? = null
+    viewModel: MainViewModel = viewModel()
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -143,36 +137,6 @@ fun SongController(
                 modifier = Modifier.size(24.dp),
                 tint = Color.Unspecified
             )
-        }
-    }
-    StarrySky.with()?.setOnPlayProgressListener(object : OnPlayProgressListener {
-        override fun onPlayProgress(currPos: Long, duration: Long) {
-            viewModel.state.mProgress.value = currPos.toFloat() / duration.toFloat()
-        }
-    })
-    activity?.let {
-        StarrySky.with()?.playbackState()?.observe(it) { play ->
-            when (play.stage) {
-                PlaybackStage.IDLE -> {
-                    LogUtils.i("音乐：初始状态", "Song")
-                    if (!play.isStop) {
-                        viewModel.state.mProgress.value = 1f
-                    }
-                }
-                PlaybackStage.SWITCH -> {
-                    LogUtils.i("音乐：切歌", "Song")
-                    viewModel.dispatch(MainViewModel.MainAction.GetCurrentSong)
-                }
-                PlaybackStage.PAUSE -> {
-
-                }
-                PlaybackStage.PLAYING -> {
-
-                }
-                PlaybackStage.ERROR -> {
-                    LogUtils.e("音乐：出错 --> ${play.errorMsg}", "Song")
-                }
-            }
         }
     }
     LaunchedEffect(key1 = viewModel.state.currentPlayIndex.value) {

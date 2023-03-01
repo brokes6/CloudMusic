@@ -17,7 +17,7 @@ import com.brookes6.cloudmusic.utils.TimeUtils
 import com.brookes6.net.api.Api
 import com.brookes6.repository.model.LyricModel
 import com.brookes6.repository.model.Lyrics
-import com.drake.net.Post
+import com.drake.net.Get
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -80,6 +80,7 @@ class MainViewModel : ViewModel() {
     )
 
     private fun getCurrentSongInfo() {
+        state.mResetLyric.value = !state.mResetLyric.value
         viewModelScope.launch(CoroutineExceptionHandler { coroutineContext, throwable ->
             toast("当前音乐列表为空,请检查网络状态")
             LogUtils.e("无法获取到当前播放音乐信息，请检查是否成功播放 --> ${throwable.message}")
@@ -123,10 +124,12 @@ class MainViewModel : ViewModel() {
 
     private fun nextSong() {
         MusicManager.instance.next()
+        state.currentPlayIndex.value = state.currentPlayIndex.value + 1
     }
 
     private fun preSong() {
         MusicManager.instance.pre()
+        state.currentPlayIndex.value = state.currentPlayIndex.value -1
     }
 
     private fun playOrPause() {
@@ -148,8 +151,9 @@ class MainViewModel : ViewModel() {
         LogUtils.i("准备获取歌曲Id为:${song.value?.id}的歌词")
         _lyric.value.clear()
         scopeNetLife {
-            Post<LyricModel>(Api.GET_MUSIC_LYRIC) {
+            Get<LyricModel>(Api.GET_MUSIC_LYRIC) {
                 param("id", song.value?.id)
+                param("timestamp",System.currentTimeMillis())
             }.await().also { list ->
                 list.lrc?.lyric?.split("\n")?.forEach {
                     if (it.length <= 10) return@forEach

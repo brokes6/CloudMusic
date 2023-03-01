@@ -24,6 +24,7 @@ class MusicTask(private val context: Application) : BaseTask() {
         StarrySkyInstall.init(context).setDebug(BuildConfig.DEBUG)
             .setNotificationSwitch(true)
             .setNotificationType(INotification.SYSTEM_NOTIFICATION)
+            .setOpenCache(true)
             .setAutoManagerFocus(true)
             .connServiceListener(object : ServiceConnection{
                 override fun onServiceConnected(name: ComponentName?, service: IBinder?) {

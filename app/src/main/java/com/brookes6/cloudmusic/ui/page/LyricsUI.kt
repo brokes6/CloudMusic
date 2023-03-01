@@ -1,14 +1,8 @@
 package com.brookes6.cloudmusic.ui.page
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.*
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,11 +16,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.brookes6.cloudmusic.App
 import com.brookes6.cloudmusic.R
+import com.brookes6.cloudmusic.ui.view.FocusLayoutManager.Companion.dp2px
 import com.brookes6.cloudmusic.ui.widget.LyricsItem
 import com.brookes6.cloudmusic.utils.LogUtils
+import com.brookes6.cloudmusic.vm.MainViewModel
 import com.brookes6.repository.model.Lyrics
-import com.scwang.smart.refresh.layout.util.SmartUtil.dp2px
+import kotlinx.coroutines.delay
 
 /**
  * Author: fuxinbo
@@ -38,6 +35,7 @@ import com.scwang.smart.refresh.layout.util.SmartUtil.dp2px
 @Composable
 fun LyricsUI(
     modifier: Modifier = Modifier,
+    viewModel: MainViewModel,
     liveTime: Long = 0L,
     lyricsEntryList: List<Lyrics?>,
     textColor: Color = colorResource(id = R.color.white),
@@ -49,7 +47,6 @@ fun LyricsUI(
 ) {
     val state = rememberLazyListState()
     var mCurrentIndex by remember { mutableStateOf(0) }
-    var mPreLyricTime by remember { mutableStateOf(0L) }
     // 当没歌词的时候
     if (lyricsEntryList.isEmpty()) {
         Box(
@@ -71,16 +68,9 @@ fun LyricsUI(
             }
             // 歌词主体
             val lyricsEntryListItems: (LazyListScope.() -> Unit) = {
-                this.items(lyricsEntryList) { lyricsEntry ->
+                this.itemsIndexed(lyricsEntryList) { index, lyricsEntry ->
                     LyricsItem(
-                        current = when {
-                            liveTime > (lyricsEntry?.time?:0L) &&
-                            mPreLyricTime <= liveTime && liveTime < (lyricsEntry?.time?:0L) ->{
-                                mPreLyricTime = liveTime
-                                true
-                            }
-                            else -> false
-                        },
+                        current = index == mCurrentIndex,
                         currentTextElementHeightPxState = currentTextElementHeightPx,
                         lyrics = lyricsEntry,
                         textColor = textColor,
@@ -116,11 +106,16 @@ fun LyricsUI(
             }
             // 定位中间
             LaunchedEffect(key1 = liveTime, key2 = currentTextElementHeightPx.value, block = {
-                val height = (dp2px(maxHeight.value) - currentTextElementHeightPx.value) / 2
+                delay(200)
+                val height = (dp2px(App.content, maxHeight.value).toInt() - currentTextElementHeightPx.value) / 2
                 val index = findShowLine(lyricsEntryList, liveTime)
                 if (index <= mCurrentIndex && mCurrentIndex != 0) return@LaunchedEffect
                 mCurrentIndex = index
                 state.animateScrollToItem((index + 1).coerceAtLeast(0), -height)
+            })
+            LaunchedEffect(key1 = viewModel.state.mResetLyric.value, block = {
+                LogUtils.i("重置歌词进度","Song")
+                mCurrentIndex = 0
             })
         }
     }

@@ -14,27 +14,20 @@ import kotlinx.serialization.json.Json
  * Description:
  */
 @TypeConverters(
-    LyricOriginConverter::class,
-    LyricCHTranslationConverter::class
+    LyricOriginConverter::class
 )
 @kotlinx.serialization.Serializable
 data class LyricModel(
-    val sgc: Boolean,
-    val sfy: Boolean,
-    val qfy: Boolean,
-    val lrc: LyricOrigin?,
-    val tlyric: LyricCHTranslation?
+    val sgc: Boolean = false,
+    val sfy: Boolean = false,
+    val qfy: Boolean = false,
+    val lrc: LyricOrigin? = null,
+    val tlyric: LyricOrigin? = null
 ) {
     @kotlinx.serialization.Serializable
     data class LyricOrigin(
-        val version: Int,
-        val lyric: String,
-    )
-
-    @kotlinx.serialization.Serializable
-    data class LyricCHTranslation(
-        val version: Int,
-        val lyric: String,
+        val version: Int = 0,
+        val lyric: String = "",
     )
 }
 
@@ -46,18 +39,6 @@ class LyricOriginConverter {
 
     @TypeConverter
     fun modelToJson(data: LyricModel.LyricOrigin): String {
-        return Json.encodeToString(data)
-    }
-}
-
-class LyricCHTranslationConverter {
-    @TypeConverter
-    fun jsonToModel(json: String): LyricModel.LyricCHTranslation {
-        return Json.decodeFromString(json)
-    }
-
-    @TypeConverter
-    fun modelToJson(data: LyricModel.LyricCHTranslation): String {
         return Json.encodeToString(data)
     }
 }

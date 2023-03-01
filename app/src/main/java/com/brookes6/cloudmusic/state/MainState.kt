@@ -53,7 +53,9 @@ data class MainState(
     /**
      * 是否展示歌词
      */
-    val mIsShowLyric : MutableState<Boolean> = mutableStateOf(false)
+    val mIsShowLyric: MutableState<Boolean> = mutableStateOf(false),
+
+    val mResetLyric: MutableState<Boolean> = mutableStateOf(false)
 )
 
 @IntDef(PAGE_TYPE.SPLASH, PAGE_TYPE.LOGIN, PAGE_TYPE.HOME)

@@ -91,17 +91,13 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOw
                     modifier = Modifier.fillMaxSize()
                 )
             }
-            AnimatedVisibility(
-                visible = viewModel.state.mIsShowLyric.value,
-                modifier = Modifier.fillMaxSize()
-            ) {
+            if(viewModel.state.mIsShowLyric.value){
                 LyricsUI(
                     modifier = Modifier.fillMaxSize(),
+                    viewModel,
                     mCurrentPlayTime / 1000,
                     viewModel.lyric.value.toList(),
-                ) {
-
-                }
+                ) {}
             }
         }
         Text(
@@ -139,6 +135,7 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOw
         Slider(value = viewModel.state.mProgress.value, onValueChange = {
             if (mIsTouch.value) {
                 LogUtils.d("拖动设置进度条进度:${it}")
+                viewModel.state.mResetLyric.value = !viewModel.state.mResetLyric.value
                 MusicManager.instance.seekTo(
                     ((viewModel.song.value?.duration ?: 1) * it).toLong()
                 )
@@ -149,7 +146,7 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOw
             colors = SliderDefaults.colors(
                 thumbColor = colorResource(id = R.color.white),
                 inactiveTrackColor = Color.White,
-                activeTrackColor = colorResource(id = R.color.black)
+                activeTrackColor = colorResource(id = R.color.song_author)
             ),
             modifier = Modifier
                 .constrainAs(progress) {

@@ -34,7 +34,6 @@ data class MainState(
      * 当前展示的页面
      */
     val currentRoute: MutableState<String> = mutableStateOf(""),
-
     /**
      * 是否展示音乐详情页
      */
@@ -51,6 +50,10 @@ data class MainState(
      * 当前播放状态
      */
     val mPlayStatus: MutableState<Int> = mutableStateOf(PLAY_STATUS.NOMAL),
+    /**
+     * 是否展示歌词
+     */
+    val mIsShowLyric : MutableState<Boolean> = mutableStateOf(false)
 )
 
 @IntDef(PAGE_TYPE.SPLASH, PAGE_TYPE.LOGIN, PAGE_TYPE.HOME)

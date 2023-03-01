@@ -10,14 +10,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.brookes6.cloudmusic.R
+import com.brookes6.cloudmusic.state.PLAY_STATUS
 import com.brookes6.cloudmusic.ui.theme.titleColor
 import com.brookes6.cloudmusic.vm.MainViewModel
 
@@ -108,36 +106,29 @@ fun SongController(
             cornerRadius = 1.dp,
             backgroundColor = Color.White
         )
-        Icon(
-            bitmap = ImageBitmap.imageResource(id = R.mipmap.ic_song_type_random),
-            contentDescription = stringResource(id = R.string.description),
+        IconClick(
+            onClick = {
+
+            }, res = R.drawable.icon_song_detail_sequential,
             modifier = Modifier.constrainAs(songPlayType) {
                 top.linkTo(songPlayStatus.top)
                 bottom.linkTo(songPlayStatus.bottom)
                 end.linkTo(songPlayStatus.start, 10.dp)
             },
-            tint = Color.Unspecified
+            iconSize = 24.dp
         )
-        Box(modifier = Modifier
-            .size(36.dp)
-            .clickable {
-
-            }
-            .background(colorResource(id = R.color.song_author), CircleShape)
-            .constrainAs(songPlayStatus) {
+        IconClick(
+            onClick = {
+                viewModel.dispatch(MainViewModel.MainAction.PlayOrPauseSong)
+            },
+            res = if (viewModel.state.mPlayStatus.value != PLAY_STATUS.PLAYING) R.drawable.icon_song_detail_play else R.drawable.icon_song_detail_pause,
+            modifier = Modifier.constrainAs(songPlayStatus) {
                 top.linkTo(songImage.top)
                 bottom.linkTo(songImage.bottom)
                 end.linkTo(parent.end, 14.dp)
             },
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                bitmap = ImageBitmap.imageResource(id = R.mipmap.ic_song_pause),
-                contentDescription = "播放",
-                modifier = Modifier.size(24.dp),
-                tint = Color.Unspecified
-            )
-        }
+            iconSize = 24.dp
+        )
     }
     LaunchedEffect(key1 = viewModel.state.currentPlayIndex.value) {
         viewModel.dispatch(MainViewModel.MainAction.GetCurrentSong)

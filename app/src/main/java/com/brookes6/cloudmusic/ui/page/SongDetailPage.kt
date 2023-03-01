@@ -2,11 +2,9 @@ package com.brookes6.cloudmusic.ui.page
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
@@ -16,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -24,11 +23,13 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import coil.transform.CircleCropTransformation
+import coil.transform.RoundedCornersTransformation
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.manager.MusicManager
 import com.brookes6.cloudmusic.state.PLAY_STATUS
+import com.brookes6.cloudmusic.ui.widget.IconClick
 import com.brookes6.cloudmusic.utils.LogUtils
+import com.brookes6.cloudmusic.utils.TimeUtils
 import com.brookes6.cloudmusic.vm.MainViewModel
 import com.lzx.starrysky.OnPlayProgressListener
 import com.lzx.starrysky.StarrySky
@@ -42,15 +43,17 @@ import com.lzx.starrysky.manager.PlaybackStage
  * Description:
  */
 
+@Preview
 @Composable
 fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOwner? = null) {
     val interationSource = remember { MutableInteractionSource() }
     val mIsTouch = interationSource.collectIsDraggedAsState()
+    var mCurrentPlayTime by remember { mutableStateOf(0L) }
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        val (cover, name, author, lyrics, function, progress, play, next, pre) = createRefs()
+        val (cover, name, author, lyrics, function, startTime, endTime, progress, play, next, pre) = createRefs()
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .crossfade(true)
@@ -61,32 +64,35 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOw
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
-                .blur(60.dp),
+                .blur(65.dp),
         )
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .crossfade(true)
                 .data(viewModel.song.value?.songCover)
-                .transformations(CircleCropTransformation())
+                .transformations(RoundedCornersTransformation(24f))
                 .build(),
             contentDescription = stringResource(id = R.string.description),
             modifier = Modifier
-                .size(231.dp)
                 .constrainAs(cover) {
-                    top.linkTo(parent.top, 91.dp)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
+                    top.linkTo(author.bottom, 20.dp)
+                    start.linkTo(parent.start, 20.dp)
+                    end.linkTo(parent.end, 50.dp)
+                    bottom.linkTo(progress.top, 45.dp)
+                    height = Dimension.fillToConstraints
+                    width = Dimension.fillToConstraints
                 }
         )
         Text(
             text = viewModel.song.value?.songName ?: "未知歌曲",
             fontSize = 22.sp,
             color = Color.White,
-            modifier = Modifier.constrainAs(name) {
-                top.linkTo(cover.bottom, 28.dp)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            },
+            modifier = Modifier
+                .statusBarsPadding()
+                .constrainAs(name) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start, 20.dp)
+                },
             maxLines = 1
         )
         Text(
@@ -95,12 +101,23 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOw
             color = colorResource(id = R.color.song_author),
             modifier = Modifier.constrainAs(author) {
                 top.linkTo(name.bottom, 12.dp)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
+                start.linkTo(name.start)
             }
+        )
+        IconClick(
+            onClick = {
+
+            },
+            res = if (viewModel.state.mIsShowLyric.value) R.drawable.icon_song_detail_lyric_initiate else R.drawable.icon_song_detail_lyric_no,
+            modifier = Modifier.constrainAs(lyrics) {
+                end.linkTo(progress.end)
+                bottom.linkTo(progress.top)
+            },
+            iconSize = 30.dp
         )
         Slider(value = viewModel.state.mProgress.value, onValueChange = {
             if (mIsTouch.value) {
+                LogUtils.d("拖动设置进度条进度:${it}")
                 MusicManager.instance.seekTo(
                     ((viewModel.song.value?.duration ?: 1) * it).toLong()
                 )
@@ -109,30 +126,49 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOw
         },
             interactionSource = interationSource,
             colors = SliderDefaults.colors(
-                thumbColor = colorResource(id = R.color.song_author),
+                thumbColor = colorResource(id = R.color.white),
                 inactiveTrackColor = Color.White,
-                activeTrackColor = colorResource(id = R.color.song_author)
+                activeTrackColor = colorResource(id = R.color.black)
             ),
             modifier = Modifier
                 .constrainAs(progress) {
-                    start.linkTo(parent.start, 24.dp)
-                    end.linkTo(parent.end, 24.dp)
-                    bottom.linkTo(play.top, 58.dp)
+                    start.linkTo(parent.start, 20.dp)
+                    end.linkTo(parent.end, 20.dp)
+                    bottom.linkTo(play.top, 38.dp)
                     width = Dimension.fillToConstraints
                 }
         )
+        Text(
+            text = TimeUtils.timeInSecond(mCurrentPlayTime),
+            modifier = Modifier.constrainAs(startTime) {
+                start.linkTo(progress.start)
+                top.linkTo(progress.bottom, 3.dp)
+            },
+            fontSize = 12.sp,
+            color = colorResource(id = R.color.white)
+        )
+        Text(
+            text = TimeUtils.timeInSecond(viewModel.song.value?.duration),
+            modifier = Modifier.constrainAs(endTime) {
+                end.linkTo(progress.end)
+                top.linkTo(progress.bottom, 3.dp)
+            },
+            fontSize = 12.sp,
+            color = colorResource(id = R.color.white)
+        )
+
         IconButton(onClick = {
             viewModel.dispatch(MainViewModel.MainAction.PlayOrPauseSong)
         }, modifier = Modifier.constrainAs(play) {
-            bottom.linkTo(parent.bottom, 43.dp)
+            bottom.linkTo(function.top, 20.dp)
             start.linkTo(parent.start)
             end.linkTo(parent.end)
         }) {
             Icon(
-                bitmap = ImageBitmap.imageResource(id = R.drawable.icon_song_detail_play),
+                bitmap = ImageBitmap.imageResource(id = if (viewModel.state.mPlayStatus.value != PLAY_STATUS.PLAYING) R.drawable.icon_song_detail_play else R.drawable.icon_song_detail_pause),
                 contentDescription = stringResource(id = R.string.description),
                 modifier = Modifier
-                    .size(75.dp),
+                    .size(50.dp),
                 tint = Color.Unspecified,
             )
         }
@@ -141,13 +177,13 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOw
         }, modifier = Modifier.constrainAs(pre) {
             top.linkTo(play.top)
             bottom.linkTo(play.bottom)
-            end.linkTo(play.start, 33.dp)
+            end.linkTo(play.start, 43.dp)
         }) {
             Icon(
                 bitmap = ImageBitmap.imageResource(id = R.drawable.icon_song_detail_pre),
                 contentDescription = stringResource(id = R.string.description),
                 modifier = Modifier
-                    .size(24.dp),
+                    .size(40.dp),
                 tint = Color.Unspecified,
             )
         }
@@ -156,19 +192,40 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOw
         }, modifier = Modifier.constrainAs(next) {
             top.linkTo(play.top)
             bottom.linkTo(play.bottom)
-            start.linkTo(play.end, 33.dp)
+            start.linkTo(play.end, 43.dp)
         }) {
             Icon(
                 bitmap = ImageBitmap.imageResource(id = R.drawable.icon_song_detail_next),
                 contentDescription = stringResource(id = R.string.description),
                 modifier = Modifier
-                    .size(24.dp),
+                    .size(40.dp),
                 tint = Color.Unspecified,
             )
         }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .constrainAs(function) {
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }, horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            IconClick({
+
+            }, modifier = Modifier, R.drawable.icon_song_detail_like_normal, 30.dp)
+            IconClick({
+
+            }, modifier = Modifier, R.drawable.icon_song_detail_sequential, 30.dp)
+        }
+
         StarrySky.with()?.setOnPlayProgressListener(object : OnPlayProgressListener {
             override fun onPlayProgress(currPos: Long, duration: Long) {
-                viewModel.state.mProgress.value = currPos.toFloat() / duration.toFloat()
+                mCurrentPlayTime = currPos
+                var progress = currPos.toFloat() / duration.toFloat()
+                if (progress.isNaN()) progress = 0f
+                viewModel.state.mProgress.value = progress
             }
         })
         activity?.let {

@@ -10,7 +10,6 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.constant.RouteConstant
@@ -20,10 +19,8 @@ import com.brookes6.cloudmusic.utils.LogUtils
 import com.brookes6.cloudmusic.vm.MainViewModel
 import com.brookes6.net.api.Api
 import com.brookes6.repository.model.LoginModel
-import com.drake.net.Get
 import com.drake.net.Post
 import com.drake.net.utils.scopeNet
-import com.drake.serialize.serialize.serialize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

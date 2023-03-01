@@ -17,6 +17,7 @@ class SongInfo(
     var artist: String = "",    //作者
     var songCover: String = "",  //音乐封面
     var duration: Long = -1, //音乐长度
+    var id : Long = 0,
     var decode: Boolean = false, //是否需要解码，如果要解码，最好用本地音频
     var headData: HashMap<String, String>? = hashMapOf() //header 信息
 ) : Parcelable, Cloneable {

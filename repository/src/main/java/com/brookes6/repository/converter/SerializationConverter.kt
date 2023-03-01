@@ -45,8 +45,7 @@ class SerializationConverter : NetConverter {
                         val json = JSONObject(bodyString) // 获取JSON中后端定义的错误码和错误信息
                         json.getString("data").parseBody<R>(kType)
                     } catch (e: java.lang.Exception) { // 固定格式JSON分析失败直接解析JSON
-                        Log.e("Json", " 固定格式JSON分析失败:" + e.message )
-                        e.printStackTrace()
+                        Log.e("Json", " 固定格式JSON分析失败:" + e.message + "开始尝试解析body" )
                         bodyString.parseBody<R>(kType)
                     }
                 }

@@ -87,4 +87,12 @@ object Api {
      * 可选参数 : br: 码率,默认设置了 999000 即最大码率,如果要 320k 则可设置为 320000,其他类推
      */
     const val GET_MUSIC_URL = "/song/url/v1"
+
+    /**
+     * 获取歌词
+     *
+     * 说明 : 调用此接口 , 传入音乐 id 可获得对应音乐的歌词 ( 不需要登录 )
+     * - 必选参数 : id: 音乐 id
+     */
+    const val GET_MUSIC_LYRIC = "/lyric"
 }

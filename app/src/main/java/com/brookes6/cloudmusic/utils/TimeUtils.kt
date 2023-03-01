@@ -1,5 +1,9 @@
 package com.brookes6.cloudmusic.utils
 
+import android.annotation.SuppressLint
+import java.text.ParseException
+import java.text.SimpleDateFormat
+
 /**
  * Author: fuxinbo
 
@@ -27,5 +31,20 @@ object TimeUtils {
         sp.append(":")
         sp.append(if (second < 10) "0${second}" else second)
         return sp.toString()
+    }
+
+    /**
+     * 将日期格式转换为秒数
+     *
+     * @param date 时间格式
+     * @return
+     */
+    fun dateTransformTime(date: String): Long {
+        var time: Long
+        date.split(":").let {
+            if (it.size != 2) return 0L
+            time = (it[0].toLong() * 60) + it[1].subSequence(0, 2).toString().toLong()
+        }
+        return time
     }
 }

@@ -1,10 +1,12 @@
 package com.brookes6.cloudmusic.ui.page
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
@@ -25,6 +27,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.transform.RoundedCornersTransformation
 import com.brookes6.cloudmusic.R
+import com.brookes6.cloudmusic.action.MainAction
 import com.brookes6.cloudmusic.manager.MusicManager
 import com.brookes6.cloudmusic.state.PLAY_STATUS
 import com.brookes6.cloudmusic.ui.widget.IconClick
@@ -66,23 +69,41 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOw
                 .fillMaxSize()
                 .blur(65.dp),
         )
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .crossfade(true)
-                .data(viewModel.song.value?.songCover)
-                .transformations(RoundedCornersTransformation(24f))
-                .build(),
-            contentDescription = stringResource(id = R.string.description),
-            modifier = Modifier
-                .constrainAs(cover) {
-                    top.linkTo(author.bottom, 20.dp)
-                    start.linkTo(parent.start, 20.dp)
-                    end.linkTo(parent.end, 50.dp)
-                    bottom.linkTo(progress.top, 45.dp)
-                    height = Dimension.fillToConstraints
-                    width = Dimension.fillToConstraints
+        Box(modifier = Modifier.constrainAs(cover) {
+            top.linkTo(author.bottom, 20.dp)
+            start.linkTo(parent.start, 20.dp)
+            end.linkTo(parent.end, 50.dp)
+            bottom.linkTo(progress.top, 45.dp)
+            height = Dimension.fillToConstraints
+            width = Dimension.fillToConstraints
+        }, contentAlignment = Alignment.Center) {
+            AnimatedVisibility(
+                visible = !viewModel.state.mIsShowLyric.value,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .crossfade(true)
+                        .data(viewModel.song.value?.songCover)
+                        .transformations(RoundedCornersTransformation(24f))
+                        .build(),
+                    contentDescription = stringResource(id = R.string.description),
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+            AnimatedVisibility(
+                visible = viewModel.state.mIsShowLyric.value,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                LyricsUI(
+                    modifier = Modifier.fillMaxSize(),
+                    mCurrentPlayTime / 1000,
+                    viewModel.lyric.value.toList(),
+                ) {
+
                 }
-        )
+            }
+        }
         Text(
             text = viewModel.song.value?.songName ?: "未知歌曲",
             fontSize = 22.sp,
@@ -106,7 +127,7 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOw
         )
         IconClick(
             onClick = {
-
+                viewModel.state.mIsShowLyric.value = !viewModel.state.mIsShowLyric.value
             },
             res = if (viewModel.state.mIsShowLyric.value) R.drawable.icon_song_detail_lyric_initiate else R.drawable.icon_song_detail_lyric_no,
             modifier = Modifier.constrainAs(lyrics) {
@@ -158,7 +179,7 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOw
         )
 
         IconButton(onClick = {
-            viewModel.dispatch(MainViewModel.MainAction.PlayOrPauseSong)
+            viewModel.dispatch(MainAction.PlayOrPauseSong)
         }, modifier = Modifier.constrainAs(play) {
             bottom.linkTo(function.top, 20.dp)
             start.linkTo(parent.start)
@@ -173,7 +194,7 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOw
             )
         }
         IconButton(onClick = {
-            viewModel.dispatch(MainViewModel.MainAction.PreSong)
+            viewModel.dispatch(MainAction.PreSong)
         }, modifier = Modifier.constrainAs(pre) {
             top.linkTo(play.top)
             bottom.linkTo(play.bottom)
@@ -188,7 +209,7 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOw
             )
         }
         IconButton(onClick = {
-            viewModel.dispatch(MainViewModel.MainAction.NextSong)
+            viewModel.dispatch(MainAction.NextSong)
         }, modifier = Modifier.constrainAs(next) {
             top.linkTo(play.top)
             bottom.linkTo(play.bottom)
@@ -239,7 +260,7 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOw
                     }
                     PlaybackStage.SWITCH -> {
                         LogUtils.i("音乐：切歌", "Song")
-                        viewModel.dispatch(MainViewModel.MainAction.GetCurrentSong)
+                        viewModel.dispatch(MainAction.GetCurrentSong)
                     }
                     PlaybackStage.PAUSE -> {
                         viewModel.state.mPlayStatus.value = PLAY_STATUS.PAUSE
@@ -253,5 +274,8 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOw
                 }
             }
         }
+        LaunchedEffect(key1 = viewModel.state.currentPlayIndex.value, block = {
+            viewModel.dispatch(MainAction.GetCurrentLyric)
+        })
     }
 }

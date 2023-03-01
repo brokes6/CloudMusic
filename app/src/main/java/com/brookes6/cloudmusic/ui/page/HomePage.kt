@@ -39,6 +39,7 @@ import coil.request.ImageRequest
 import coil.size.Size
 import coil.transform.RoundedCornersTransformation
 import com.brookes6.cloudmusic.R
+import com.brookes6.cloudmusic.action.MainAction
 import com.brookes6.cloudmusic.ui.theme.titleColor
 import com.brookes6.cloudmusic.ui.view.FocusLayoutManager
 import com.brookes6.cloudmusic.ui.view.FocusLayoutManager.Companion.dp2px
@@ -150,7 +151,7 @@ fun HomePage(
                 viewModel.recommendSong.value
             ) { index ->
                 mainViewModel.dispatch(
-                    MainViewModel.MainAction.PlaySong(
+                    MainAction.PlaySong(
                         index,
                         viewModel.recommendSong.value.toMutableList()
                     )

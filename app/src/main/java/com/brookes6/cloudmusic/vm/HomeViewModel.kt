@@ -72,6 +72,7 @@ class HomeViewModel : ViewModel() {
                         recommendSong.name,
                         recommendSong.ar?.getOrNull(0)?.name ?: "未知艺术家",
                         recommendSong.al?.picUrl ?: "",
+                        id = recommendSong.id,
                     )
                 }.also {
                     Get<List<SongModel>>(Api.GET_MUSIC_URL) {

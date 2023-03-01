@@ -2,8 +2,10 @@ package com.brookes6.cloudmusic.vm
 
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.scopeNetLife
 import androidx.lifecycle.viewModelScope
 import com.brookes6.cloudmusic.R
+import com.brookes6.cloudmusic.action.MainAction
 import com.brookes6.cloudmusic.bean.BottomTabBean
 import com.brookes6.cloudmusic.constant.RouteConstant
 import com.brookes6.cloudmusic.extensions.toast
@@ -11,6 +13,11 @@ import com.brookes6.cloudmusic.manager.MusicManager
 import com.brookes6.cloudmusic.state.MainState
 import com.brookes6.cloudmusic.state.PAGE_TYPE
 import com.brookes6.cloudmusic.utils.LogUtils
+import com.brookes6.cloudmusic.utils.TimeUtils
+import com.brookes6.net.api.Api
+import com.brookes6.repository.model.LyricModel
+import com.brookes6.repository.model.Lyrics
+import com.drake.net.Post
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -29,6 +36,9 @@ class MainViewModel : ViewModel() {
     private val _song: MutableState<SongInfo?> = mutableStateOf(null)
     val song: State<SongInfo?> = _song
 
+    private val _lyric: MutableState<MutableList<Lyrics?>> = mutableStateOf(mutableListOf())
+    val lyric: State<MutableList<Lyrics?>> = _lyric
+
     /**
      * 分发事件
      *
@@ -44,6 +54,7 @@ class MainViewModel : ViewModel() {
             is MainAction.NextSong -> nextSong()
             is MainAction.PreSong -> preSong()
             is MainAction.PlayOrPauseSong -> playOrPause()
+            is MainAction.GetCurrentLyric -> getCurrentLyric()
         }
     }
 
@@ -128,21 +139,27 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    sealed class MainAction {
-        object GoHomePage : MainAction()
-
-        object GoLoginPage : MainAction()
-
-        class PlaySong(val index: Int, val list: MutableList<SongInfo>) : MainAction()
-
-        object GetCurrentSong : MainAction()
-
-        object ChangerSongDetailPage : MainAction()
-
-        object NextSong : MainAction()
-
-        object PreSong : MainAction()
-
-        object PlayOrPauseSong : MainAction()
+    /**
+     * 获取当前播放歌曲的歌词
+     *
+     */
+    private fun getCurrentLyric() {
+        if (song.value?.id == 0L || song.value?.id == null) return
+        LogUtils.i("准备获取歌曲Id为:${song.value?.id}的歌词")
+        _lyric.value.clear()
+        scopeNetLife {
+            Post<LyricModel>(Api.GET_MUSIC_LYRIC) {
+                param("id", song.value?.id)
+            }.await().also { list ->
+                list.lrc?.lyric?.split("\n")?.forEach {
+                    if (it.length <= 10) return@forEach
+                    val lyric = Lyrics(
+                        TimeUtils.dateTransformTime(it.substring(1, 6)),
+                        it.substring(11, it.length)
+                    )
+                    _lyric.value.add(lyric)
+                }
+            }
+        }
     }
 }

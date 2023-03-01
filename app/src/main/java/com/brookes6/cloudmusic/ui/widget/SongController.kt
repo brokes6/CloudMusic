@@ -25,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.brookes6.cloudmusic.R
+import com.brookes6.cloudmusic.action.MainAction
 import com.brookes6.cloudmusic.state.PLAY_STATUS
 import com.brookes6.cloudmusic.ui.theme.titleColor
 import com.brookes6.cloudmusic.vm.MainViewModel
@@ -52,7 +53,7 @@ fun SongController(
             .clickable(interactionSource = remember {
                 MutableInteractionSource()
             }, indication = null) {
-                viewModel.dispatch(MainViewModel.MainAction.ChangerSongDetailPage)
+                viewModel.dispatch(MainAction.ChangerSongDetailPage)
             }
             .padding(4.dp)
     ) {
@@ -109,7 +110,8 @@ fun SongController(
         IconClick(
             onClick = {
 
-            }, res = R.drawable.icon_song_detail_sequential,
+            },
+            res = R.drawable.icon_song_detail_sequential,
             modifier = Modifier.constrainAs(songPlayType) {
                 top.linkTo(songPlayStatus.top)
                 bottom.linkTo(songPlayStatus.bottom)
@@ -119,7 +121,7 @@ fun SongController(
         )
         IconClick(
             onClick = {
-                viewModel.dispatch(MainViewModel.MainAction.PlayOrPauseSong)
+                viewModel.dispatch(MainAction.PlayOrPauseSong)
             },
             res = if (viewModel.state.mPlayStatus.value != PLAY_STATUS.PLAYING) R.drawable.icon_song_detail_play else R.drawable.icon_song_detail_pause,
             modifier = Modifier.constrainAs(songPlayStatus) {
@@ -131,6 +133,6 @@ fun SongController(
         )
     }
     LaunchedEffect(key1 = viewModel.state.currentPlayIndex.value) {
-        viewModel.dispatch(MainViewModel.MainAction.GetCurrentSong)
+        viewModel.dispatch(MainAction.GetCurrentSong)
     }
 }

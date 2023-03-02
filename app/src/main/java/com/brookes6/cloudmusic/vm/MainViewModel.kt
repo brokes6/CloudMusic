@@ -80,6 +80,7 @@ class MainViewModel : ViewModel() {
     )
 
     private fun getCurrentSongInfo() {
+        state.isInitPage2.value = false
         state.mResetLyric.value = !state.mResetLyric.value
         viewModelScope.launch(CoroutineExceptionHandler { coroutineContext, throwable ->
             toast("当前音乐列表为空,请检查网络状态")

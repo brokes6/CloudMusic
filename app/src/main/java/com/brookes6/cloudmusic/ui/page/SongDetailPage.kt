@@ -1,6 +1,10 @@
 package com.brookes6.cloudmusic.ui.page
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.*
@@ -79,7 +83,20 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOw
         }, contentAlignment = Alignment.Center) {
             AnimatedVisibility(
                 visible = !viewModel.state.mIsShowLyric.value,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                enter = fadeIn(
+                    animationSpec = tween(
+                        durationMillis = 800,
+                        delayMillis = 200,
+                        easing = FastOutSlowInEasing
+                    )
+                ) + expandIn(
+                    animationSpec = tween(
+                        durationMillis = 800,
+                        delayMillis = 200,
+                        easing = FastOutSlowInEasing
+                    )
+                )
             ) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
@@ -91,7 +108,7 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOw
                     modifier = Modifier.fillMaxSize()
                 )
             }
-            if(viewModel.state.mIsShowLyric.value){
+            if (viewModel.state.mIsShowLyric.value) {
                 LyricsUI(
                     modifier = Modifier.fillMaxSize(),
                     viewModel,
@@ -135,6 +152,7 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOw
         Slider(value = viewModel.state.mProgress.value, onValueChange = {
             if (mIsTouch.value) {
                 LogUtils.d("拖动设置进度条进度:${it}")
+                viewModel.state.isInitPage2.value = false
                 viewModel.state.mResetLyric.value = !viewModel.state.mResetLyric.value
                 MusicManager.instance.seekTo(
                     ((viewModel.song.value?.duration ?: 1) * it).toLong()

@@ -1,7 +1,10 @@
 package com.brookes6.cloudmusic.ui.page
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -46,7 +49,7 @@ fun LyricsUI(
     itemOnClick: (Lyrics?) -> Unit,
 ) {
     val state = rememberLazyListState()
-    var mCurrentIndex by remember { mutableStateOf(0) }
+    var mSeekLyric by remember { mutableStateOf(true) }
     // 当没歌词的时候
     if (lyricsEntryList.isEmpty()) {
         Box(
@@ -70,7 +73,7 @@ fun LyricsUI(
             val lyricsEntryListItems: (LazyListScope.() -> Unit) = {
                 this.itemsIndexed(lyricsEntryList) { index, lyricsEntry ->
                     LyricsItem(
-                        current = index == mCurrentIndex,
+                        current = index == viewModel.state.mCurrentLyricIndex.value,
                         currentTextElementHeightPxState = currentTextElementHeightPx,
                         lyrics = lyricsEntry,
                         textColor = textColor,
@@ -106,16 +109,26 @@ fun LyricsUI(
             }
             // 定位中间
             LaunchedEffect(key1 = liveTime, key2 = currentTextElementHeightPx.value, block = {
-                delay(200)
-                val height = (dp2px(App.content, maxHeight.value).toInt() - currentTextElementHeightPx.value) / 2
+                val height = (dp2px(
+                    App.content,
+                    maxHeight.value
+                ).toInt() - currentTextElementHeightPx.value) / 2
                 val index = findShowLine(lyricsEntryList, liveTime)
-                if (index <= mCurrentIndex && mCurrentIndex != 0) return@LaunchedEffect
-                mCurrentIndex = index
+                if (mSeekLyric) {
+                    mSeekLyric = false
+                    delay(200)
+                    state.animateScrollToItem((viewModel.state.mCurrentLyricIndex.value + 1).coerceAtLeast(0), -height)
+                    return@LaunchedEffect
+                }
+                if (index <= viewModel.state.mCurrentLyricIndex.value && viewModel.state.mCurrentLyricIndex.value != 0) return@LaunchedEffect
+                viewModel.state.mCurrentLyricIndex.value = index
                 state.animateScrollToItem((index + 1).coerceAtLeast(0), -height)
             })
             LaunchedEffect(key1 = viewModel.state.mResetLyric.value, block = {
-                LogUtils.i("重置歌词进度","Song")
-                mCurrentIndex = 0
+                if (viewModel.state.isInitPage2.value) return@LaunchedEffect
+                LogUtils.i("重置歌词进度", "Song")
+                viewModel.state.mCurrentLyricIndex.value = 0
+                viewModel.state.isInitPage2.value = true
             })
         }
     }
@@ -137,14 +150,4 @@ private fun findShowLine(list: List<Lyrics?>, time: Long): Int {
         }
     }
     return index
-}
-
-private fun judgeSelect(time: Long, lyricTime: Long?): Boolean {
-    LogUtils.i("当前播放时间为:${time},当前歌词时间为:${lyricTime}")
-    if (lyricTime == null) return false
-    if (time < lyricTime) return false
-    if (time > lyricTime) {
-        return true
-    }
-    return false
 }

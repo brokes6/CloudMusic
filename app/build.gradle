@@ -8,9 +8,9 @@ android {
     signingConfigs {
         test {
         storePassword '121300'
-            keyAlias 'test'
+            keyAlias 'cloud'
             keyPassword '121300'
-            storeFile file('/Users/fuxinbo/AndroidStudioProjects/Key/testKey.properties')
+            storeFile file('../Test.jks')
         }
     }
     namespace 'com.brookes6.cloudmusic'

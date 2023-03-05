@@ -2,10 +2,10 @@ package com.brookes6.cloudmusic.vm
 
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.scopeNetLife
+import com.brookes6.cloudmusic.constant.AppConstant.USER_ID
 import com.brookes6.cloudmusic.extensions.request
+import com.brookes6.cloudmusic.extensions.scopeDialog
 import com.brookes6.cloudmusic.manager.DataBaseManager
-import com.brookes6.cloudmusic.manager.MusicManager
 import com.brookes6.cloudmusic.state.HomeState
 import com.brookes6.cloudmusic.utils.LogUtils
 import com.brookes6.net.api.Api
@@ -13,7 +13,7 @@ import com.brookes6.repository.model.LoginModel
 import com.brookes6.repository.model.RecommendSongModel
 import com.brookes6.repository.model.SongModel
 import com.drake.net.Get
-import com.drake.net.Post
+import com.drake.serialize.serialize.serialize
 import com.lzx.starrysky.SongInfo
 
 /**
@@ -48,8 +48,9 @@ class HomeViewModel : ViewModel() {
         request({
             DataBaseManager.db?.userDao?.getUserInfo()
         }, {
-            LogUtils.i("获取本地用户数据成功:${it?.account?.userName}", "DAO")
+            LogUtils.i("获取本地用户数据成功:${it?.account?.userName},用户ID为 --> ${it?.account?.id}", "DAO")
             _userInfo.value = it
+            serialize(USER_ID to it?.account?.id)
         }, {
             LogUtils.e("获取用户数据出现异常！->${it}")
         })
@@ -62,7 +63,7 @@ class HomeViewModel : ViewModel() {
         }
         val songMap = hashMapOf<Long, SongInfo>()
         val musicId = StringBuffer()
-        scopeNetLife {
+        scopeDialog {
             Get<RecommendSongModel>(Api.RECOMMEND_SONG).await().also {
                 it.dailySongs?.forEachIndexed { index, recommendSong ->
                     musicId.append(if (musicId.isEmpty()) "${recommendSong.id}" else ",${recommendSong.id}")

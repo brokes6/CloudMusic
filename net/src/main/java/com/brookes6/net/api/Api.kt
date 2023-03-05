@@ -9,7 +9,14 @@ package com.brookes6.net.api
  */
 object Api {
 
-    const val BASE_URL = "http://192.168.0.106:3000"
+    const val BASE_URL = "http://192.168.31.133:3000"
+
+    /**
+     * 刷新登录
+     *
+     * 说明 : 调用此接口 , 可刷新登录状态,返回内容包含新的cookie(不支持刷新二维码登录的cookie)
+     */
+    const val REFRESH_COOKIE = "/login/refresh"
 
     /**
      * 手机登录
@@ -95,4 +102,24 @@ object Api {
      * - 必选参数 : id: 音乐 id
      */
     const val GET_MUSIC_LYRIC = "/lyric"
+
+    /**
+     * 获取用户详情
+     *
+     * 说明 : 登录后调用此接口 , 传入用户 id, 可以获取用户详情
+     * - 必选参数 : uid : 用户 id
+     */
+    const val GET_USER_INFO = "/user/detail"
+
+    /**
+     * 获取用户歌单
+     *
+     * 说明 : 登录后调用此接口 , 传入用户 id, 可以获取用户歌单
+     * - 必选参数 : uid : 用户 id
+     *
+     * 可选参数 :
+     * - limit : 返回数量 , 默认为 30
+     * - offset : 偏移数量，用于分页 , 如 :( 页数 -1)*30, 其中 30 为 limit 的值 , 默认为 0
+     */
+    const val GET_USER_PLAYLIST = "/user/playlist"
 }

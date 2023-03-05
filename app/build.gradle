@@ -62,6 +62,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
     // Android view
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation 'androidx.fragment:fragment:1.5.5'
     // Test
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
@@ -83,12 +84,14 @@ dependencies {
     implementation "androidx.compose.ui:ui:$compose_ui_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_ui_version"
     implementation 'androidx.compose.material:material:1.3.1'
+    // repository
+    implementation project(':repository')
+    // StarrySky https://github.com/EspoirX/StarrySky
+    implementation project(':starrysky')
 
     // 第三方
     // Coil https://github.com/coil-kt/coil
     implementation("io.coil-kt:coil-compose:2.2.2")
-    // StarrySky https://github.com/EspoirX/StarrySky
-    implementation project(':starrysky')
     // BRV https://github.com/liangjingkanji/BRV
     implementation 'com.github.liangjingkanji:BRV:1.3.90'
     // Android 高性能读写本地数据 https://github.com/liangjingkanji/Serialize
@@ -96,6 +99,6 @@ dependencies {
     // 状态栏 https://github.com/google/accompanist
     implementation "com.google.accompanist:accompanist-insets:0.28.0"
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.28.0"
-    // repository
-    implementation project(':repository')
+    //Lottie http://airbnb.io/lottie/#/android-compose
+    implementation "com.airbnb.android:lottie:6.0.0"
 }

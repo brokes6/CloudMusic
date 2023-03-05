@@ -18,6 +18,7 @@ import com.brookes6.net.api.Api
 import com.brookes6.repository.model.LyricModel
 import com.brookes6.repository.model.Lyrics
 import com.drake.net.Get
+import com.drake.net.utils.scopeNet
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -62,20 +63,20 @@ class MainViewModel : ViewModel() {
         BottomTabBean(
             RouteConstant.HOME_PAGE,
             "主页",
-            R.mipmap.ic_home_normal,
-            R.mipmap.ic_home_select
+            R.drawable.ic_home_normal,
+            R.drawable.ic_home_select
         ),
         BottomTabBean(
             RouteConstant.HOME_SONG_PAGE,
             "歌单",
-            R.mipmap.ic_song_normal,
-            R.mipmap.ic_song_select
+            R.drawable.ic_song_normal,
+            R.drawable.ic_song_select
         ),
         BottomTabBean(
-            RouteConstant.HOME_SEARCH_PAGE,
-            "搜索",
-            R.mipmap.ic_search_normal,
-            R.mipmap.ic_search_normal
+            RouteConstant.HOME_MY_PAGE,
+            "我的",
+            R.drawable.ic_me_normal,
+            R.drawable.ic_me_select
         ),
     )
 
@@ -151,6 +152,9 @@ class MainViewModel : ViewModel() {
         if (song.value?.id == 0L || song.value?.id == null) return
         LogUtils.i("准备获取歌曲Id为:${song.value?.id}的歌词")
         _lyric.value.clear()
+        scopeNet {
+
+        }
         scopeNetLife {
             Get<LyricModel>(Api.GET_MUSIC_LYRIC) {
                 param("id", song.value?.id)

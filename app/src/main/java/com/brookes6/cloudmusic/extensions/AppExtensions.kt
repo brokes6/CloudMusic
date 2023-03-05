@@ -1,7 +1,13 @@
 package com.brookes6.cloudmusic.extensions
 
+import android.app.Dialog
 import android.widget.Toast
 import com.brookes6.cloudmusic.App
+import com.brookes6.cloudmusic.MainActivity
+import com.drake.net.scope.DialogCoroutineScope
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 /**
  * Author: fuxinbo
@@ -19,3 +25,10 @@ import com.brookes6.cloudmusic.App
 fun toast(message: String) {
     Toast.makeText(App.content, message, Toast.LENGTH_SHORT).show()
 }
+
+fun scopeDialog(
+    dialog: Dialog? = null,
+    cancelable: Boolean = true,
+    dispatcher: CoroutineDispatcher = Dispatchers.Main,
+    block: suspend CoroutineScope.() -> Unit
+) = DialogCoroutineScope(MainActivity.content, dialog, cancelable, dispatcher).launch(block)

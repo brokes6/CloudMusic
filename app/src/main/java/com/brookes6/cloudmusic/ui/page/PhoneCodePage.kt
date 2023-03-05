@@ -119,7 +119,7 @@ fun PhoneCodePage(viewModel: LoginViewModel = viewModel(),onNavController: (Stri
                         width = Dimension.fillToConstraints
                     },
                 colors = if (!viewModel.state.isShowPhoneCode.value) ButtonDefaults.buttonColors(
-                    secondaryBackground_2
+                    secondaryBackgroundV2
                 ) else ButtonDefaults.buttonColors(mainButtonColor)
             ) {
                 viewModel.dispatch(

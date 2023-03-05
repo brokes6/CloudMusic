@@ -7,6 +7,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.scopeNetLife
 import androidx.lifecycle.viewModelScope
+import com.brookes6.cloudmusic.constant.AppConstant.COOKIE
+import com.brookes6.cloudmusic.constant.AppConstant.IS_LOGIN
 import com.brookes6.cloudmusic.constant.RouteConstant
 import com.brookes6.cloudmusic.extensions.toast
 import com.brookes6.cloudmusic.manager.DataBaseManager
@@ -80,8 +82,8 @@ class LoginViewModel : ViewModel() {
                 }
             }.await().also {
                 if (it.code == 200) {
-                    serialize("isLogin" to true)
-                    serialize("cookie" to it.cookie)
+                    serialize(IS_LOGIN to true)
+                    serialize(COOKIE to it.cookie)
                     state.code.value = it.code
                     state.isLogin.value = true
                     state.isError.value = false
@@ -90,7 +92,7 @@ class LoginViewModel : ViewModel() {
                     }
                     onNavController(RouteConstant.HOME_PAGE)
                 } else {
-                    serialize("isLogin" to false)
+                    serialize(IS_LOGIN to false)
                     state.code.value = it.code
                     state.isError.value = true
                     state.message.value = it.message ?: "发生错误"
@@ -145,7 +147,7 @@ class LoginViewModel : ViewModel() {
                 param("key", mQRCodeKey)
             }.await().also {
                 if (it.code == 803) {
-                    serialize("cookie" to it.cookie)
+                    serialize(COOKIE to it.cookie)
                     getAccountInfo()
                     state.mQRCodeStatus.value = true
                     LogUtils.i("保存的Cookie为:${it.cookie}")
@@ -162,7 +164,7 @@ class LoginViewModel : ViewModel() {
     private fun getAccountInfo(){
         scopeNetLife {
             Post<LoginModel>(Api.ACCOUNT_INFO).await().also {
-                serialize("isLogin" to true)
+                serialize(IS_LOGIN to true)
                 state.code.value = it.code
                 state.isLogin.value = true
                 state.isError.value = false

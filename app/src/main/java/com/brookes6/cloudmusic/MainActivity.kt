@@ -1,7 +1,7 @@
 package com.brookes6.cloudmusic
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.view.WindowCompat
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -30,6 +31,7 @@ import com.brookes6.cloudmusic.utils.LogUtils
 import com.brookes6.cloudmusic.vm.HomeViewModel
 import com.brookes6.cloudmusic.vm.LoginViewModel
 import com.brookes6.cloudmusic.vm.MainViewModel
+import com.brookes6.cloudmusic.vm.MyViewModel
 import com.drake.brv.utils.BRV
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -44,11 +46,17 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
  * Description:
  */
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
+
+    companion object {
+        @SuppressLint("StaticFieldLeak")
+        lateinit var content: FragmentActivity
+    }
 
     @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialApi::class)
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        content = this
         BRV.modelId = BR.data
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
@@ -59,6 +67,7 @@ class MainActivity : ComponentActivity() {
             val viewModel: MainViewModel = viewModel()
             val loginViewModel: LoginViewModel = viewModel()
             val homeViewModel: HomeViewModel = viewModel()
+            val myViewModel: MyViewModel = viewModel()
 
             val navController = rememberAnimatedNavController()
             val state = rememberBottomSheetScaffoldState()
@@ -96,7 +105,7 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         loginGraph(navController, viewModel, loginViewModel)
-                        homeGraph(navController, homeViewModel, viewModel)
+                        homeGraph(navController, homeViewModel, viewModel, myViewModel)
                     }
                     AnimatedVisibility(
                         visible = viewModel.state.isShowSongController.value,
@@ -223,7 +232,8 @@ class MainActivity : ComponentActivity() {
     private fun NavGraphBuilder.homeGraph(
         navController: NavController,
         homeViewModel: HomeViewModel,
-        viewModel: MainViewModel
+        viewModel: MainViewModel,
+        myViewModel: MyViewModel
     ) {
         navigation(startDestination = RouteConstant.HOME_PAGE, route = RouteConstant.HOME) {
             composable(RouteConstant.HOME_PAGE) {
@@ -232,8 +242,8 @@ class MainActivity : ComponentActivity() {
             composable(RouteConstant.HOME_SONG_PAGE) {
                 SongPage()
             }
-            composable(RouteConstant.HOME_SEARCH_PAGE) {
-                SearchPage()
+            composable(RouteConstant.HOME_MY_PAGE) {
+                MyPage(myViewModel,navController)
             }
         }
     }

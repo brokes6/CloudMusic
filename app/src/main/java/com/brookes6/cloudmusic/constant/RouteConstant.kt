@@ -27,6 +27,8 @@ object RouteConstant {
 
     const val HOME_SEARCH_PAGE = HOME + "homeSearchPage"
 
+    const val HOME_MY_PAGE = HOME + "homeMyPage"
+
     const val SPLASH_PAGE = "splashPage"
 
 }

@@ -32,8 +32,8 @@ class MyViewModel : ViewModel() {
     /**
      * 用户歌单
      */
-    private val _playList : MutableState<PlayListModel?> = mutableStateOf(null)
-    val playList : State<PlayListModel?> = _playList
+    private val _playList: MutableState<PlayListModel?> = mutableStateOf(null)
+    val playList: State<PlayListModel?> = _playList
 
     private var _userId: Long? = null
 
@@ -70,6 +70,7 @@ class MyViewModel : ViewModel() {
      *
      */
     private fun getUserPlayList() {
+        if (_playList.value != null) return
         if (!getUserId()) return
         scopeDialog {
             Post<PlayListModel>(Api.GET_USER_PLAYLIST) {

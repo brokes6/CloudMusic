@@ -65,5 +65,6 @@ fun MyPage(viewModel: MyViewModel, navController: NavController? = null) {
 
     LaunchedEffect(key1 = Unit, block = {
         viewModel.dispatch(MyAction.GetUserInfo)
+        viewModel.dispatch(MyAction.GetUserPlayList)
     })
 }

@@ -10,7 +10,8 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class RecommendSongModel(
-    val dailySongs: MutableList<DailySongs>? = null
+    val dailySongs: MutableList<DailySongs>? = null,
+    val code : Int = 0,
 ) {
 
     @Serializable

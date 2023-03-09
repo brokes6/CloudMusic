@@ -31,4 +31,8 @@ object RouteConstant {
 
     const val SPLASH_PAGE = "splashPage"
 
+    const val SONG = "SONG"
+
+    const val SONG_PLAY_LIST = SONG + "songPlayList"
+
 }

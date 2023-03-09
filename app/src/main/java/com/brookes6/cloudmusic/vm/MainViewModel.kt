@@ -56,6 +56,7 @@ class MainViewModel : ViewModel() {
             is MainAction.PreSong -> preSong()
             is MainAction.PlayOrPauseSong -> playOrPause()
             is MainAction.GetCurrentLyric -> getCurrentLyric()
+            is MainAction.SwitchPlayModel -> switchPlayModel()
         }
     }
 
@@ -85,7 +86,7 @@ class MainViewModel : ViewModel() {
         state.mResetLyric.value = !state.mResetLyric.value
         viewModelScope.launch(CoroutineExceptionHandler { coroutineContext, throwable ->
             toast("当前音乐列表为空,请检查网络状态")
-            LogUtils.e("无法获取到当前播放音乐信息，请检查是否成功播放 --> ${throwable.message}")
+            LogUtils.e("无法获取到当前播放音乐信息，请检查是否成功播放 --> ${throwable.message}","Request")
         }) {
             StarrySky.with()?.let {
                 _song.value = it.getPlayList()[it.getNowPlayingIndex()]
@@ -103,20 +104,30 @@ class MainViewModel : ViewModel() {
     }
 
     private fun playSong(index: Int, list: MutableList<SongInfo>) {
+        LogUtils.i(
+            "准备播放的歌曲信息为 --> \n" +
+                    "ID:${list[index].songId}\n" +
+                    "名称:${list[index].songName}\n" +
+                    "作者:${list[index].artist}\n" +
+                    "封面:${list[index].songCover}\n" +
+                    "播放地址:${list[index].songUrl}\n" +
+                    "时长:${list[index].duration}","Song"
+        )
         viewModelScope.launch {
-            LogUtils.d("开始播放:${index}")
+            MusicManager.instance.getPlayList()?.let { musicList ->
+                if (list.size != musicList.size) return@let
+                if (list.zip(musicList).all {
+                        it.first.id == it.second.id
+                    }) {
+                    LogUtils.i("当前歌曲列表已经已存在,将直接播放","Song")
+                    MusicManager.instance.playOnly(index)
+                    state.currentPlayIndex.value = index
+                    return@launch
+                }
+            }
             MusicManager.instance.playMusicByIndex(list, index)
             state.currentPlayIndex.value = index
             state.isShowSongController.value = true
-            LogUtils.i(
-                "当前播放的歌曲信息为 --> \n" +
-                        "ID:${list[index].songId}\n" +
-                        "名称:${list[index].songName}\n" +
-                        "作者:${list[index].artist}\n" +
-                        "封面:${list[index].songCover}\n" +
-                        "播放地址:${list[index].songUrl}\n" +
-                        "时长:${list[index].duration}"
-            )
         }
     }
 
@@ -131,7 +142,7 @@ class MainViewModel : ViewModel() {
 
     private fun preSong() {
         MusicManager.instance.pre()
-        state.currentPlayIndex.value = state.currentPlayIndex.value -1
+        state.currentPlayIndex.value = state.currentPlayIndex.value - 1
     }
 
     private fun playOrPause() {
@@ -158,7 +169,7 @@ class MainViewModel : ViewModel() {
         scopeNetLife {
             Get<LyricModel>(Api.GET_MUSIC_LYRIC) {
                 param("id", song.value?.id)
-                param("timestamp",System.currentTimeMillis())
+                param("timestamp", System.currentTimeMillis())
             }.await().also { list ->
                 list.lrc?.lyric?.split("\n")?.forEach {
                     if (it.length <= 10) return@forEach
@@ -170,5 +181,9 @@ class MainViewModel : ViewModel() {
                 }
             }
         }
+    }
+
+    private fun switchPlayModel() {
+        MusicManager.instance.switchPlayModel()
     }
 }

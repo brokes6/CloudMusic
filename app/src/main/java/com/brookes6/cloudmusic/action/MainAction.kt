@@ -15,16 +15,49 @@ sealed class MainAction {
 
     object GoLoginPage : MainAction()
 
+    /**
+     * 播放歌曲
+     *
+     * @property index 播放歌曲所在的索引未知
+     * @property list 当前歌曲所在的列表
+     * @constructor Create empty Play song
+     */
     class PlaySong(val index: Int, val list: MutableList<SongInfo>) : MainAction()
 
+    /**
+     * 获取当前歌曲数据
+     *
+     */
     object GetCurrentSong : MainAction()
 
+    /**
+     * 展开/关闭音乐详情页
+     *
+     */
     object ChangerSongDetailPage : MainAction()
 
+    /**
+     * 下一首
+     *
+     */
     object NextSong : MainAction()
 
+    /**
+     * 上一首
+     *
+     */
     object PreSong : MainAction()
 
+    /**
+     * 切换播放模式
+     *
+     */
+    object SwitchPlayModel : MainAction()
+
+    /**
+     * 暂停/播放音乐
+     *
+     */
     object PlayOrPauseSong : MainAction()
 
     /**

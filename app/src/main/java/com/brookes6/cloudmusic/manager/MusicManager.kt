@@ -1,7 +1,9 @@
 package com.brookes6.cloudmusic.manager
 
+import com.brookes6.cloudmusic.extensions.toast
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
+import com.lzx.starrysky.control.RepeatMode
 
 /**
  * Author: 付鑫博
@@ -17,12 +19,12 @@ class MusicManager private constructor() {
         val instance: MusicManager by lazy { MusicManager() }
     }
 
-    fun play(songInfo: MutableList<SongInfo>,index : Int) {
+    fun play(songInfo: MutableList<SongInfo>, index: Int) {
         StarrySky.with()?.let {
             if (it.isPaused()) {
                 it.restoreMusic()
             } else {
-                it.playMusic(songInfo,index)
+                it.playMusic(songInfo, index)
             }
         }
     }
@@ -32,17 +34,17 @@ class MusicManager private constructor() {
      *
      * @param index
      */
-    fun playOnly(index : Int){
-        StarrySky.with()?.playMusicById(index.toString())
+    fun playOnly(index: Int) {
+        StarrySky.with()?.playMusicByIndex(index)
     }
 
-    fun playMusicForInfo(info : SongInfo){
+    fun playMusicForInfo(info: SongInfo) {
         StarrySky.with()?.prepareByInfo(info)
         StarrySky.with()?.playMusicByInfo(info)
     }
 
-    fun playMusicByIndex(list : MutableList<SongInfo>,index : Int){
-        StarrySky.with()?.playMusic(list,index)
+    fun playMusicByIndex(list: MutableList<SongInfo>, index: Int) {
+        StarrySky.with()?.playMusic(list, index)
     }
 
     fun pause() {
@@ -87,6 +89,28 @@ class MusicManager private constructor() {
             it.updatePlayList(songList)
         }
     }
+
+    fun switchPlayModel() {
+        StarrySky.with()?.let {
+            when (it.getRepeatMode().repeatMode) {
+                RepeatMode.REPEAT_MODE_NONE -> {
+                    toast("单曲循环")
+                    it.setRepeatMode(RepeatMode.REPEAT_MODE_ONE, true)
+                }
+                RepeatMode.REPEAT_MODE_ONE -> {
+                    toast("随机播放")
+                    it.setRepeatMode(RepeatMode.REPEAT_MODE_SHUFFLE, false)
+                }
+                RepeatMode.REPEAT_MODE_SHUFFLE -> {
+                    toast("顺序播放")
+                    it.setRepeatMode(RepeatMode.REPEAT_MODE_NONE, false)
+                }
+            }
+        }
+    }
+
+    fun getCurrentPlayModel(): Int =
+        StarrySky.with()?.getRepeatMode()?.repeatMode ?: RepeatMode.REPEAT_MODE_NONE
 
     /**
      * 获取播放列表

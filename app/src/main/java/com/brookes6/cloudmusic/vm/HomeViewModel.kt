@@ -2,7 +2,9 @@ package com.brookes6.cloudmusic.vm
 
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
+import com.brookes6.cloudmusic.action.HomeAction
 import com.brookes6.cloudmusic.constant.AppConstant.USER_ID
+import com.brookes6.cloudmusic.extensions.checkCookie
 import com.brookes6.cloudmusic.extensions.request
 import com.brookes6.cloudmusic.extensions.scopeDialog
 import com.brookes6.cloudmusic.manager.DataBaseManager
@@ -65,6 +67,7 @@ class HomeViewModel : ViewModel() {
         val musicId = StringBuffer()
         scopeDialog {
             Get<RecommendSongModel>(Api.RECOMMEND_SONG).await().also {
+                checkCookie(it.code){ getRecommendSong() }
                 it.dailySongs?.forEachIndexed { index, recommendSong ->
                     musicId.append(if (musicId.isEmpty()) "${recommendSong.id}" else ",${recommendSong.id}")
                     songMap[recommendSong.id] = SongInfo(
@@ -74,6 +77,7 @@ class HomeViewModel : ViewModel() {
                         recommendSong.ar?.getOrNull(0)?.name ?: "未知艺术家",
                         recommendSong.al?.picUrl ?: "",
                         id = recommendSong.id,
+                        index = index + 1
                     )
                 }.also {
                     Get<List<SongModel>>(Api.GET_MUSIC_URL) {
@@ -93,18 +97,4 @@ class HomeViewModel : ViewModel() {
             }
         }
     }
-
-    sealed class HomeAction {
-
-        /**
-         * 从数据库中获取用户信息
-         */
-        object GetUserInfo : HomeAction()
-
-        /**
-         * 获取每日推荐歌曲
-         */
-        object GetRecommendSong : HomeAction()
-    }
-
 }

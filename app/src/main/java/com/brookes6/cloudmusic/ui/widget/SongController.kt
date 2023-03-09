@@ -1,6 +1,7 @@
 package com.brookes6.cloudmusic.ui.widget
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,6 +13,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -26,9 +28,11 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.action.MainAction
+import com.brookes6.cloudmusic.manager.MusicManager
 import com.brookes6.cloudmusic.state.PLAY_STATUS
 import com.brookes6.cloudmusic.ui.theme.titleColor
 import com.brookes6.cloudmusic.vm.MainViewModel
+import com.lzx.starrysky.control.RepeatMode
 
 /**
  * @Author fuxinbo
@@ -42,9 +46,16 @@ fun SongController(
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = viewModel()
 ) {
+    val rotateAnimation by animateFloatAsState(
+        targetValue = if (viewModel.state.mPlayStatus.value == PLAY_STATUS.PLAYING) 360f else 0f,
+        animationSpec = repeatable(
+            iterations = if (viewModel.state.mPlayStatus.value == PLAY_STATUS.PLAYING) 99 else 1,
+            animation = tween(15000, easing = LinearEasing),
+            repeatMode = androidx.compose.animation.core.RepeatMode.Restart
+        )
+    )
     ConstraintLayout(
-        modifier = Modifier
-            .padding(20.dp, 0.dp, 20.dp, 0.dp)
+        modifier = modifier
             .fillMaxWidth()
             .background(
                 colorResource(id = R.color.song_controller),
@@ -69,6 +80,7 @@ fun SongController(
             modifier = Modifier
                 .size(43.dp)
                 .clip(CircleShape)
+                .rotate(rotateAnimation)
                 .constrainAs(songImage) {
                     top.linkTo(parent.top, 4.dp)
                     bottom.linkTo(parent.bottom, 11.dp)
@@ -109,9 +121,22 @@ fun SongController(
         )
         IconClick(
             onClick = {
-
+                viewModel.dispatch(MainAction.SwitchPlayModel)
             },
-            res = R.drawable.icon_song_detail_sequential,
+            res = when (MusicManager.instance.getCurrentPlayModel()) {
+                RepeatMode.REPEAT_MODE_NONE -> {
+                    R.drawable.icon_song_detail_sequential
+                }
+                RepeatMode.REPEAT_MODE_ONE -> {
+                    R.drawable.icon_song_detail_circulate
+                }
+                RepeatMode.REPEAT_MODE_SHUFFLE -> {
+                    R.drawable.icon_song_detail_random
+                }
+                else -> {
+                    R.drawable.icon_song_detail_sequential
+                }
+            },
             modifier = Modifier.constrainAs(songPlayType) {
                 top.linkTo(songPlayStatus.top)
                 bottom.linkTo(songPlayStatus.bottom)
@@ -129,7 +154,7 @@ fun SongController(
                 bottom.linkTo(songImage.bottom)
                 end.linkTo(parent.end, 14.dp)
             },
-            iconSize = 24.dp
+            iconSize = 30.dp
         )
     }
     LaunchedEffect(key1 = viewModel.state.currentPlayIndex.value) {

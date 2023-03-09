@@ -12,6 +12,7 @@ import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.brookes6.cloudmusic.R
+import com.brookes6.cloudmusic.constant.AppConstant
 import com.brookes6.cloudmusic.constant.RouteConstant
 import com.brookes6.cloudmusic.manager.DataBaseManager
 import com.brookes6.cloudmusic.state.PAGE_TYPE
@@ -21,6 +22,7 @@ import com.brookes6.net.api.Api
 import com.brookes6.repository.model.LoginModel
 import com.drake.net.Post
 import com.drake.net.utils.scopeNet
+import com.drake.serialize.serialize.serialize
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -45,6 +47,7 @@ fun SplashPage(navController: NavController? = null, viewModel: MainViewModel? =
                 LogUtils.d("账号状态为 -> $it")
                 if (it.profile != null) {
                     // 登录状态为已登录
+                    serialize(AppConstant.IS_LOGIN to true)
                     this@LaunchedEffect.launch(Dispatchers.IO) {
                         DataBaseManager.db?.userDao?.install(it)
                     }
@@ -58,6 +61,8 @@ fun SplashPage(navController: NavController? = null, viewModel: MainViewModel? =
                     }
                 } else {
                     // 登录状态为未登录
+                    serialize(AppConstant.IS_LOGIN to false)
+                    serialize(AppConstant.COOKIE to "")
                     viewModel?.state?.let {state ->
                         state.goPageType.value = PAGE_TYPE.LOGIN
                     }

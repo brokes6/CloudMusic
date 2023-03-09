@@ -23,12 +23,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.transform.RoundedCornersTransformation
 import com.brookes6.cloudmusic.R
-import com.brookes6.cloudmusic.action.MainAction
+import com.brookes6.cloudmusic.constant.RouteConstant
 import com.brookes6.cloudmusic.extensions.paddingStart
 import com.brookes6.cloudmusic.ui.theme.secondaryBackground80Percent
 import com.brookes6.cloudmusic.vm.MyViewModel
@@ -42,13 +41,16 @@ import com.brookes6.cloudmusic.vm.MyViewModel
  */
 
 @Composable
-fun MyLikeSongSub(viewModel: MyViewModel, navController: NavController? = null) {
+fun MyLikeSongSub(
+    viewModel: MyViewModel,
+    onNavController: (String) -> Unit = {}
+) {
     ConstraintLayout(
         modifier = Modifier
             .clickable(interactionSource = remember {
                 MutableInteractionSource()
             }, indication = null) {
-
+                onNavController.invoke(RouteConstant.SONG_PLAY_LIST + "/0")
             }
             .padding(20.dp, 20.dp, 20.dp, 0.dp)
             .fillMaxWidth()

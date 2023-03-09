@@ -29,7 +29,10 @@ import com.brookes6.cloudmusic.vm.MyViewModel
  * Description:
  */
 @Composable
-fun MyTopUserSub(viewModel: MyViewModel,navController: NavController? = null) {
+fun MyTopUserSub(
+    viewModel: MyViewModel,
+    onNavController: (String) -> Unit = {}
+) {
     Box(
         modifier = Modifier
             .paddingTop(62.dp)

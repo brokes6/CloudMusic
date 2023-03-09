@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.ImageView
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -38,7 +39,9 @@ import coil.load
 import coil.request.ImageRequest
 import coil.size.Size
 import coil.transform.RoundedCornersTransformation
+import com.brookes6.cloudmusic.MainActivity
 import com.brookes6.cloudmusic.R
+import com.brookes6.cloudmusic.action.HomeAction
 import com.brookes6.cloudmusic.action.MainAction
 import com.brookes6.cloudmusic.ui.theme.titleColor
 import com.brookes6.cloudmusic.ui.view.FocusLayoutManager
@@ -160,9 +163,12 @@ fun HomePage(
         }
     }
     LaunchedEffect(key1 = mainViewModel.state.isLogin, block = {
-        viewModel.dispatch(HomeViewModel.HomeAction.GetUserInfo)
-        viewModel.dispatch(HomeViewModel.HomeAction.GetRecommendSong)
+        viewModel.dispatch(HomeAction.GetUserInfo)
+        viewModel.dispatch(HomeAction.GetRecommendSong)
     })
+    BackHandler(enabled = true) {
+        MainActivity.content.finish()
+    }
 }
 
 /**

@@ -74,9 +74,7 @@ class LoginViewModel : ViewModel() {
         scopeNetLife {
             Post<LoginModel>(Api.PHONE_LOGIN) {
                 param("phone", phone)
-                if (password.isNotEmpty()) {
-                    param("password", password)
-                }
+                param("password", password)
                 if (captcha.isNotEmpty()) {
                     param("captcha", captcha)
                 }
@@ -132,7 +130,8 @@ class LoginViewModel : ViewModel() {
                     param("key", it.unikey)
                     param("qrimg", 1)
                 }.await().also {
-                    val decodedString: ByteArray = Base64.decode(it.qrimg.split(",")[1], Base64.DEFAULT)
+                    val decodedString: ByteArray =
+                        Base64.decode(it.qrimg.split(",")[1], Base64.DEFAULT)
                     onQRCodeCallback.invoke(decodedString)
                 }
             }
@@ -161,7 +160,7 @@ class LoginViewModel : ViewModel() {
      * 获取账号信息
      *
      */
-    private fun getAccountInfo(){
+    private fun getAccountInfo() {
         scopeNetLife {
             Post<LoginModel>(Api.ACCOUNT_INFO).await().also {
                 serialize(IS_LOGIN to true)

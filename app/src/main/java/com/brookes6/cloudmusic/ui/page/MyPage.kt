@@ -1,5 +1,6 @@
 package com.brookes6.cloudmusic.ui.page
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,9 +16,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.brookes6.cloudmusic.MainActivity
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.action.MyAction
 import com.brookes6.cloudmusic.ui.sub.MyFunctionSub
@@ -34,7 +35,10 @@ import com.brookes6.cloudmusic.vm.MyViewModel
  */
 
 @Composable
-fun MyPage(viewModel: MyViewModel, navController: NavController? = null) {
+fun MyPage(
+    viewModel: MyViewModel,
+    onNavController: (String) -> Unit = {}
+) {
     val state = rememberScrollState()
     Box() {
         // 背景
@@ -55,11 +59,11 @@ fun MyPage(viewModel: MyViewModel, navController: NavController? = null) {
             modifier = Modifier.verticalScroll(state)
         ) {
             // 头像部分
-            MyTopUserSub(viewModel, navController)
+            MyTopUserSub(viewModel, onNavController)
             // 功能区部分
-            MyFunctionSub(viewModel, navController)
+            MyFunctionSub(viewModel, onNavController)
             // 我喜欢的歌单部分
-            MyLikeSongSub(viewModel, navController)
+            MyLikeSongSub(viewModel, onNavController)
         }
     }
 
@@ -67,4 +71,7 @@ fun MyPage(viewModel: MyViewModel, navController: NavController? = null) {
         viewModel.dispatch(MyAction.GetUserInfo)
         viewModel.dispatch(MyAction.GetUserPlayList)
     })
+    BackHandler(enabled = true) {
+        MainActivity.content.finish()
+    }
 }

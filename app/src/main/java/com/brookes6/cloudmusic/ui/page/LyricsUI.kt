@@ -6,7 +6,10 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -26,7 +29,6 @@ import com.brookes6.cloudmusic.ui.widget.LyricsItem
 import com.brookes6.cloudmusic.utils.LogUtils
 import com.brookes6.cloudmusic.vm.MainViewModel
 import com.brookes6.repository.model.Lyrics
-import kotlinx.coroutines.delay
 
 /**
  * Author: fuxinbo
@@ -49,7 +51,6 @@ fun LyricsUI(
     itemOnClick: (Lyrics?) -> Unit,
 ) {
     val state = rememberLazyListState()
-    var mSeekLyric by remember { mutableStateOf(true) }
     // 当没歌词的时候
     if (lyricsEntryList.isEmpty()) {
         Box(
@@ -114,13 +115,7 @@ fun LyricsUI(
                     maxHeight.value
                 ).toInt() - currentTextElementHeightPx.value) / 2
                 val index = findShowLine(lyricsEntryList, liveTime)
-                if (mSeekLyric) {
-                    mSeekLyric = false
-                    delay(200)
-                    state.animateScrollToItem((viewModel.state.mCurrentLyricIndex.value + 1).coerceAtLeast(0), -height)
-                    return@LaunchedEffect
-                }
-                if (index <= viewModel.state.mCurrentLyricIndex.value && viewModel.state.mCurrentLyricIndex.value != 0) return@LaunchedEffect
+                if (index < viewModel.state.mCurrentLyricIndex.value) return@LaunchedEffect
                 viewModel.state.mCurrentLyricIndex.value = index
                 state.animateScrollToItem((index + 1).coerceAtLeast(0), -height)
             })

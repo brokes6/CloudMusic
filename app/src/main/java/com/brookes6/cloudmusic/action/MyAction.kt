@@ -12,5 +12,4 @@ sealed class MyAction{
     object GetUserInfo : MyAction()
 
     object GetUserPlayList : MyAction()
-
 }

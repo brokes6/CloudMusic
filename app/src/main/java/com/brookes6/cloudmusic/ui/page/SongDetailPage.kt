@@ -1,10 +1,8 @@
 package com.brookes6.cloudmusic.ui.page
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandIn
-import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
@@ -43,6 +41,7 @@ import com.brookes6.cloudmusic.utils.TimeUtils
 import com.brookes6.cloudmusic.vm.MainViewModel
 import com.lzx.starrysky.OnPlayProgressListener
 import com.lzx.starrysky.StarrySky
+import com.lzx.starrysky.control.RepeatMode
 import com.lzx.starrysky.manager.PlaybackStage
 
 /**
@@ -96,13 +95,14 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOw
             AnimatedVisibility(
                 visible = !viewModel.state.mIsShowLyric.value,
                 modifier = Modifier.fillMaxSize(),
-                enter = fadeIn(
+                enter = slideInVertically() + fadeIn(
                     animationSpec = tween(
                         durationMillis = 800,
                         delayMillis = 200,
                         easing = FastOutSlowInEasing
                     )
-                ) + expandIn(
+                ),
+                exit = slideOutVertically() + fadeOut(
                     animationSpec = tween(
                         durationMillis = 800,
                         delayMillis = 200,
@@ -196,7 +196,7 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOw
                         activeTrackColor = colorResource(id = R.color.song_author)
                     ),
                     modifier = Modifier
-                        .padding(15.dp, 5.dp, 15.dp, 0.dp)
+                        .padding(12.dp, 5.dp, 12.dp, 0.dp)
                         .fillMaxWidth()
                 )
                 Box(
@@ -252,9 +252,26 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOw
                             50.dp
                         )
                     }
-                    IconClick({
-
-                    }, modifier = Modifier, R.drawable.icon_song_detail_sequential, 30.dp)
+                    IconClick(
+                        {
+                            viewModel.dispatch(MainAction.SwitchPlayModel)
+                        }, modifier = Modifier,
+                        when (MusicManager.instance.getCurrentPlayModel()) {
+                            RepeatMode.REPEAT_MODE_NONE -> {
+                                R.drawable.icon_song_detail_sequential
+                            }
+                            RepeatMode.REPEAT_MODE_ONE -> {
+                                R.drawable.icon_song_detail_circulate
+                            }
+                            RepeatMode.REPEAT_MODE_SHUFFLE -> {
+                                R.drawable.icon_song_detail_random
+                            }
+                            else -> {
+                                R.drawable.icon_song_detail_sequential
+                            }
+                        },
+                        30.dp
+                    )
                 }
             }
         }
@@ -276,7 +293,6 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOw
                         viewModel.state.mPlayStatus.value = PLAY_STATUS.NOMAL
                     }
                     PlaybackStage.SWITCH -> {
-                        LogUtils.i("音乐：切歌", "Song")
                         viewModel.dispatch(MainAction.GetCurrentSong)
                     }
                     PlaybackStage.PAUSE -> {

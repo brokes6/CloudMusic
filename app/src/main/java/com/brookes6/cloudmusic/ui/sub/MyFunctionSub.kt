@@ -22,7 +22,10 @@ import com.brookes6.cloudmusic.vm.MyViewModel
  * Description:
  */
 @Composable
-fun MyFunctionSub(viewModel: MyViewModel,navController: NavController? = null) {
+fun MyFunctionSub(
+    viewModel: MyViewModel,
+    onNavController: (String) -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .padding(20.dp, 25.dp, 20.dp, 0.dp)

@@ -11,6 +11,7 @@ import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -22,6 +23,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.brookes6.cloudmusic.constant.AppConstant
 import com.brookes6.cloudmusic.constant.RouteConstant
 import com.brookes6.cloudmusic.ui.page.*
 import com.brookes6.cloudmusic.ui.theme.mainBackground
@@ -106,46 +110,47 @@ class MainActivity : FragmentActivity() {
                         }
                         loginGraph(navController, viewModel, loginViewModel)
                         homeGraph(navController, homeViewModel, viewModel, myViewModel)
+                        songGraph(navController, viewModel, myViewModel)
                     }
-                    AnimatedVisibility(
-                        visible = viewModel.state.isShowSongController.value,
-                        modifier = Modifier.constrainAs(songController) {
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                            bottom.linkTo(bottomTab.top)
-                        }
+                    Column(
+                        Modifier
+                            .padding(20.dp, 0.dp, 20.dp, 0.dp)
+                            .navigationBarsPadding()
+                            .fillMaxWidth()
+                            .animateContentSize()
+                            .constrainAs(bottomTab) {
+                                bottom.linkTo(parent.bottom)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                            },
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        SongController(
-                            modifier = Modifier,
-                            viewModel = viewModel
-                        )
-                    }
-                    if (viewModel.state.isShowBottomTab.value) {
-                        BottomTab(
-                            modifier = Modifier
-                                .padding(20.dp, 0.dp, 20.dp, 0.dp)
-                                .navigationBarsPadding()
-                                .fillMaxWidth()
-                                .background(
-                                    secondaryBackground,
-                                    RoundedCornerShape(20.dp)
-                                )
-                                .padding(4.dp)
-                                .constrainAs(bottomTab) {
-                                    bottom.linkTo(parent.bottom)
-                                    start.linkTo(parent.start)
-                                    end.linkTo(parent.end)
-                                },
-                            viewModel.getHomeBottomTabList()
-                        ) { route ->
-                            navController.navigate(route) {
-                                if (route != viewModel.state.currentRoute.value) {
-                                    viewModel.state.currentRoute.value = route
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
+                        if (viewModel.state.isShowSongController.value) {
+                            SongController(
+                                modifier = Modifier,
+                                viewModel = viewModel
+                            )
+                        }
+                        if (viewModel.state.isShowBottomTab.value) {
+                            BottomTab(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        secondaryBackground,
+                                        RoundedCornerShape(20.dp)
+                                    )
+                                    .padding(4.dp),
+                                viewModel.getHomeBottomTabList()
+                            ) { route ->
+                                navController.navigate(route) {
+                                    if (route != viewModel.state.currentRoute.value) {
+                                        viewModel.state.currentRoute.value = route
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
                                     }
-                                    launchSingleTop = true
-                                    restoreState = true
                                 }
                             }
                         }
@@ -243,7 +248,43 @@ class MainActivity : FragmentActivity() {
                 SongPage()
             }
             composable(RouteConstant.HOME_MY_PAGE) {
-                MyPage(myViewModel,navController)
+                MyPage(myViewModel, onNavController = { page ->
+                    viewModel.state.isShowBottomTab.value = false
+                    navController.navigate(page)
+                })
+            }
+        }
+    }
+
+    @OptIn(ExperimentalAnimationApi::class)
+    private fun NavGraphBuilder.songGraph(
+        navController: NavController,
+        mainViewModel: MainViewModel,
+        viewModel: MyViewModel,
+    ) {
+        navigation(startDestination = RouteConstant.SONG_PLAY_LIST, route = RouteConstant.SONG) {
+            composable(
+                RouteConstant.SONG_PLAY_LIST + "/{${AppConstant.PLAY_LIST_INDEX}}",
+                arguments = listOf(navArgument(AppConstant.PLAY_LIST_INDEX) {
+                    type = NavType.IntType
+                    defaultValue = 0
+                })
+            ) {
+                PlayListPage(
+                    it.arguments?.getInt(AppConstant.PLAY_LIST_INDEX) ?: 0,
+                    viewModel,
+                    onNavController = { page ->
+                        when (page) {
+                            AppConstant.ON_BACK -> {
+                                mainViewModel.state.isShowBottomTab.value = true
+                                navController.popBackStack()
+                            }
+                            else -> {
+                                navController.navigate(page)
+                            }
+                        }
+                    }
+                )
             }
         }
     }

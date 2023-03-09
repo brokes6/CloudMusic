@@ -98,6 +98,12 @@ class PlayerControl(
         playMusicImpl(songInfo)
     }
 
+    fun playMusicByIndex(index: Int) {
+        if (index < 0) return
+        val songInfo = provider.getSongInfoByIndex(index)
+        playMusicImpl(songInfo)
+    }
+
     /**
      * 根据songUrl播放，songId 默认为 url 的 md5
      */

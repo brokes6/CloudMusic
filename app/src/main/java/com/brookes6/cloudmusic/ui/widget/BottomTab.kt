@@ -1,6 +1,6 @@
 package com.brookes6.cloudmusic.ui.widget
 
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -33,42 +33,49 @@ import com.brookes6.cloudmusic.ui.theme.secondaryBackground
 fun BottomTab(
     modifier: Modifier = Modifier,
     tabList: MutableList<BottomTabBean> = mutableListOf(),
-    onNavController : (String) -> Unit = {}
+    onNavController: (String) -> Unit = {}
 ) {
     var mSelectItemIndex by remember { mutableStateOf(0) }
-    Row(
+    BoxWithConstraints(
         modifier = modifier
     ) {
-        tabList.forEachIndexed { index, bean ->
-            Row(
-                modifier = Modifier
-                    .weight(if (mSelectItemIndex == index) 2f else 1f)
-                    .background(
-                        if (mSelectItemIndex == index) colorResource(id = R.color.bottomTabSelect) else secondaryBackground,
-                        RoundedCornerShape(16.dp)
-                    )
-                    .clickable {
-                        if (mSelectItemIndex == index) return@clickable
-                        mSelectItemIndex = index
-                        onNavController.invoke(bean.route)
-                    }
-                    .animateContentSize(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Icon(
-                    bitmap = ImageBitmap.imageResource(id = if (mSelectItemIndex == index) bean.selectIcon else bean.normalIcon),
-                    contentDescription = stringResource(id = R.string.description),
+        val mCurrentItemWidth = (maxWidth / 4) * 2
+        val mItemWidth = (maxWidth / 4)
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            tabList.forEachIndexed { index, bean ->
+                val animateWidth =
+                    animateDpAsState(targetValue = if (mSelectItemIndex == index) mCurrentItemWidth else mItemWidth)
+                Row(
                     modifier = Modifier
-                        .padding(0.dp, 14.dp, 18.dp, 14.dp)
-                        .size(24.dp),
-                    tint = Color.Unspecified
-                )
-                if (mSelectItemIndex == index) Text(
-                    text = bean.title,
-                    fontSize = 12.sp,
-                    color = mainBackground
-                )
+                        .width(animateWidth.value)
+                        .background(
+                            if (mSelectItemIndex == index) colorResource(id = R.color.bottomTabSelect) else secondaryBackground,
+                            RoundedCornerShape(16.dp)
+                        )
+                        .clickable {
+                            if (mSelectItemIndex == index) return@clickable
+                            mSelectItemIndex = index
+                            onNavController.invoke(bean.route)
+                        },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        bitmap = ImageBitmap.imageResource(id = if (mSelectItemIndex == index) bean.selectIcon else bean.normalIcon),
+                        contentDescription = stringResource(id = R.string.description),
+                        modifier = Modifier
+                            .padding(0.dp, 14.dp, 18.dp, 14.dp)
+                            .size(24.dp),
+                        tint = Color.Unspecified
+                    )
+                    if (mSelectItemIndex == index) Text(
+                        text = bean.title,
+                        fontSize = 12.sp,
+                        color = mainBackground
+                    )
+                }
             }
         }
     }

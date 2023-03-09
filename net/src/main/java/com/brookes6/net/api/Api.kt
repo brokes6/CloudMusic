@@ -122,4 +122,44 @@ object Api {
      * - offset : 偏移数量，用于分页 , 如 :( 页数 -1)*30, 其中 30 为 limit 的值 , 默认为 0
      */
     const val GET_USER_PLAYLIST = "/user/playlist"
+
+    /**
+     * 获取歌单所有歌曲
+     *
+     * 说明 : 由于网易云接口限制，歌单详情只会提供 10 首歌，通过调用此接口，传入对应的歌单id，即可获得对应的所有歌曲
+     *
+     * 必选参数
+     * - id : 歌单 id
+     *
+     * 可选参数
+     * - limit : 限制获取歌曲的数量，默认值为当前歌单的歌曲数量
+     * - offset : 默认值为0
+     */
+    const val GET_PLAY_LIST_DETAIL = "/playlist/track/al"
+
+    /**
+     * 喜欢音乐列表
+     *
+     * 说明 : 调用此接口 , 传入用户 id, 可获取已喜欢音乐 id 列表(id 数组)
+     * - 必选参数 : uid: 用户 id
+     */
+    const val GET_LIkE_LIST = "/likelist"
+
+    /**
+     * 喜欢音乐
+     *
+     * 说明 : 调用此接口 , 传入音乐 id, 可喜欢该音乐
+     * - 必选参数 : id: 歌曲 id
+     *
+     * 可选参数 :
+     * - like: 布尔值 , 默认为 true 即喜欢 , 若传 false, 则取消喜欢
+     */
+    const val LIST_OR_DISLIKE_SONG = "/like"
+
+    /**
+     * 推荐 mv
+     *
+     * 说明 : 调用此接口 , 可获取推荐 mv
+     */
+    const val GET_RECOMMEND_MV = "/personalized/mv"
 }

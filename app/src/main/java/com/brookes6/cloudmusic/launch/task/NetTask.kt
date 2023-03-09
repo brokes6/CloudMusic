@@ -33,6 +33,8 @@ import com.drake.serialize.serialize.serialize
  */
 class NetTask(val content: Application) : BaseTask() {
 
+    private var mIsRefresh : Boolean = false
+
     override fun dependentTaskList(): MutableList<Class<out IBaseTask>> {
         return mutableListOf(MmkvTask::class.java)
     }
@@ -45,7 +47,7 @@ class NetTask(val content: Application) : BaseTask() {
             setRequestInterceptor(object : RequestInterceptor {
                 override fun interceptor(request: BaseRequest) {
                     val cookie: String? = deserialize(AppConstant.COOKIE)
-                    LogUtils.i("当前使用的cookie --> \n$cookie}")
+                    LogUtils.i("当前使用的cookie --> \n$cookie")
                     if (!cookie.isNullOrEmpty()) {
                         request.param("cookie", cookie, true)
                     } else {
@@ -72,11 +74,17 @@ class NetTask(val content: Application) : BaseTask() {
      *
      */
     private fun refreshCookie() {
-        if (!deserialize(AppConstant.IS_LOGIN, false)) return
+        if (mIsRefresh) return
+        if (!deserialize(AppConstant.IS_LOGIN, false)) {
+            LogUtils.w("当前用户未登录，不进行Cookie获取")
+            return
+        }
+        mIsRefresh = true
         LogUtils.i("本地Cookie为空，重新获取Cookie")
         scopeNet {
             Get<CookieModel>(Api.REFRESH_COOKIE).await().also {
                 serialize(AppConstant.COOKIE to it.cookie)
+                mIsRefresh = false
             }
         }
     }

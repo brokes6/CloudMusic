@@ -14,4 +14,8 @@ object AppConstant {
     const val COOKIE = "cookie"
 
     const val IS_LOGIN = "isLogin"
+
+    const val PLAY_LIST_INDEX = "playListIndex"
+
+    const val ON_BACK = "onBack"
 }

@@ -81,8 +81,6 @@ fun PlayListPage(
             }
         ) {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth(),
                 state = mState
             ) {
                 item {

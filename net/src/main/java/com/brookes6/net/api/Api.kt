@@ -9,7 +9,11 @@ package com.brookes6.net.api
  */
 object Api {
 
-    const val BASE_URL = "http://192.168.0.103:3000"
+    /**
+     * TODO
+     * 不更新IP地址
+     */
+    const val BASE_URL = "https://service-norc4cei-1300670965.gz.apigw.tencentcs.com/release"
 
     /**
      * 刷新登录
@@ -135,7 +139,7 @@ object Api {
      * - limit : 限制获取歌曲的数量，默认值为当前歌单的歌曲数量
      * - offset : 默认值为0
      */
-    const val GET_PLAY_LIST_DETAIL = "/playlist/track/al"
+    const val GET_PLAY_LIST_DETAIL = "/playlist/track/all"
 
     /**
      * 喜欢音乐列表

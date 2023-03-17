@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class VerifyQRCodeModel(
-    val code: Int,
-    val message: String?,
+    val code: Int = 0,
+    val message: String = "",
     val cookie: String?
 )

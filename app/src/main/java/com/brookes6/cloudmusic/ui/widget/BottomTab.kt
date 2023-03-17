@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,10 +18,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.bean.BottomTabBean
 import com.brookes6.cloudmusic.ui.theme.mainBackground
 import com.brookes6.cloudmusic.ui.theme.secondaryBackground
+import com.brookes6.cloudmusic.vm.MainViewModel
 
 /**
  * @Author fuxinbo
@@ -33,9 +35,9 @@ import com.brookes6.cloudmusic.ui.theme.secondaryBackground
 fun BottomTab(
     modifier: Modifier = Modifier,
     tabList: MutableList<BottomTabBean> = mutableListOf(),
+    viewModel: MainViewModel = viewModel(),
     onNavController: (String) -> Unit = {}
 ) {
-    var mSelectItemIndex by remember { mutableStateOf(0) }
     BoxWithConstraints(
         modifier = modifier
     ) {
@@ -46,31 +48,33 @@ fun BottomTab(
         ) {
             tabList.forEachIndexed { index, bean ->
                 val animateWidth =
-                    animateDpAsState(targetValue = if (mSelectItemIndex == index) mCurrentItemWidth else mItemWidth)
+                    animateDpAsState(targetValue = if (viewModel.state.currentBottomTabIndex.value == index) mCurrentItemWidth else mItemWidth)
                 Row(
                     modifier = Modifier
                         .width(animateWidth.value)
                         .background(
-                            if (mSelectItemIndex == index) colorResource(id = R.color.bottomTabSelect) else secondaryBackground,
+                            if (viewModel.state.currentBottomTabIndex.value == index) colorResource(
+                                id = R.color.bottomTabSelect
+                            ) else secondaryBackground,
                             RoundedCornerShape(16.dp)
                         )
                         .clickable {
-                            if (mSelectItemIndex == index) return@clickable
-                            mSelectItemIndex = index
+                            if (viewModel.state.currentBottomTabIndex.value == index) return@clickable
+                            viewModel.state.currentBottomTabIndex.value = index
                             onNavController.invoke(bean.route)
                         },
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Icon(
-                        bitmap = ImageBitmap.imageResource(id = if (mSelectItemIndex == index) bean.selectIcon else bean.normalIcon),
+                        bitmap = ImageBitmap.imageResource(id = if (viewModel.state.currentBottomTabIndex.value == index) bean.selectIcon else bean.normalIcon),
                         contentDescription = stringResource(id = R.string.description),
                         modifier = Modifier
                             .padding(0.dp, 14.dp, 18.dp, 14.dp)
                             .size(24.dp),
                         tint = Color.Unspecified
                     )
-                    if (mSelectItemIndex == index) Text(
+                    if (viewModel.state.currentBottomTabIndex.value == index) Text(
                         text = bean.title,
                         fontSize = 12.sp,
                         color = mainBackground

@@ -19,6 +19,10 @@ data class MainState(
      */
     val isShowBottomTab: MutableState<Boolean> = mutableStateOf(false),
     /**
+     * 当前展示的tab索引
+     */
+    val currentBottomTabIndex: MutableState<Int> = mutableStateOf(0),
+    /**
      * 是否展示音乐控制器
      */
     val isShowSongController: MutableState<Boolean> = mutableStateOf(false),
@@ -58,7 +62,7 @@ data class MainState(
 
     val mResetLyric: MutableState<Boolean> = mutableStateOf(false),
 
-    val mCurrentLyricIndex : MutableState<Int> = mutableStateOf(0),
+    val mCurrentLyricIndex: MutableState<Int> = mutableStateOf(0),
 )
 
 @IntDef(PAGE_TYPE.SPLASH, PAGE_TYPE.LOGIN, PAGE_TYPE.HOME)

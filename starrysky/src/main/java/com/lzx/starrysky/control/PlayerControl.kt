@@ -101,6 +101,13 @@ class PlayerControl(
     fun playMusicByIndex(index: Int) {
         if (index < 0) return
         val songInfo = provider.getSongInfoByIndex(index)
+        if (songInfo?.songUrl?.isEmpty() == true) {
+            SongUtils.getSongUrl(songInfo.id) {
+                songInfo.songUrl = it
+                playMusicImpl(songInfo)
+            }
+            return
+        }
         playMusicImpl(songInfo)
     }
 

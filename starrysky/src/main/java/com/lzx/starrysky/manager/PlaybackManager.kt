@@ -18,6 +18,7 @@ import com.lzx.starrysky.playback.Playback
 import com.lzx.starrysky.queue.MediaQueueManager
 import com.lzx.starrysky.queue.MediaSourceProvider
 import com.lzx.starrysky.service.MusicServiceBinder
+import com.lzx.starrysky.utils.SongUtils
 import com.lzx.starrysky.utils.md5
 
 class PlaybackManager(
@@ -89,19 +90,22 @@ class PlaybackManager(
         } else {
             mediaQueue.updateIndexBySongId(songInfo.songId)
         }
-        interceptorService.handlerInterceptor(songInfo, InterceptorPlace.BEFORE, object : InterceptCallback {
-            override fun onNext(songInfo: SongInfo?) {
-                if (songInfo == null || songInfo.songId.isEmpty() || songInfo.songUrl.isEmpty()) {
-                    throw IllegalStateException("songId 或 songUrl 不能为空")
+        interceptorService.handlerInterceptor(
+            songInfo,
+            InterceptorPlace.BEFORE,
+            object : InterceptCallback {
+                override fun onNext(songInfo: SongInfo?) {
+                    if (songInfo == null || songInfo.songId.isEmpty() || songInfo.songUrl.isEmpty()) {
+                        throw IllegalStateException("songId -> ${songInfo?.songId} 或 songUrl -> ${songInfo?.songUrl} 不能为空")
+                    }
+                    mediaQueue.updateMusicArt(songInfo)  //更新媒体封面信息
+                    player()?.play(songInfo, isPlayWhenReady)
                 }
-                mediaQueue.updateMusicArt(songInfo)  //更新媒体封面信息
-                player()?.play(songInfo, isPlayWhenReady)
-            }
 
-            override fun onInterrupt(msg: String?) {
-                onPlaybackError(songInfo, msg.orEmpty())
-            }
-        })
+                override fun onInterrupt(msg: String?) {
+                    onPlaybackError(songInfo, msg.orEmpty())
+                }
+            })
     }
 
     /**
@@ -131,6 +135,13 @@ class PlaybackManager(
         }
         if (mediaQueue.skipQueuePosition(1)) {
             val song = mediaQueue.getCurrentSongInfo(false)
+            if (song?.songUrl?.isEmpty() == true) {
+                SongUtils.getSongUrl(song.id) {
+                    song.songUrl = it
+                    onPlayMusicImpl(song, true)
+                }
+                return
+            }
             onPlayMusicImpl(song, true)
         }
     }
@@ -144,6 +155,13 @@ class PlaybackManager(
         }
         if (mediaQueue.skipQueuePosition(-1)) {
             val song = mediaQueue.getCurrentSongInfo(false)
+            if (song?.songUrl?.isEmpty() == true) {
+                SongUtils.getSongUrl(song.id) {
+                    song.songUrl = it
+                    onPlayMusicImpl(song, true)
+                }
+                return
+            }
             onPlayMusicImpl(song, true)
         }
     }
@@ -357,7 +375,11 @@ class PlaybackManager(
         }
     }
 
-    override fun onPlayerStateChanged(songInfo: SongInfo?, playWhenReady: Boolean, playbackState: Int) {
+    override fun onPlayerStateChanged(
+        songInfo: SongInfo?,
+        playWhenReady: Boolean,
+        playbackState: Int
+    ) {
         if (lastSongInfo?.songId != songInfo?.songId && !isActionStop) {
             val state = PlaybackStage()
             state.lastSongInfo = lastSongInfo
@@ -376,61 +398,64 @@ class PlaybackManager(
 
 
     private fun onPlaybackCompletion() {
-        interceptorService.handlerInterceptor(player()?.getCurrPlayInfo(), InterceptorPlace.AFTER, object : InterceptCallback {
-            override fun onNext(songInfo: SongInfo?) {
-                val repeatMode = RepeatMode.with
-                when (repeatMode.repeatMode) {
-                    //顺序播放
-                    RepeatMode.REPEAT_MODE_NONE -> {
-                        if (repeatMode.isLoop) {
+        interceptorService.handlerInterceptor(
+            player()?.getCurrPlayInfo(),
+            InterceptorPlace.AFTER,
+            object : InterceptCallback {
+                override fun onNext(songInfo: SongInfo?) {
+                    val repeatMode = RepeatMode.with
+                    when (repeatMode.repeatMode) {
+                        //顺序播放
+                        RepeatMode.REPEAT_MODE_NONE -> {
+                            if (repeatMode.isLoop) {
+                                player()?.currentMediaId = ""
+                                if (!isSkipMediaQueue) {
+                                    onSkipToNext()
+                                }
+                            } else if (!mediaQueue.currSongIsLastSong()) {
+                                if (!isSkipMediaQueue) {
+                                    onSkipToNext()
+                                }
+                            } else {
+                                player()?.currentMediaId = ""
+                            }
+                        }
+                        //单曲播放
+                        RepeatMode.REPEAT_MODE_ONE -> {
+                            player()?.currentMediaId = ""
+                            if (repeatMode.isLoop) {
+                                onRestoreMusic()
+                            }
+                        }
+                        //随机播放
+                        RepeatMode.REPEAT_MODE_SHUFFLE -> {
                             player()?.currentMediaId = ""
                             if (!isSkipMediaQueue) {
                                 onSkipToNext()
                             }
-                        } else if (!mediaQueue.currSongIsLastSong()) {
-                            if (!isSkipMediaQueue) {
-                                onSkipToNext()
-                            }
-                        } else {
-                            player()?.currentMediaId = ""
                         }
-                    }
-                    //单曲播放
-                    RepeatMode.REPEAT_MODE_ONE -> {
-                        player()?.currentMediaId = ""
-                        if (repeatMode.isLoop) {
-                            onRestoreMusic()
-                        }
-                    }
-                    //随机播放
-                    RepeatMode.REPEAT_MODE_SHUFFLE -> {
-                        player()?.currentMediaId = ""
-                        if (!isSkipMediaQueue) {
-                            onSkipToNext()
-                        }
-                    }
-                    //倒序播放
-                    RepeatMode.REPEAT_MODE_REVERSE -> {
-                        if (repeatMode.isLoop) {
-                            player()?.currentMediaId = ""
-                            if (!isSkipMediaQueue) {
-                                onSkipToPrevious()
+                        //倒序播放
+                        RepeatMode.REPEAT_MODE_REVERSE -> {
+                            if (repeatMode.isLoop) {
+                                player()?.currentMediaId = ""
+                                if (!isSkipMediaQueue) {
+                                    onSkipToPrevious()
+                                }
+                            } else if (!mediaQueue.currSongIsFirstSong()) {
+                                if (!isSkipMediaQueue) {
+                                    onSkipToPrevious()
+                                }
+                            } else {
+                                player()?.currentMediaId = ""
                             }
-                        } else if (!mediaQueue.currSongIsFirstSong()) {
-                            if (!isSkipMediaQueue) {
-                                onSkipToPrevious()
-                            }
-                        } else {
-                            player()?.currentMediaId = ""
                         }
                     }
                 }
-            }
 
-            override fun onInterrupt(msg: String?) {
+                override fun onInterrupt(msg: String?) {
 
-            }
-        })
+                }
+            })
 
 
     }

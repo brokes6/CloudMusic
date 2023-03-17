@@ -11,6 +11,7 @@ import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -64,6 +65,7 @@ fun FocusEdit(modifier: Modifier = Modifier, onPhoneCodeCallback: (code: String)
             modifier = Modifier
                 .focusRequester(focusRequester1)
                 .size(60.dp)
+                .clip(RoundedCornerShape(20.dp))
                 .background(Color.White, RoundedCornerShape(20.dp)),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             textStyle = TextStyle(
@@ -95,6 +97,7 @@ fun FocusEdit(modifier: Modifier = Modifier, onPhoneCodeCallback: (code: String)
             modifier = Modifier
                 .focusRequester(focusRequester2)
                 .size(60.dp)
+                .clip(RoundedCornerShape(20.dp))
                 .background(Color.White, RoundedCornerShape(20.dp)),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             textStyle = TextStyle(
@@ -124,6 +127,7 @@ fun FocusEdit(modifier: Modifier = Modifier, onPhoneCodeCallback: (code: String)
             }, modifier = Modifier
                 .focusRequester(focusRequester3)
                 .size(60.dp)
+                .clip(RoundedCornerShape(20.dp))
                 .background(Color.White, RoundedCornerShape(20.dp)),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             textStyle = TextStyle(
@@ -153,6 +157,7 @@ fun FocusEdit(modifier: Modifier = Modifier, onPhoneCodeCallback: (code: String)
             }, modifier = Modifier
                 .focusRequester(focusRequester4)
                 .size(60.dp)
+                .clip(RoundedCornerShape(20.dp))
                 .background(Color.White, RoundedCornerShape(20.dp)),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             textStyle = TextStyle(

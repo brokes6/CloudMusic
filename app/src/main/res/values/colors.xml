@@ -9,13 +9,15 @@
     <color name="white">#FFFFFFFF</color>
     <color name="white_70">#B3FFFFFF</color>
 
+    <color name="mainBackground">#FF262345</color>
     <color name="forget_password">#FF465180</color>
     <color name="bottomTabSelect">#FFE8BCD3</color>
-    <color name="song_controller">#33000000</color>
+    <color name="song_controller">#1D1C35</color>
 
     <color name="song_author">#FFFF5753</color>
 
     <color name="search_transparent">#5B000000</color>
+    <color name="transparent">#00000000</color>
     <color name="song_detail">#CC000000</color>
     <color name="song_info">#B2000000</color>
 </resources>

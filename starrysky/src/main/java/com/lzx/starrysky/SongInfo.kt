@@ -10,7 +10,7 @@ import kotlinx.android.parcel.Parcelize
  * 面向用户的音频信息
  */
 @Parcelize
-class SongInfo(
+class SongInfo  (
     var songId: String = "", //音乐id
     var songUrl: String = "",  //音乐播放地址
     var songName: String = "",  //音乐标题

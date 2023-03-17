@@ -151,6 +151,8 @@ class LoginViewModel : ViewModel() {
                     state.mQRCodeStatus.value = true
                     LogUtils.i("保存的Cookie为:${it.cookie}")
                     onNavController(RouteConstant.HOME_PAGE)
+                } else {
+                    toast(it.message)
                 }
             }
         }

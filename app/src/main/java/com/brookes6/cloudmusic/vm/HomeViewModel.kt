@@ -15,8 +15,10 @@ import com.brookes6.repository.model.LoginModel
 import com.brookes6.repository.model.RecommendSongModel
 import com.brookes6.repository.model.SongModel
 import com.drake.net.Get
+import com.drake.net.utils.withMain
 import com.drake.serialize.serialize.serialize
 import com.lzx.starrysky.SongInfo
+import kotlinx.coroutines.Dispatchers
 
 /**
  * @Author fuxinbo
@@ -65,9 +67,9 @@ class HomeViewModel : ViewModel() {
         }
         val songMap = hashMapOf<Long, SongInfo>()
         val musicId = StringBuffer()
-        scopeDialog {
+        scopeDialog(dispatcher = Dispatchers.IO) {
             Get<RecommendSongModel>(Api.RECOMMEND_SONG).await().also {
-                checkCookie(it.code){ getRecommendSong() }
+                checkCookie(it.code) { getRecommendSong() }
                 it.dailySongs?.forEachIndexed { index, recommendSong ->
                     musicId.append(if (musicId.isEmpty()) "${recommendSong.id}" else ",${recommendSong.id}")
                     songMap[recommendSong.id] = SongInfo(
@@ -90,7 +92,9 @@ class HomeViewModel : ViewModel() {
                                 duration = songInfo.time
                             }
                         }.also {
-                            _recommendSong.value = songMap.values.toMutableList()
+                            withMain {
+                                _recommendSong.value = songMap.values.toMutableList()
+                            }
                         }
                     }
                 }

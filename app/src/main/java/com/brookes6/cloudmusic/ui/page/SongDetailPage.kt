@@ -54,7 +54,7 @@ import com.lzx.starrysky.manager.PlaybackStage
 
 @Preview
 @Composable
-fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOwner? = null) {
+fun SongDetailPage(viewModel: MainViewModel = viewModel()) {
     val interationSource = remember { MutableInteractionSource() }
     val mIsTouch = interationSource.collectIsDraggedAsState()
     var mCurrentPlayTime by remember { mutableStateOf(0L) }
@@ -283,32 +283,11 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel(), activity: LifecycleOw
                 viewModel.state.mProgress.value = progress
             }
         })
-        activity?.let {
-            StarrySky.with()?.playbackState()?.observe(it) { play ->
-                when (play.stage) {
-                    PlaybackStage.IDLE -> {
-                        if (!play.isStop) {
-                            viewModel.state.mProgress.value = 0f
-                        }
-                        viewModel.state.mPlayStatus.value = PLAY_STATUS.NOMAL
-                    }
-                    PlaybackStage.SWITCH -> {
-                        viewModel.dispatch(MainAction.GetCurrentSong)
-                    }
-                    PlaybackStage.PAUSE -> {
-                        viewModel.state.mPlayStatus.value = PLAY_STATUS.PAUSE
-                    }
-                    PlaybackStage.PLAYING -> {
-                        viewModel.state.mPlayStatus.value = PLAY_STATUS.PLAYING
-                    }
-                    PlaybackStage.ERROR -> {
-                        LogUtils.e("音乐：出错 --> ${play.errorMsg}", "Song")
-                    }
-                }
-            }
-        }
-        LaunchedEffect(key1 = viewModel.state.currentPlayIndex.value, block = {
-            viewModel.dispatch(MainAction.GetCurrentLyric)
-        })
+        LaunchedEffect(
+            key1 = viewModel.state.isShowSongDetailPage.value,
+            key2 = viewModel.song.value,
+            block = {
+                viewModel.dispatch(MainAction.GetCurrentLyric)
+            })
     }
 }

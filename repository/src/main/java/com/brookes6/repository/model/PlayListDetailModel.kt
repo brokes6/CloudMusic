@@ -9,8 +9,9 @@ package com.brookes6.repository.model
  */
 @kotlinx.serialization.Serializable
 data class PlayListDetailModel(
-    val code: Int,
-    val songs: List<PlayListDetailSongInfo?>,
+    val code: Int = 0,
+    val songs: MutableList<PlayListDetailSongInfo> = mutableListOf(),
+    val msg: String = "",
 )
 
 @kotlinx.serialization.Serializable
@@ -19,10 +20,11 @@ data class PlayListDetailSongInfo(
     val name: String = "",
     val ar: List<PlayListSongAuthorInfo?>,
     var al: PlayListSongCoverInfo?,
-    val mark: Int = 0,
+    val mark: Long = 0,
     val version: Int = 0,
     val copyright: Int = 0,
-    val mv: Int = 0
+    val mv: Int = 0,
+    val dt: Long = 0,
 )
 
 @kotlinx.serialization.Serializable

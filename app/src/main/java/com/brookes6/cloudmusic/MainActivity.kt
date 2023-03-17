@@ -25,8 +25,10 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.brookes6.cloudmusic.action.MainAction
 import com.brookes6.cloudmusic.constant.AppConstant
 import com.brookes6.cloudmusic.constant.RouteConstant
+import com.brookes6.cloudmusic.state.PLAY_STATUS
 import com.brookes6.cloudmusic.ui.page.*
 import com.brookes6.cloudmusic.ui.theme.mainBackground
 import com.brookes6.cloudmusic.ui.theme.secondaryBackground
@@ -42,6 +44,9 @@ import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.lzx.starrysky.StarrySky
+import com.lzx.starrysky.StarrySkyInstall
+import com.lzx.starrysky.manager.PlaybackStage
 
 /**
  * Author: fuxinbo
@@ -55,6 +60,9 @@ class MainActivity : FragmentActivity() {
     companion object {
         @SuppressLint("StaticFieldLeak")
         lateinit var content: FragmentActivity
+
+        @JvmStatic
+        lateinit var viewModel: MainViewModel
     }
 
     @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialApi::class)
@@ -68,7 +76,7 @@ class MainActivity : FragmentActivity() {
                 setNavigationBarColor(Color.Transparent, false)
                 setSystemBarsColor(Color.Transparent, false)
             }
-            val viewModel: MainViewModel = viewModel()
+            viewModel = viewModel()
             val loginViewModel: LoginViewModel = viewModel()
             val homeViewModel: HomeViewModel = viewModel()
             val myViewModel: MyViewModel = viewModel()
@@ -77,7 +85,7 @@ class MainActivity : FragmentActivity() {
             val state = rememberBottomSheetScaffoldState()
             BottomSheetScaffold(
                 sheetContent = {
-                    SongDetailPage(viewModel = viewModel, activity = this@MainActivity)
+                    SongDetailPage(viewModel = viewModel)
                 },
                 scaffoldState = state,
                 sheetPeekHeight = 0.dp,
@@ -88,7 +96,7 @@ class MainActivity : FragmentActivity() {
                         .background(mainBackground)
                         .fillMaxSize()
                 ) {
-                    val (content, songController, bottomTab) = createRefs()
+                    val (content, bottomTab) = createRefs()
                     AnimatedNavHost(
                         navController = navController,
                         startDestination = RouteConstant.SPLASH_PAGE,
@@ -98,7 +106,7 @@ class MainActivity : FragmentActivity() {
                                 top.linkTo(parent.top)
                                 start.linkTo(parent.start)
                                 end.linkTo(parent.end)
-                                bottom.linkTo(bottomTab.top)
+                                bottom.linkTo(parent.bottom)
                                 height = Dimension.fillToConstraints
                             }
                     ) {
@@ -140,7 +148,8 @@ class MainActivity : FragmentActivity() {
                                         RoundedCornerShape(20.dp)
                                     )
                                     .padding(4.dp),
-                                viewModel.getHomeBottomTabList()
+                                viewModel.getHomeBottomTabList(),
+                                viewModel
                             ) { route ->
                                 navController.navigate(route) {
                                     if (route != viewModel.state.currentRoute.value) {
@@ -170,6 +179,35 @@ class MainActivity : FragmentActivity() {
                     state.bottomSheetState.expand()
                 }
             })
+        }
+        StarrySkyInstall.onStarryInitSuccessCallback = {
+            StarrySky.with()?.playbackState()?.observe(this) { play ->
+                when (play.stage) {
+                    PlaybackStage.IDLE -> {
+                        if (!play.isStop) {
+                            viewModel.state.mProgress.value = 0f
+                        }
+                        viewModel.state.mPlayStatus.value = PLAY_STATUS.NOMAL
+                    }
+                    PlaybackStage.SWITCH -> {
+                        viewModel.dispatch(MainAction.GetCurrentSong)
+                    }
+                    PlaybackStage.PAUSE -> {
+                        LogUtils.i("当前音乐已暂停", "Song")
+                        viewModel.state.mPlayStatus.value = PLAY_STATUS.PAUSE
+                    }
+                    PlaybackStage.PLAYING -> {
+                        LogUtils.i("当前音乐正在播放", "Song")
+                        viewModel.state.mPlayStatus.value = PLAY_STATUS.PLAYING
+                        if (viewModel.state.isShowSongController.value) return@observe
+                        LogUtils.i("检测到当前正在播放音乐，将显示音乐控制器", "Song")
+                        viewModel.state.isShowSongController.value = true
+                    }
+                    PlaybackStage.ERROR -> {
+                        LogUtils.e("当前音乐出现错误 --> ${play.errorMsg}", "Song")
+                    }
+                }
+            }
         }
     }
 

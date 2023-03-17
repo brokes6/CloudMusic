@@ -1,6 +1,7 @@
 package com.brookes6.cloudmusic.manager
 
 import com.brookes6.cloudmusic.extensions.toast
+import com.brookes6.cloudmusic.utils.LogUtils
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.control.RepeatMode
@@ -90,6 +91,14 @@ class MusicManager private constructor() {
         }
     }
 
+    fun setPlayListAndPlay(index: Int, songList: MutableList<SongInfo>) {
+        StarrySky.with()?.let {
+            it.clearPlayList()
+            it.updatePlayList(songList)
+            it.playMusicByIndex(index)
+        }
+    }
+
     fun switchPlayModel() {
         StarrySky.with()?.let {
             when (it.getRepeatMode().repeatMode) {
@@ -107,6 +116,11 @@ class MusicManager private constructor() {
                 }
             }
         }
+    }
+
+    fun getPlayPosition(): Int {
+        LogUtils.i("当前播放索引为 --> ${StarrySky.with()?.getNowIndex()}", "Song")
+        return StarrySky.with()?.getNowIndex() ?: 0
     }
 
     fun getCurrentPlayModel(): Int =

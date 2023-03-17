@@ -130,9 +130,10 @@ object StarrySkyInstall {
     /**
      * 添加全局拦截器
      */
-    fun addInterceptor(interceptor: StarrySkyInterceptor, thread: String = InterceptorThread.UI) = apply {
-        interceptors += Pair(interceptor, thread)
-    }
+    fun addInterceptor(interceptor: StarrySkyInterceptor, thread: String = InterceptorThread.UI) =
+        apply {
+            interceptors += Pair(interceptor, thread)
+        }
 
     /**
      * 通知栏开关，打开则显示通知栏，关闭则不显示
@@ -253,13 +254,14 @@ object StarrySkyInstall {
         }
     }
 
+    var onStarryInitSuccessCallback: () -> Unit = {}
+
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             try {
                 if (service is MusicServiceBinder) {
                     retryLineService = 0
                     binder = service
-                    Log.e("Song","binder已成功创建 --> ${binder}")
                     binder?.setNotificationConfig(
                         isOpenNotification,
                         notificationType,
@@ -275,6 +277,8 @@ object StarrySkyInstall {
                     binder?.initPlaybackManager(playback)
                     isBindService = true
                     connection?.onServiceConnected(name, service)
+                    Log.e("Song", "binder已成功创建 --> ${binder}")
+                    onStarryInitSuccessCallback.invoke()
                 }
             } catch (ex: Exception) {
                 ex.printStackTrace()
@@ -315,7 +319,8 @@ object StarrySkyInstall {
                     contextWrapper.startService(intent)
                 }
             }
-            val result = contextWrapper.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+            val result =
+                contextWrapper.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
             if (result) {
                 connectionMap[contextWrapper] = serviceConnection
                 serviceToken = ServiceToken(contextWrapper)

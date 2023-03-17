@@ -33,7 +33,7 @@ import com.drake.serialize.serialize.serialize
  */
 class NetTask(val content: Application) : BaseTask() {
 
-    private var mIsRefresh : Boolean = false
+    private var mIsRefresh: Boolean = false
 
     override fun dependentTaskList(): MutableList<Class<out IBaseTask>> {
         return mutableListOf(MmkvTask::class.java)
@@ -49,7 +49,7 @@ class NetTask(val content: Application) : BaseTask() {
                     val cookie: String? = deserialize(AppConstant.COOKIE)
                     LogUtils.i("当前使用的cookie --> \n$cookie")
                     if (!cookie.isNullOrEmpty()) {
-                        request.param("cookie", cookie, true)
+                        request.param("cookie", cookie, false)
                     } else {
                         refreshCookie()
                     }

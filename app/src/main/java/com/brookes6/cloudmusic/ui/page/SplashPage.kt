@@ -43,15 +43,17 @@ fun SplashPage(navController: NavController? = null, viewModel: MainViewModel? =
     }
     LaunchedEffect(true) {
         scopeNet {
-            Post<LoginModel>(Api.LOGIN_STATUS).await().also {
-                LogUtils.d("账号状态为 -> $it")
+            Post<LoginModel>(Api.LOGIN_STATUS) {
+                param("timestamp", System.currentTimeMillis())
+            }.await().also {
                 if (it.profile != null) {
+                    LogUtils.d("账号状态为 -> $it")
                     // 登录状态为已登录
                     serialize(AppConstant.IS_LOGIN to true)
                     this@LaunchedEffect.launch(Dispatchers.IO) {
                         DataBaseManager.db?.userDao?.install(it)
                     }
-                    viewModel?.state?.let {state ->
+                    viewModel?.state?.let { state ->
                         state.isLogin.value = true
                         state.isShowBottomTab.value = true
                         state.goPageType.value = PAGE_TYPE.HOME
@@ -62,8 +64,7 @@ fun SplashPage(navController: NavController? = null, viewModel: MainViewModel? =
                 } else {
                     // 登录状态为未登录
                     serialize(AppConstant.IS_LOGIN to false)
-                    serialize(AppConstant.COOKIE to "")
-                    viewModel?.state?.let {state ->
+                    viewModel?.state?.let { state ->
                         state.goPageType.value = PAGE_TYPE.LOGIN
                     }
                     navController?.navigate(RouteConstant.LOGIN) {

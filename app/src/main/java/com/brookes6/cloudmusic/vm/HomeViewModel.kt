@@ -2,23 +2,27 @@ package com.brookes6.cloudmusic.vm
 
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.scopeNetLife
+import androidx.lifecycle.viewModelScope
 import com.brookes6.cloudmusic.action.HomeAction
 import com.brookes6.cloudmusic.constant.AppConstant.USER_ID
 import com.brookes6.cloudmusic.extensions.checkCookie
 import com.brookes6.cloudmusic.extensions.request
 import com.brookes6.cloudmusic.extensions.scopeDialog
 import com.brookes6.cloudmusic.manager.DataBaseManager
+import com.brookes6.cloudmusic.manager.MusicManager
 import com.brookes6.cloudmusic.state.HomeState
 import com.brookes6.cloudmusic.utils.LogUtils
 import com.brookes6.net.api.Api
-import com.brookes6.repository.model.LoginModel
-import com.brookes6.repository.model.RecommendSongModel
-import com.brookes6.repository.model.SongModel
+import com.brookes6.repository.model.*
 import com.drake.net.Get
+import com.drake.net.Post
 import com.drake.net.utils.withMain
 import com.drake.serialize.serialize.serialize
 import com.lzx.starrysky.SongInfo
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * @Author fuxinbo
@@ -33,6 +37,12 @@ class HomeViewModel : ViewModel() {
     private val _recommendSong: MutableState<List<SongInfo>> = mutableStateOf(listOf())
     val recommendSong: State<List<SongInfo>> = _recommendSong
 
+    private val _mv: MutableState<RecommendMvInfo?> = mutableStateOf(null)
+    val mv: State<RecommendMvInfo?> = _mv
+
+    private val _recordMusic: MutableState<List<RecordMusicList?>> = mutableStateOf(listOf())
+    val recordMusic: State<List<RecordMusicList?>> = _recordMusic
+
     var state by mutableStateOf(HomeState())
         private set
 
@@ -45,6 +55,31 @@ class HomeViewModel : ViewModel() {
         when (action) {
             is HomeAction.GetUserInfo -> getUserInfo()
             is HomeAction.GetRecommendSong -> getRecommendSong()
+            is HomeAction.GetRecommendMV -> getRecommendMV()
+            is HomeAction.GetRecordMusic -> getRecordMusic()
+        }
+    }
+
+    fun getRecordSong(index: Int) {
+        viewModelScope.launch(CoroutineExceptionHandler { coroutineContext, throwable ->
+            LogUtils.e("歌单音乐转换异常 --> ${throwable.message}", "Song")
+        }) {
+            val list = mutableListOf<SongInfo>()
+            _recordMusic.value.forEachIndexed { index, recordMusicList ->
+                list.add(
+                    SongInfo(
+                        songId = "${index + 1}",
+                        songName = recordMusicList?.data?.name ?: "",
+                        artist = recordMusicList?.data?.ar?.getOrNull(0)?.name ?: "未知艺术家",
+                        songCover = recordMusicList?.data?.al?.picUrl ?: "",
+                        duration = recordMusicList?.data?.dt ?: 0,
+                        id = recordMusicList?.data?.id ?: 0,
+                        index = index + 1
+                    )
+                )
+            }.also {
+                MusicManager.instance.setPlayListAndPlay(index, list)
+            }
         }
     }
 
@@ -97,6 +132,51 @@ class HomeViewModel : ViewModel() {
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+
+    private fun getRecommendMV() {
+        if (_mv.value != null) return
+        scopeDialog {
+            Post<RecommendMvModel>(Api.GET_RECOMMEND_MV).await().also {
+                if (it.code == 200) {
+                    if (it.result.isEmpty()) return@scopeDialog
+                    _mv.value = it.result[0]
+                    getMvUrl(it.result[0]?.id)
+                }
+            }
+        }
+    }
+
+    private fun getMvUrl(id: Long?) {
+        if (id == null) return
+        scopeNetLife {
+            Post<MvUrlModel>(Api.GET_MV_URL) {
+                param("id", id)
+            }.await().also {
+                if (it.code == 200) {
+                    _mv.value?.url = it.data?.url ?: ""
+                } else {
+                    LogUtils.e("Mv地址获取失败!,id为 --> ${id}")
+                }
+            }
+        }
+    }
+
+    private fun getRecordMusic() {
+        if (_recordMusic.value.isNotEmpty()) return
+        scopeDialog {
+            Post<RecordMusicModel>(Api.GET_RECORD_MUSIC) {
+                param("limit", 3)
+            }.await().also {
+                if (it.code == 200) {
+                    it.data?.list?.let { list ->
+                        _recordMusic.value = list
+                    }
+                } else {
+                    LogUtils.e("获取最近歌曲失败 --> ${it.message}")
                 }
             }
         }

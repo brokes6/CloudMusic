@@ -18,4 +18,15 @@ sealed class HomeAction {
      * 获取每日推荐歌曲
      */
     object GetRecommendSong : HomeAction()
+
+    /**
+     * 获取推荐MV
+     */
+    object GetRecommendMV : HomeAction()
+
+    /**
+     * 获取最近播放歌曲
+     *
+     */
+    object GetRecordMusic : HomeAction()
 }

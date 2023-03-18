@@ -9,6 +9,8 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -46,6 +48,7 @@ import com.brookes6.cloudmusic.action.MainAction
 import com.brookes6.cloudmusic.ui.theme.titleColor
 import com.brookes6.cloudmusic.ui.view.FocusLayoutManager
 import com.brookes6.cloudmusic.ui.view.FocusLayoutManager.Companion.dp2px
+import com.brookes6.cloudmusic.ui.widget.RecordMusicItem
 import com.brookes6.cloudmusic.vm.HomeViewModel
 import com.brookes6.cloudmusic.vm.MainViewModel
 import com.drake.brv.utils.models
@@ -69,7 +72,7 @@ fun HomePage(
 ) {
     var searchText by remember { mutableStateOf("") }
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-        val (bg, search, recommendTitle, recommend, video, music) = createRefs()
+        val (bg, search, recommendTitle, recommend, videoTitle, video, recentlyMusic, music) = createRefs()
         // bg
         Image(
             bitmap = ImageBitmap.imageResource(id = R.mipmap.ic_home_top_bg), null,
@@ -161,10 +164,59 @@ fun HomePage(
                 )
             }
         }
+        Text(
+            "Weekly",
+            fontSize = 18.sp,
+            color = titleColor,
+            modifier = Modifier
+                .rotate(-90f)
+                .constrainAs(videoTitle) {
+                    start.linkTo(parent.start)
+                    top.linkTo(video.top)
+                    bottom.linkTo(video.bottom)
+                })
+        Box(modifier = Modifier
+            .clip(RoundedCornerShape(20.dp))
+            .height(168.dp)
+            .constrainAs(video) {
+                top.linkTo(recommend.bottom, 46.dp)
+                end.linkTo(parent.end, 20.dp)
+                start.linkTo(videoTitle.end, 20.dp)
+                width = Dimension.fillToConstraints
+            }) {
+//            AndroidVideoView(mv = viewModel.mv.value)
+        }
+        Text(
+            "最近音乐",
+            fontSize = 18.sp,
+            color = titleColor,
+            modifier = Modifier
+                .rotate(-90f)
+                .constrainAs(recentlyMusic) {
+                    start.linkTo(parent.start)
+                    top.linkTo(music.top)
+                    bottom.linkTo(music.bottom)
+                })
+        LazyColumn(
+            modifier = Modifier.constrainAs(music) {
+                top.linkTo(video.bottom, 46.dp)
+                end.linkTo(parent.end, 20.dp)
+                start.linkTo(recentlyMusic.end, 20.dp)
+                width = Dimension.fillToConstraints
+            },
+        ) {
+            itemsIndexed(viewModel.recordMusic.value) { index, item ->
+                RecordMusicItem(index, item) {
+                    viewModel.getRecordSong(it)
+                }
+            }
+        }
     }
     LaunchedEffect(key1 = mainViewModel.state.isLogin, block = {
         viewModel.dispatch(HomeAction.GetUserInfo)
         viewModel.dispatch(HomeAction.GetRecommendSong)
+        viewModel.dispatch(HomeAction.GetRecommendMV)
+        viewModel.dispatch(HomeAction.GetRecordMusic)
     })
     BackHandler(enabled = true) {
         MainActivity.content.finish()
@@ -211,3 +263,25 @@ fun AndroidRecyclerView(
             it.models = item
         })
 }
+
+///**
+// * 视频播放器
+// *
+// */
+//@Composable
+//fun AndroidVideoView(
+//    mv: RecommendMvInfo?
+//) {
+//    AndroidView(factory = { context ->
+//        StandardGSYVideoPlayer(context).apply {
+//            fullscreenButton.setOnClickListener {
+//                startWindowFullscreen(context, false, true)
+//            }
+//        }
+//    }, modifier = Modifier.fillMaxSize(),
+//        update = {
+//            mv?.let { mv ->
+//                it.setUpLazy(mv.url, true, null, null, null)
+//            }
+//        })
+//}

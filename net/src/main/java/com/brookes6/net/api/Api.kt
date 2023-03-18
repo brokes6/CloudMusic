@@ -166,4 +166,23 @@ object Api {
      * 说明 : 调用此接口 , 可获取推荐 mv
      */
     const val GET_RECOMMEND_MV = "/personalized/mv"
+
+    /**
+     * mv 地址
+     *
+     * 说明 : 调用此接口 , 传入 mv id,可获取 mv 播放地址
+     * - 必选参数 :
+     * id: mv id
+     * - 可选参数 :
+     * r: 分辨率,默认 1080,可从 /mv/detail 接口获取分辨率列表
+     */
+    const val GET_MV_URL = "/mv/url"
+
+    /**
+     * 最近播放-歌曲
+     *
+     * 说明 : 调用此接口 , 可获得最近播放-歌曲
+     * - 可选参数 : limit : 返回数量 , 默认为 100
+     */
+    const val GET_RECORD_MUSIC = "/record/recent/song"
 }

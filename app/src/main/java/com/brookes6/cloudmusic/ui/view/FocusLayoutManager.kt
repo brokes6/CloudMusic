@@ -534,7 +534,7 @@ class FocusLayoutManager private constructor(builder: Builder) : RecyclerView.La
         }
         //当前"一次完整的聚焦滑动"所在的进度百分比.百分比增加方向为向着堆叠移动的方向（即如果为FOCUS_LEFT，从右向左移动fraction将从0%到100%）
         val fraction =
-            Math.abs(mVerticalOffset) % onceCompleteScrollLength / (onceCompleteScrollLength * 1.0f)
+            abs(mVerticalOffset) % onceCompleteScrollLength / (onceCompleteScrollLength * 1.0f)
 
         //堆叠区域view偏移量。在一次完整的聚焦滑动期间，其总偏移量是一个layerPadding的距离
         val layerViewOffset = layerPadding * fraction
@@ -545,7 +545,7 @@ class FocusLayoutManager private constructor(builder: Builder) : RecyclerView.La
 
         //修正第一个可见的view：mFirstVisiPos。已经滑动了多少个完整的onceCompleteScrollLength就代表滑动了多少个item
         mFirstVisiPos =
-            Math.floor((Math.abs(mVerticalOffset) / onceCompleteScrollLength).toDouble()).toInt()
+            floor((abs(mVerticalOffset) / onceCompleteScrollLength).toDouble()).toInt()
         //向下取整
         //临时将mLastVisiPos赋值为getItemCount() - 1，放心，下面遍历时会判断view是否已溢出屏幕，并及时修正该值并结束布局
         mLastVisiPos = itemCount - 1
@@ -764,14 +764,10 @@ class FocusLayoutManager private constructor(builder: Builder) : RecyclerView.La
                         }
                     }
                 }
-                var l: Int
-                var t: Int
-                var r: Int
-                var b: Int
-                l = paddingLeft
-                t = (startY - getDecoratedMeasurementVertical(item)).toInt()
-                r = paddingLeft + getDecoratedMeasurementHorizontal(item)
-                b = startY.toInt()
+                val l: Int = paddingLeft
+                val t: Int = (startY - getDecoratedMeasurementVertical(item)).toInt()
+                val r: Int = paddingLeft + getDecoratedMeasurementHorizontal(item)
+                val b: Int = startY.toInt()
                 layoutDecoratedWithMargins(item, l, t, r, b)
 
                 //判断下一个view的布局位置是不是已经超出屏幕了，若超出，修正mLastVisiPos并跳出遍历
@@ -917,7 +913,7 @@ class FocusLayoutManager private constructor(builder: Builder) : RecyclerView.La
         val minDuration = autoSelectMinDuration
         val maxDuration = autoSelectMaxDuration
         val duration: Long
-        val distanceFraction = Math.abs(distance) / onceCompleteScrollLength
+        val distanceFraction = abs(distance) / onceCompleteScrollLength
         duration = if (distance <= onceCompleteScrollLength) {
             (minDuration + (maxDuration - minDuration) * distanceFraction).toLong()
         } else {

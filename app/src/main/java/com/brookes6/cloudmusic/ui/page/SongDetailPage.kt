@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -42,7 +41,6 @@ import com.brookes6.cloudmusic.vm.MainViewModel
 import com.lzx.starrysky.OnPlayProgressListener
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.control.RepeatMode
-import com.lzx.starrysky.manager.PlaybackStage
 
 /**
  * Author: fuxinbo
@@ -55,8 +53,8 @@ import com.lzx.starrysky.manager.PlaybackStage
 @Preview
 @Composable
 fun SongDetailPage(viewModel: MainViewModel = viewModel()) {
-    val interationSource = remember { MutableInteractionSource() }
-    val mIsTouch = interationSource.collectIsDraggedAsState()
+    val interactionSource = remember { MutableInteractionSource() }
+    val mIsTouch = interactionSource.collectIsDraggedAsState()
     var mCurrentPlayTime by remember { mutableStateOf(0L) }
     ConstraintLayout(
         modifier = Modifier
@@ -189,7 +187,7 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel()) {
                         }
                         viewModel.state.mProgress.value = it
                     },
-                    interactionSource = interationSource,
+                    interactionSource = interactionSource,
                     colors = SliderDefaults.colors(
                         thumbColor = colorResource(id = R.color.white),
                         inactiveTrackColor = Color.White,

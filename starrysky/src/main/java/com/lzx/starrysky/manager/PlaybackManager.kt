@@ -136,6 +136,10 @@ class PlaybackManager(
         if (mediaQueue.skipQueuePosition(1)) {
             val song = mediaQueue.getCurrentSongInfo(false)
             if (song?.songUrl?.isEmpty() == true) {
+                if (song.id == 0L) {
+                    onSkipToNext()
+                    return
+                }
                 SongUtils.getSongUrl(song.id) {
                     song.songUrl = it
                     onPlayMusicImpl(song, true)
@@ -156,6 +160,10 @@ class PlaybackManager(
         if (mediaQueue.skipQueuePosition(-1)) {
             val song = mediaQueue.getCurrentSongInfo(false)
             if (song?.songUrl?.isEmpty() == true) {
+                if (song.id == 0L) {
+                    onSkipToPrevious()
+                    return
+                }
                 SongUtils.getSongUrl(song.id) {
                     song.songUrl = it
                     onPlayMusicImpl(song, true)

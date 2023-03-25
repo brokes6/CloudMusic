@@ -45,15 +45,20 @@ import com.brookes6.cloudmusic.MainActivity
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.action.HomeAction
 import com.brookes6.cloudmusic.action.MainAction
+import com.brookes6.cloudmusic.constant.AppConstant
 import com.brookes6.cloudmusic.ui.theme.titleColor
 import com.brookes6.cloudmusic.ui.view.FocusLayoutManager
 import com.brookes6.cloudmusic.ui.view.FocusLayoutManager.Companion.dp2px
 import com.brookes6.cloudmusic.ui.widget.RecordMusicItem
+import com.brookes6.cloudmusic.utils.LogUtils
 import com.brookes6.cloudmusic.vm.HomeViewModel
 import com.brookes6.cloudmusic.vm.MainViewModel
+import com.brookes6.repository.model.RecommendMvInfo
 import com.drake.brv.utils.models
 import com.drake.brv.utils.setup
 import com.lzx.starrysky.SongInfo
+import com.shuyu.gsyvideoplayer.GSYVideoManager
+import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
 
 /**
  * Author: fuxinbo
@@ -165,7 +170,7 @@ fun HomePage(
             }
         }
         Text(
-            "Weekly",
+            "推荐MV",
             fontSize = 18.sp,
             color = titleColor,
             modifier = Modifier
@@ -184,7 +189,7 @@ fun HomePage(
                 start.linkTo(videoTitle.end, 20.dp)
                 width = Dimension.fillToConstraints
             }) {
-//            AndroidVideoView(mv = viewModel.mv.value)
+            AndroidVideoView(mv = viewModel.mv.value)
         }
         Text(
             "最近音乐",
@@ -218,7 +223,17 @@ fun HomePage(
         viewModel.dispatch(HomeAction.GetRecommendMV)
         viewModel.dispatch(HomeAction.GetRecordMusic)
     })
+    DisposableEffect(Unit) {
+        LogUtils.d("首页首次进入组件树", AppConstant.COMPOSABLE)
+        onDispose {
+            LogUtils.d("首页从组件树移除时", AppConstant.COMPOSABLE)
+            GSYVideoManager.releaseAllVideos()
+        }
+    }
     BackHandler(enabled = true) {
+        if (GSYVideoManager.backFromWindowFull(MainActivity.content)) {
+            return@BackHandler
+        }
         MainActivity.content.finish()
     }
 }
@@ -264,24 +279,35 @@ fun AndroidRecyclerView(
         })
 }
 
-///**
-// * 视频播放器
-// *
-// */
-//@Composable
-//fun AndroidVideoView(
-//    mv: RecommendMvInfo?
-//) {
-//    AndroidView(factory = { context ->
-//        StandardGSYVideoPlayer(context).apply {
-//            fullscreenButton.setOnClickListener {
-//                startWindowFullscreen(context, false, true)
-//            }
-//        }
-//    }, modifier = Modifier.fillMaxSize(),
-//        update = {
-//            mv?.let { mv ->
-//                it.setUpLazy(mv.url, true, null, null, null)
-//            }
-//        })
-//}
+/**
+ * 视频播放器
+ *
+ */
+@Composable
+fun AndroidVideoView(
+    mv: RecommendMvInfo?
+) {
+    AndroidView(factory = { context ->
+        StandardGSYVideoPlayer(context).apply {
+            setIsTouchWiget(false)
+            isReleaseWhenLossAudio = true
+             backButton.visibility = View.GONE
+            thumbImageViewLayout.visibility = View.VISIBLE
+            fullscreenButton.setOnClickListener {
+                startWindowFullscreen(context, false, true)
+            }
+        }
+    }, modifier = Modifier.fillMaxSize(),
+        update = {
+            mv?.let { mv ->
+                LogUtils.d("视频组件加载数据", "DATA")
+                it.setUpLazy(mv.url, true, null, null, null)
+                it.clearThumbImageView()
+                it.thumbImageView = ImageView(MainActivity.content).apply {
+                    scaleType = ImageView.ScaleType.CENTER_CROP
+                    load(mv.picUrl)
+                }
+                it.thumbImageView.visibility = View.VISIBLE
+            }
+        })
+}

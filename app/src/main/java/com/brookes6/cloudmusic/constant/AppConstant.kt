@@ -18,4 +18,14 @@ object AppConstant {
     const val PLAY_LIST_INDEX = "playListIndex"
 
     const val ON_BACK = "onBack"
+
+    /**
+     * 重组日志TAG
+     */
+    const val COMPOSABLE = "Composable"
+
+    /**
+     * 音乐日志TAG
+     */
+    const val SONG = "Song"
 }

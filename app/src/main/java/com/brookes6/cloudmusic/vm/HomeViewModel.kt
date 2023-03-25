@@ -128,7 +128,10 @@ class HomeViewModel : ViewModel() {
                             }
                         }.also {
                             withMain {
-                                _recommendSong.value = songMap.values.toMutableList()
+                                _recommendSong.value = songMap.values.toMutableList().apply {
+                                    add(0, SongInfo())
+                                    add(0, SongInfo())
+                                }
                             }
                         }
                     }
@@ -143,23 +146,23 @@ class HomeViewModel : ViewModel() {
             Post<RecommendMvModel>(Api.GET_RECOMMEND_MV).await().also {
                 if (it.code == 200) {
                     if (it.result.isEmpty()) return@scopeDialog
-                    _mv.value = it.result[0]
-                    getMvUrl(it.result[0]?.id)
+                    getMvUrl(it.result[0])
                 }
             }
         }
     }
 
-    private fun getMvUrl(id: Long?) {
-        if (id == null) return
+    private fun getMvUrl(mvData: RecommendMvInfo?) {
+        if (mvData?.id == null) return
         scopeNetLife {
             Post<MvUrlModel>(Api.GET_MV_URL) {
-                param("id", id)
+                param("id", mvData.id)
             }.await().also {
                 if (it.code == 200) {
-                    _mv.value?.url = it.data?.url ?: ""
+                    mvData.url = it.data?.url ?: ""
+                    _mv.value = mvData
                 } else {
-                    LogUtils.e("Mv地址获取失败!,id为 --> ${id}")
+                    LogUtils.e("Mv地址获取失败!,id为 --> ${mvData.id}")
                 }
             }
         }

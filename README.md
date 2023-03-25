@@ -35,3 +35,24 @@
 - [ ] 歌曲分类
 - [ ] 播放列表
 
+## 效果展示(展示已完成的部分):
+- 登录页部分
+
+<img src="https://github.com/brokes6/CloudMusic/blob/main/photo/startPage.png" width="33%" height="700"><img src="https://github.com/brokes6/CloudMusic/blob/main/photo/phoneLoginPage.png" width="33%" height="700"><img src="https://github.com/brokes6/CloudMusic/blob/main/photo/phoneCodePage.png" width="33%" height="700">
+<img src="https://github.com/brokes6/CloudMusic/blob/main/photo/phoneQRPage.png" width="33%" height="700">
+
+- 首页部分
+
+<img src="https://github.com/brokes6/CloudMusic/blob/main/photo/homePage.png" width="33%" height="700"><img src="https://github.com/brokes6/CloudMusic/blob/main/photo/homePagePlay.png" width="33%" height="700">
+
+- 音乐详情页部分
+
+<img src="https://github.com/brokes6/CloudMusic/blob/main/photo/songDetailPage.png" width="33%" height="700"><img src="https://github.com/brokes6/CloudMusic/blob/main/photo/songDetailLyricPage.png" width="33%" height="700">
+
+- 我的页面部分
+
+<img src="https://github.com/brokes6/CloudMusic/blob/main/photo/myPage.png" width="33%" height="700">
+
+- 歌单详情页部分
+
+<img src="https://github.com/brokes6/CloudMusic/blob/main/photo/songListPage.png" width="33%" height="700">

@@ -36,6 +36,9 @@
 - [ ] 播放列表
 
 ## 效果展示(展示已完成的部分):
+图片会有一些拉伸，无法展示真实效果，如果可以请自行编译查看效果(自带腾讯云函数服务，可立即使用)
+
+
 - 登录页部分
 
 <img src="https://github.com/brokes6/CloudMusic/blob/main/photo/startPage.png" width="33%" height="700"><img src="https://github.com/brokes6/CloudMusic/blob/main/photo/phoneLoginPage.png" width="33%" height="700"><img src="https://github.com/brokes6/CloudMusic/blob/main/photo/phoneCodePage.png" width="33%" height="700">

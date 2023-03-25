@@ -117,6 +117,6 @@ dependencies {
     //Lottie http://airbnb.io/lottie/#/android-compose
     implementation("com.airbnb.android:lottie:6.0.0")
     // GSYVideoPlayer https://github.com/CarGuo/GSYVideoPlayer
-//    implementation("com.github.CarGuo.GSYVideoPlayer:GSYVideoPlayer:v8.3.5-release-jitpack")
-
+    implementation("com.github.CarGuo.GSYVideoPlayer:gsyVideoPlayer-java:v8.3.5-release-jitpack")
+    implementation("com.github.CarGuo.GSYVideoPlayer:gsyVideoPlayer-arm64:v8.3.5-release-jitpack")
 }

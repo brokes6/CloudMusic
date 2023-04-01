@@ -39,4 +39,6 @@ dependencies {
     api("androidx.room:room-ktx:2.4.2")
     //net
     api(project(mapOf("path" to ":net")))
+    // 深拷贝 https://github.com/bennyhuo/KotlinDeepCopy
+    api("com.bennyhuo.kotlin:deepcopy-reflect:1.7.10.0")
 }

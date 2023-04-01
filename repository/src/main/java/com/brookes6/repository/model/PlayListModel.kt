@@ -1,5 +1,7 @@
 package com.brookes6.repository.model
 
+import com.bennyhuo.kotlin.deepcopy.reflect.DeepCopyable
+
 /**
  * Author: fuxinbo
 
@@ -11,7 +13,7 @@ package com.brookes6.repository.model
 data class PlayListModel(
     val more: Boolean = false,
     val playlist: MutableList<PlayListInfo?>,
-)
+) : DeepCopyable
 
 @kotlinx.serialization.Serializable
 data class PlayListInfo(

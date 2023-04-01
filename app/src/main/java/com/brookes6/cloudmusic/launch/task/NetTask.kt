@@ -40,7 +40,6 @@ class NetTask(val content: Application) : BaseTask() {
     }
 
     override fun run() {
-        // 当前使用的是本地服务
         NetConfig.initialize(Api.BASE_URL, content) {
             setDebug(BuildConfig.DEBUG)
             setDialogFactory { LoadingDialog(it) }

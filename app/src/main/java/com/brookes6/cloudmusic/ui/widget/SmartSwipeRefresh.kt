@@ -462,17 +462,17 @@ fun MyRefreshFooter(flag: SmartSwipeStateFlag, isNeedTimestamp: Boolean = true) 
                 },
                 contentDescription = null
             )
-            Column(modifier = Modifier.padding(start = 8.dp)) {
-                Text(
-                    text = when (flag) {
-                        SmartSwipeStateFlag.REFRESHING -> "正在加载..."
-                        SmartSwipeStateFlag.SUCCESS -> "加载成功"
-                        SmartSwipeStateFlag.ERROR -> "加载失败"
-                        SmartSwipeStateFlag.IDLE, SmartSwipeStateFlag.TIPS_DOWN -> "上拉加载更多"
-                        SmartSwipeStateFlag.TIPS_RELEASE -> "释放立即加载"
-                    }, fontSize = 18.sp, color = Color.White
-                )
-                if (isNeedTimestamp) {
+            if (isNeedTimestamp) {
+                Column(modifier = Modifier.padding(start = 8.dp)) {
+                    Text(
+                        text = when (flag) {
+                            SmartSwipeStateFlag.REFRESHING -> "正在加载..."
+                            SmartSwipeStateFlag.SUCCESS -> "加载成功"
+                            SmartSwipeStateFlag.ERROR -> "加载失败"
+                            SmartSwipeStateFlag.IDLE, SmartSwipeStateFlag.TIPS_DOWN -> "上拉加载更多"
+                            SmartSwipeStateFlag.TIPS_RELEASE -> "释放立即加载"
+                        }, fontSize = 18.sp, color = Color.White
+                    )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "上次加载：${

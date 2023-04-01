@@ -1,6 +1,8 @@
 package com.brookes6.cloudmusic.vm
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -31,6 +33,8 @@ class PlayListViewModel : ViewModel() {
 
     private var mRequestIndex = 0
 
+    val mIsShowLoadUI: MutableState<Boolean> = mutableStateOf(false)
+
     private val _playList: SnapshotStateList<PlayListDetailSongInfo> =
         mutableStateListOf()
     val playList: SnapshotStateList<PlayListDetailSongInfo> = _playList
@@ -60,9 +64,11 @@ class PlayListViewModel : ViewModel() {
                     param("id", id)
                     param("limit", 50)
                     param("offset", 0 + (50 * requestIndex))
+                    param("timestamp", System.currentTimeMillis())
                 }.await().also {
                     checkCookie(it.code)
                     state?.loadMoreFlag = SmartSwipeStateFlag.SUCCESS
+                    mIsShowLoadUI.value = it.songs.size > 7
                     mRequestIndex = requestIndex
                     if (_playList.isNotEmpty()) {
                         _playList.addAll(it.songs)

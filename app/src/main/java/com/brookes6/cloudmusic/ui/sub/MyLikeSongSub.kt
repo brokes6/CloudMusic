@@ -30,7 +30,7 @@ import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.constant.RouteConstant
 import com.brookes6.cloudmusic.extensions.paddingStart
 import com.brookes6.cloudmusic.ui.theme.secondaryBackground80Percent
-import com.brookes6.cloudmusic.vm.MyViewModel
+import com.brookes6.repository.model.PlayListInfo
 
 /**
  * Author: fuxinbo
@@ -42,7 +42,7 @@ import com.brookes6.cloudmusic.vm.MyViewModel
 
 @Composable
 fun MyLikeSongSub(
-    viewModel: MyViewModel,
+    item: PlayListInfo?,
     onNavController: (String) -> Unit = {}
 ) {
     ConstraintLayout(
@@ -50,7 +50,7 @@ fun MyLikeSongSub(
             .clickable(interactionSource = remember {
                 MutableInteractionSource()
             }, indication = null) {
-                onNavController.invoke(RouteConstant.SONG_PLAY_LIST + "/0")
+                onNavController.invoke(RouteConstant.SONG_PLAY_LIST + "/${0}")
             }
             .padding(20.dp, 20.dp, 20.dp, 0.dp)
             .fillMaxWidth()
@@ -60,7 +60,7 @@ fun MyLikeSongSub(
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .crossfade(true)
-                .data(viewModel.playList.value?.playlist?.get(0)?.coverImgUrl)
+                .data(item?.coverImgUrl)
                 .transformations(RoundedCornersTransformation(20f))
                 .build(),
             contentDescription = stringResource(
@@ -86,7 +86,7 @@ fun MyLikeSongSub(
             }
         )
         Text(
-            text = viewModel.playList.value?.playlist?.get(0)?.name ?: "",
+            text = item?.name ?: "",
             fontSize = 12.sp,
             color = Color.White,
             modifier = Modifier.constrainAs(name) {
@@ -95,7 +95,7 @@ fun MyLikeSongSub(
             }
         )
         Text(
-            text = viewModel.playList.value?.playlist?.get(0)?.trackCount.toString() + "首",
+            text = item?.trackCount.toString() + "首",
             fontSize = 10.sp,
             color = Color.Gray,
             modifier = Modifier.constrainAs(info) {

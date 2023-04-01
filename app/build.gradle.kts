@@ -23,6 +23,12 @@ android {
     }
 
     signingConfigs {
+        getByName("debug") {
+            storePassword = "121300"
+            keyAlias = "cloud"
+            keyPassword = "121300"
+            storeFile = file("../Test.jks")
+        }
         create("release") {
             storePassword = "121300"
             keyAlias = "cloud"
@@ -119,4 +125,6 @@ dependencies {
     // GSYVideoPlayer https://github.com/CarGuo/GSYVideoPlayer
     implementation("com.github.CarGuo.GSYVideoPlayer:gsyVideoPlayer-java:v8.3.5-release-jitpack")
     implementation("com.github.CarGuo.GSYVideoPlayer:gsyVideoPlayer-arm64:v8.3.5-release-jitpack")
+    // 深拷贝 https://github.com/bennyhuo/KotlinDeepCopy
+    implementation("com.bennyhuo.kotlin:deepcopy-reflect:1.7.10.0")
 }

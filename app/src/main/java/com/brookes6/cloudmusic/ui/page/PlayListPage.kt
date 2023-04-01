@@ -67,17 +67,15 @@ fun PlayListPage(
                 model.dispatch(
                     PlayListAction.GetPlayListDetail(
                         mRequestIndex.value,
-                        viewModel.getPlayList(
-                            playListIndex
-                        )?.id ?: 0,
+                        viewModel.getPlayList(playListIndex)?.id ?: 0L,
                         refreshState
                     )
                 )
             },
             isNeedRefresh = false,
-            isNeedLoadMore = true,
+            isNeedLoadMore = model.mIsShowLoadUI.value,
             footerIndicator = {
-                MyRefreshFooter(refreshState.loadMoreFlag, true)
+                MyRefreshFooter(refreshState.loadMoreFlag, model.mIsShowLoadUI.value)
             }
         ) {
             LazyColumn(
@@ -235,7 +233,7 @@ fun PlayListPage(
         model.dispatch(
             PlayListAction.GetPlayListDetail(
                 mRequestIndex.value,
-                viewModel.getPlayList(playListIndex)?.id ?: 0,
+                viewModel.getPlayList(playListIndex)?.id ?: 0L,
                 null
             )
         )
@@ -245,4 +243,4 @@ fun PlayListPage(
     }
 }
 
-fun MyViewModel.getPlayList(index: Int): PlayListInfo? = playList.value?.playlist?.get(index)
+fun MyViewModel.getPlayList(index: Int): PlayListInfo? = origin.value?.playlist?.get(index)

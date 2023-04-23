@@ -3,7 +3,7 @@ package com.brookes6.repository.db
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.brookes6.repository.db.dao.UserInfoDao
-import com.brookes6.repository.model.LoginModel
+import com.brookes6.repository.model.UserModel
 
 /**
  * Author: 付鑫博
@@ -13,7 +13,7 @@ import com.brookes6.repository.model.LoginModel
  * Modify:
  * Description:
  */
-@Database(entities = [LoginModel::class], version = 1)
+@Database(entities = [UserModel::class], version = 1)
 abstract class AppDataBase : RoomDatabase() {
 
     abstract val userDao: UserInfoDao

@@ -25,6 +25,7 @@ import com.brookes6.cloudmusic.ui.theme.*
 import com.brookes6.cloudmusic.ui.widget.FocusEdit
 import com.brookes6.cloudmusic.utils.LogUtils
 import com.brookes6.cloudmusic.vm.LoginViewModel
+import com.brookes6.cloudmusic.vm.TokenViewModel
 
 /**
  * Author: fuxinbo
@@ -34,7 +35,10 @@ import com.brookes6.cloudmusic.vm.LoginViewModel
  * Description:
  */
 @Composable
-fun PhoneCodePage(viewModel: LoginViewModel = viewModel(),onNavController: (String) -> Unit = {}) {
+fun PhoneCodePage(
+    viewModel: LoginViewModel = viewModel(),
+    tokenVM : TokenViewModel,
+    onNavController: (String) -> Unit = {}) {
     var phone by remember { mutableStateOf("") }
     var mPhoneCode = ""
     Box(Modifier.background(mainBackground)) {
@@ -138,6 +142,7 @@ fun PhoneCodePage(viewModel: LoginViewModel = viewModel(),onNavController: (Stri
                             phone,
                             "",
                             onNavController,
+                            tokenVM.token,
                             mPhoneCode
                         )
                     }

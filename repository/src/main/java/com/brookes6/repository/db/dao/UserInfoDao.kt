@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.brookes6.repository.model.LoginModel
+import com.brookes6.repository.model.UserModel
 
 /**
  * Author: fuxinbo
@@ -17,9 +17,9 @@ import com.brookes6.repository.model.LoginModel
 interface UserInfoDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun install(data: LoginModel)
+    fun install(data: UserModel)
 
     @Query("SELECT * FROM loginmodel")
-    fun getUserInfo(): LoginModel
+    fun getUserInfo(): UserModel
 
 }

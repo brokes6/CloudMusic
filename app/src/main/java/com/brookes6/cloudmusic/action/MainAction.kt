@@ -11,9 +11,6 @@ import com.lzx.starrysky.SongInfo
  */
 
 sealed class MainAction {
-    object GoHomePage : MainAction()
-
-    object GoLoginPage : MainAction()
 
     /**
      * 播放歌曲

@@ -3,6 +3,7 @@ package com.brookes6.cloudmusic
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -26,6 +27,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.brookes6.cloudmusic.action.MainAction
+import com.brookes6.cloudmusic.action.MyAction
 import com.brookes6.cloudmusic.constant.AppConstant
 import com.brookes6.cloudmusic.constant.RouteConstant
 import com.brookes6.cloudmusic.state.PLAY_STATUS
@@ -38,12 +40,17 @@ import com.brookes6.cloudmusic.vm.HomeViewModel
 import com.brookes6.cloudmusic.vm.LoginViewModel
 import com.brookes6.cloudmusic.vm.MainViewModel
 import com.brookes6.cloudmusic.vm.MyViewModel
+import com.brookes6.cloudmusic.vm.TokenViewModel
+import com.brookes6.cloudmusic.vm.UserViewModel
 import com.drake.brv.utils.BRV
+import com.drake.serialize.serialize.deserialize
+import com.drake.serialize.serialize.serialize
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.lzx.starrysky.OnPlayProgressListener
 import com.lzx.starrysky.StarrySky
 import com.lzx.starrysky.StarrySkyInstall
 import com.lzx.starrysky.manager.PlaybackStage
@@ -65,12 +72,19 @@ class MainActivity : FragmentActivity() {
         lateinit var viewModel: MainViewModel
     }
 
+    private val mUserVM: UserViewModel by viewModels()
+
+    private val mTokenVM: TokenViewModel by viewModels()
+
     @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialApi::class)
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         content = this
         BRV.modelId = BR.data
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        initObserve()
+
+        // UI部分
         setContent {
             rememberSystemUiController().run {
                 setNavigationBarColor(Color.Transparent, false)
@@ -180,6 +194,10 @@ class MainActivity : FragmentActivity() {
                 }
             })
         }
+
+        /**
+         * 播放控制监听
+         */
         StarrySkyInstall.onStarryInitSuccessCallback = {
             StarrySky.with()?.playbackState()?.observe(this) { play ->
                 when (play.stage) {
@@ -189,13 +207,16 @@ class MainActivity : FragmentActivity() {
                         }
                         viewModel.state.mPlayStatus.value = PLAY_STATUS.NOMAL
                     }
+
                     PlaybackStage.SWITCH -> {
                         viewModel.dispatch(MainAction.GetCurrentSong)
                     }
+
                     PlaybackStage.PAUSE -> {
                         LogUtils.i("当前音乐已暂停", "Song")
                         viewModel.state.mPlayStatus.value = PLAY_STATUS.PAUSE
                     }
+
                     PlaybackStage.PLAYING -> {
                         LogUtils.i("当前音乐正在播放", "Song")
                         viewModel.state.mPlayStatus.value = PLAY_STATUS.PLAYING
@@ -203,12 +224,25 @@ class MainActivity : FragmentActivity() {
                         LogUtils.i("检测到当前正在播放音乐，将显示音乐控制器", "Song")
                         viewModel.state.isShowSongController.value = true
                     }
+
                     PlaybackStage.ERROR -> {
                         LogUtils.e("当前音乐出现错误 --> ${play.errorMsg}", "Song")
                     }
                 }
             }
         }
+
+        /**
+         * 播放进度监听
+         */
+        StarrySky.with()?.setOnPlayProgressListener(object : OnPlayProgressListener {
+            override fun onPlayProgress(currPos: Long, duration: Long) {
+                viewModel.state.mCurrentPlayTime.value = currPos
+                var progress = currPos.toFloat() / duration.toFloat()
+                if (progress.isNaN()) progress = 0f
+                viewModel.state.mProgress.value = progress
+            }
+        })
     }
 
     /**
@@ -229,6 +263,7 @@ class MainActivity : FragmentActivity() {
             composable(RouteConstant.PHONE_CODE_PAGE) {
                 PhoneCodePage(
                     loginViewModel,
+                    mTokenVM,
                     onNavController = { page ->
                         navController.navigate(page) {
                             viewModel.state.isShowBottomTab.value = true
@@ -248,7 +283,7 @@ class MainActivity : FragmentActivity() {
                     })
             }
             composable(RouteConstant.PHONE_LOGIN_PAGE) {
-                PhoneLoginPage(loginViewModel, onNavController = { page ->
+                PhoneLoginPage(loginViewModel, mTokenVM, onNavController = { page ->
                     when (page) {
                         RouteConstant.HOME_PAGE -> {
                             viewModel.state.isShowBottomTab.value = true
@@ -257,6 +292,7 @@ class MainActivity : FragmentActivity() {
                                 popUpTo(RouteConstant.LOGIN_PAGE) { inclusive = true }
                             }
                         }
+
                         else -> {
                             navController.navigate(page)
                         }
@@ -286,7 +322,7 @@ class MainActivity : FragmentActivity() {
                 SongPage()
             }
             composable(RouteConstant.HOME_MY_PAGE) {
-                MyPage(myViewModel, onNavController = { page ->
+                MyPage(myViewModel, mUserVM, onNavController = { page ->
                     viewModel.state.isShowBottomTab.value = false
                     navController.navigate(page)
                 })
@@ -317,12 +353,26 @@ class MainActivity : FragmentActivity() {
                                 mainViewModel.state.isShowBottomTab.value = true
                                 navController.popBackStack()
                             }
+
                             else -> {
                                 navController.navigate(page)
                             }
                         }
                     }
                 )
+            }
+        }
+    }
+
+    /**
+     * 监听Token变化，当变化时，刷新用户信息
+     */
+    private fun initObserve() {
+        mTokenVM.token.observe(this) {
+            val origin: String? = deserialize(AppConstant.COOKIE)
+            if (origin.isNullOrEmpty() || origin != it.cookie) {
+                serialize(AppConstant.COOKIE to it.cookie)
+                mUserVM.dispatch(MyAction.GetUserInfo)
             }
         }
     }

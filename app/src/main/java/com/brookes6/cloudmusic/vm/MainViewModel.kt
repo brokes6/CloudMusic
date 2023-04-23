@@ -49,8 +49,6 @@ class MainViewModel : ViewModel() {
      */
     fun dispatch(action: MainAction) {
         when (action) {
-            is MainAction.GoHomePage -> goHomePage()
-            is MainAction.GoLoginPage -> goLoginPage()
             is MainAction.PlaySong -> playSong(action.index, action.list)
             is MainAction.GetCurrentSong -> getCurrentSongInfo()
             is MainAction.ChangerSongDetailPage -> changerSongDetailPage()
@@ -103,15 +101,6 @@ class MainViewModel : ViewModel() {
                 )
             }
         }
-    }
-
-    private fun goHomePage() {
-        state.isShowBottomTab.value = true
-        state.goPageType.value = PAGE_TYPE.HOME
-    }
-
-    private fun goLoginPage() {
-        state.goPageType.value = PAGE_TYPE.LOGIN
     }
 
     private fun playSong(index: Int, list: MutableList<SongInfo>) {

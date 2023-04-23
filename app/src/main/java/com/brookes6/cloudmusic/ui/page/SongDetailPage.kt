@@ -55,7 +55,6 @@ import com.lzx.starrysky.control.RepeatMode
 fun SongDetailPage(viewModel: MainViewModel = viewModel()) {
     val interactionSource = remember { MutableInteractionSource() }
     val mIsTouch = interactionSource.collectIsDraggedAsState()
-    var mCurrentPlayTime by remember { mutableStateOf(0L) }
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -122,7 +121,7 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel()) {
                 LyricsUI(
                     modifier = Modifier.fillMaxSize(),
                     viewModel,
-                    mCurrentPlayTime / 1000,
+                    viewModel.state.mCurrentPlayTime.value / 1000,
                     viewModel.lyric.value.toList(),
                 ) {}
             }
@@ -203,7 +202,7 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel()) {
                         .fillMaxWidth()
                 ) {
                     Text(
-                        text = TimeUtils.timeInSecond(mCurrentPlayTime),
+                        text = TimeUtils.timeInSecond(viewModel.state.mCurrentPlayTime.value),
                         modifier = Modifier.align(Alignment.TopStart),
                         fontSize = 12.sp,
                         color = colorResource(id = R.color.white)
@@ -273,14 +272,6 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel()) {
                 }
             }
         }
-        StarrySky.with()?.setOnPlayProgressListener(object : OnPlayProgressListener {
-            override fun onPlayProgress(currPos: Long, duration: Long) {
-                mCurrentPlayTime = currPos
-                var progress = currPos.toFloat() / duration.toFloat()
-                if (progress.isNaN()) progress = 0f
-                viewModel.state.mProgress.value = progress
-            }
-        })
         LaunchedEffect(
             key1 = viewModel.state.isShowSongDetailPage.value,
             key2 = viewModel.song.value,

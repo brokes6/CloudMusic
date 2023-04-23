@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,6 +54,7 @@ import com.brookes6.cloudmusic.ui.widget.RecordMusicItem
 import com.brookes6.cloudmusic.utils.LogUtils
 import com.brookes6.cloudmusic.vm.HomeViewModel
 import com.brookes6.cloudmusic.vm.MainViewModel
+import com.brookes6.cloudmusic.vm.UserViewModel
 import com.brookes6.repository.model.RecommendMvInfo
 import com.drake.brv.utils.models
 import com.drake.brv.utils.setup
@@ -73,7 +75,8 @@ import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
 fun HomePage(
     navController: NavController? = null,
     viewModel: HomeViewModel = viewModel(),
-    mainViewModel: MainViewModel = viewModel()
+    mainViewModel: MainViewModel = viewModel(),
+    userVM : UserViewModel = viewModel()
 ) {
     var searchText by remember { mutableStateOf("") }
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
@@ -125,7 +128,7 @@ fun HomePage(
                 Image(
                     painter = rememberAsyncImagePainter(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data(viewModel.userInfo.value?.profile?.avatarUrl)
+                            .data(userVM.user.observeAsState().value?.profile?.avatarUrl)
                             .size(Size(32, 32))
                             .build()
                     ),
@@ -218,7 +221,6 @@ fun HomePage(
         }
     }
     LaunchedEffect(key1 = mainViewModel.state.isLogin, block = {
-        viewModel.dispatch(HomeAction.GetUserInfo)
         viewModel.dispatch(HomeAction.GetRecommendSong)
         viewModel.dispatch(HomeAction.GetRecommendMV)
         viewModel.dispatch(HomeAction.GetRecordMusic)

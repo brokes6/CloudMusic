@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -12,7 +13,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
@@ -20,6 +20,7 @@ import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.extensions.paddingTop
 import com.brookes6.cloudmusic.ui.theme.secondaryBackground80Percent
 import com.brookes6.cloudmusic.vm.MyViewModel
+import com.brookes6.cloudmusic.vm.UserViewModel
 
 /**
  * Author: fuxinbo
@@ -31,6 +32,7 @@ import com.brookes6.cloudmusic.vm.MyViewModel
 @Composable
 fun MyTopUserSub(
     viewModel: MyViewModel,
+    userVM : UserViewModel,
     onNavController: (String) -> Unit = {}
 ) {
     Box(
@@ -46,7 +48,7 @@ fun MyTopUserSub(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = viewModel.user.value?.profile?.nickname ?: "未知名称",
+                text = userVM.user.observeAsState().value?.profile?.nickname ?: "未知名称",
                 modifier = Modifier.paddingTop(50.dp), fontSize = 20.sp, color = Color.White
             )
             Row(
@@ -54,19 +56,19 @@ fun MyTopUserSub(
                     .padding(0.dp, 8.dp, 0.dp, 8.dp)
             ) {
                 Text(
-                    text = "${viewModel.user.value?.profile?.follows} 关注",
+                    text = "${userVM.user.observeAsState().value?.profile?.follows} 关注",
                     modifier = Modifier,
                     fontSize = 12.sp,
                     color = Color.Gray
                 )
                 Text(
-                    text = "${viewModel.user.value?.profile?.followeds} 粉丝",
+                    text = "${userVM.user.observeAsState().value?.profile?.followeds} 粉丝",
                     modifier = Modifier.padding(10.dp, 0.dp, 10.dp, 0.dp),
                     fontSize = 12.sp,
                     color = Color.Gray
                 )
                 Text(
-                    text = "Lv.${viewModel.user.value?.level}",
+                    text = "Lv.${userVM.user.observeAsState().value?.level}",
                     modifier = Modifier,
                     fontSize = 12.sp,
                     color = Color.Gray
@@ -76,7 +78,7 @@ fun MyTopUserSub(
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .crossfade(true)
-                .data(viewModel.user.value?.profile?.avatarUrl)
+                .data(userVM.user.observeAsState().value?.profile?.avatarUrl)
                 .transformations(CircleCropTransformation())
                 .build(),
             contentDescription = stringResource(id = R.string.description),

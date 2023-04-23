@@ -31,9 +31,6 @@ import kotlinx.coroutines.launch
  */
 class HomeViewModel : ViewModel() {
 
-    private val _userInfo: MutableState<LoginModel?> = mutableStateOf(null)
-    val userInfo: State<LoginModel?> = _userInfo
-
     private val _recommendSong: MutableState<List<SongInfo>> = mutableStateOf(listOf())
     val recommendSong: State<List<SongInfo>> = _recommendSong
 
@@ -53,7 +50,6 @@ class HomeViewModel : ViewModel() {
      */
     fun dispatch(action: HomeAction) {
         when (action) {
-            is HomeAction.GetUserInfo -> getUserInfo()
             is HomeAction.GetRecommendSong -> getRecommendSong()
             is HomeAction.GetRecommendMV -> getRecommendMV()
             is HomeAction.GetRecordMusic -> getRecordMusic()
@@ -81,18 +77,6 @@ class HomeViewModel : ViewModel() {
                 MusicManager.instance.setPlayListAndPlay(index, list)
             }
         }
-    }
-
-    private fun getUserInfo() {
-        request({
-            DataBaseManager.db?.userDao?.getUserInfo()
-        }, {
-            LogUtils.i("获取本地用户数据成功:${it?.account?.userName},用户ID为 --> ${it?.account?.id}", "DAO")
-            _userInfo.value = it
-            serialize(USER_ID to it?.account?.id)
-        }, {
-            LogUtils.e("获取用户数据出现异常！->${it}")
-        })
     }
 
     private fun getRecommendSong() {

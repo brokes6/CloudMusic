@@ -15,11 +15,10 @@ import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.constant.AppConstant
 import com.brookes6.cloudmusic.constant.RouteConstant
 import com.brookes6.cloudmusic.manager.DataBaseManager
-import com.brookes6.cloudmusic.state.PAGE_TYPE
 import com.brookes6.cloudmusic.utils.LogUtils
 import com.brookes6.cloudmusic.vm.MainViewModel
 import com.brookes6.net.api.Api
-import com.brookes6.repository.model.LoginModel
+import com.brookes6.repository.model.UserModel
 import com.drake.net.Post
 import com.drake.net.utils.scopeNet
 import com.drake.serialize.serialize.serialize
@@ -43,11 +42,11 @@ fun SplashPage(navController: NavController? = null, viewModel: MainViewModel? =
     }
     LaunchedEffect(true) {
         scopeNet {
-            Post<LoginModel>(Api.LOGIN_STATUS) {
+            Post<UserModel>(Api.LOGIN_STATUS) {
                 param("timestamp", System.currentTimeMillis())
             }.await().also {
-                if (it.profile != null) {
-                    LogUtils.d("账号状态为 -> $it")
+                if (it.account?.status == 0) {
+                    LogUtils.d("账号状态为 -> ${it.profile}")
                     // 登录状态为已登录
                     serialize(AppConstant.IS_LOGIN to true)
                     this@LaunchedEffect.launch(Dispatchers.IO) {
@@ -56,7 +55,6 @@ fun SplashPage(navController: NavController? = null, viewModel: MainViewModel? =
                     viewModel?.state?.let { state ->
                         state.isLogin.value = true
                         state.isShowBottomTab.value = true
-                        state.goPageType.value = PAGE_TYPE.HOME
                     }
                     navController?.navigate(RouteConstant.HOME) {
                         popUpTo(RouteConstant.SPLASH_PAGE) { inclusive = true }
@@ -64,9 +62,6 @@ fun SplashPage(navController: NavController? = null, viewModel: MainViewModel? =
                 } else {
                     // 登录状态为未登录
                     serialize(AppConstant.IS_LOGIN to false)
-                    viewModel?.state?.let { state ->
-                        state.goPageType.value = PAGE_TYPE.LOGIN
-                    }
                     navController?.navigate(RouteConstant.LOGIN) {
                         popUpTo(RouteConstant.SPLASH_PAGE) { inclusive = true }
                     }

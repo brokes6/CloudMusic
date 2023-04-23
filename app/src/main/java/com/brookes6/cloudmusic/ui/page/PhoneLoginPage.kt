@@ -33,6 +33,7 @@ import com.brookes6.cloudmusic.constant.RouteConstant
 import com.brookes6.cloudmusic.constant.RouteConstant.PHONE_CODE_PAGE
 import com.brookes6.cloudmusic.ui.theme.*
 import com.brookes6.cloudmusic.vm.LoginViewModel
+import com.brookes6.cloudmusic.vm.TokenViewModel
 
 /**
  * Author: fuxinbo
@@ -42,10 +43,10 @@ import com.brookes6.cloudmusic.vm.LoginViewModel
  * Description:
  */
 
-@Preview(showSystemUi = true)
 @Composable
 fun PhoneLoginPage(
     viewModel: LoginViewModel = viewModel(),
+    tokenVM : TokenViewModel,
     onNavController: (String) -> Unit = {}
 ) {
     var phone by remember { mutableStateOf("") }
@@ -192,7 +193,8 @@ fun PhoneLoginPage(
                     LoginViewModel.LoginAction.PhoneLogin(
                         phone,
                         password,
-                        onNavController
+                        onNavController,
+                        tokenVM.token
                     )
                 )
             }

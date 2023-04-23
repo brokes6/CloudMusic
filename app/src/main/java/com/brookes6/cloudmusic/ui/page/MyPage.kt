@@ -5,12 +5,19 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -19,7 +26,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.ViewCompat
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.compose.AsyncImage
 import coil.load
@@ -34,6 +40,7 @@ import com.brookes6.cloudmusic.ui.sub.MyLikeSongSub
 import com.brookes6.cloudmusic.ui.sub.MyTopUserSub
 import com.brookes6.cloudmusic.ui.theme.secondaryBackground80Percent
 import com.brookes6.cloudmusic.vm.MyViewModel
+import com.brookes6.cloudmusic.vm.UserViewModel
 import com.brookes6.repository.model.PlayListInfo
 import com.brookes6.repository.model.PlayListModel
 import com.drake.brv.utils.linear
@@ -51,6 +58,7 @@ import com.drake.brv.utils.setup
 @Composable
 fun MyPage(
     viewModel: MyViewModel,
+    userVM : UserViewModel,
     onNavController: (String) -> Unit = {}
 ) {
     val state = rememberScrollState()
@@ -59,7 +67,7 @@ fun MyPage(
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .crossfade(true)
-                .data(viewModel.user.value?.profile?.backgroundUrl)
+                .data(userVM.user.observeAsState().value?.profile?.backgroundUrl)
                 .build(),
             contentDescription = stringResource(id = R.string.description),
             modifier = Modifier
@@ -75,7 +83,7 @@ fun MyPage(
                 .fillMaxSize()
         ) {
             // 头像部分
-            MyTopUserSub(viewModel, onNavController)
+            MyTopUserSub(viewModel, userVM,onNavController)
             // 功能区部分
             MyFunctionSub(viewModel, onNavController)
             // 我喜欢的歌单部分

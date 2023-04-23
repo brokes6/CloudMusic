@@ -4,6 +4,7 @@ import android.util.Base64
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.scopeNetLife
 import androidx.lifecycle.viewModelScope
@@ -15,7 +16,8 @@ import com.brookes6.cloudmusic.manager.DataBaseManager
 import com.brookes6.cloudmusic.state.LoginState
 import com.brookes6.cloudmusic.utils.LogUtils
 import com.brookes6.net.api.Api
-import com.brookes6.repository.model.LoginModel
+import com.brookes6.repository.model.CookieModel
+import com.brookes6.repository.model.UserModel
 import com.brookes6.repository.model.QRImageModel
 import com.brookes6.repository.model.QRKeyModel
 import com.brookes6.repository.model.VerifyQRCodeModel
@@ -51,8 +53,10 @@ class LoginViewModel : ViewModel() {
                 action.phone,
                 action.password,
                 action.captcha,
+                action.token,
                 action.onNavController
             )
+
             is LoginAction.SendPhoneCode -> sendPhoneCode(action.phone)
             is LoginAction.CreateQRCode -> createQRCode(action.onQRCodeCallback)
             is LoginAction.JudgeQRCodeState -> judgeQRCode(action.onNavController)
@@ -69,10 +73,11 @@ class LoginViewModel : ViewModel() {
         phone: String,
         password: String,
         captcha: String = "",
+        token: MutableLiveData<CookieModel>,
         onNavController: (String) -> Unit = {}
     ) {
         scopeNetLife {
-            Post<LoginModel>(Api.PHONE_LOGIN) {
+            Post<UserModel>(Api.PHONE_LOGIN) {
                 param("phone", phone)
                 param("password", password)
                 if (captcha.isNotEmpty()) {
@@ -81,13 +86,10 @@ class LoginViewModel : ViewModel() {
             }.await().also {
                 if (it.code == 200) {
                     serialize(IS_LOGIN to true)
-                    serialize(COOKIE to it.cookie)
+                    token.postValue(CookieModel(cookie = it.cookie))
                     state.code.value = it.code
                     state.isLogin.value = true
                     state.isError.value = false
-                    viewModelScope.launch(Dispatchers.IO) {
-                        DataBaseManager.db?.userDao?.install(it)
-                    }
                     onNavController(RouteConstant.HOME_PAGE)
                 } else {
                     serialize(IS_LOGIN to false)
@@ -164,7 +166,7 @@ class LoginViewModel : ViewModel() {
      */
     private fun getAccountInfo() {
         scopeNetLife {
-            Post<LoginModel>(Api.ACCOUNT_INFO).await().also {
+            Post<UserModel>(Api.ACCOUNT_INFO).await().also {
                 serialize(IS_LOGIN to true)
                 state.code.value = it.code
                 state.isLogin.value = true
@@ -181,6 +183,7 @@ class LoginViewModel : ViewModel() {
             val phone: String,
             val password: String,
             val onNavController: (String) -> Unit = {},
+            val token: MutableLiveData<CookieModel>,
             val captcha: String = ""
         ) : LoginAction()
 

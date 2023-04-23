@@ -13,56 +13,77 @@ import androidx.compose.runtime.mutableStateOf
  * Description:
  */
 data class MainState(
-    val goPageType: MutableState<Int> = mutableStateOf(PAGE_TYPE.SPLASH),
+
     /**
      * 是否展示底部导航栏
      */
     val isShowBottomTab: MutableState<Boolean> = mutableStateOf(false),
+
     /**
      * 当前展示的tab索引
      */
     val currentBottomTabIndex: MutableState<Int> = mutableStateOf(0),
+
     /**
      * 是否展示音乐控制器
      */
     val isShowSongController: MutableState<Boolean> = mutableStateOf(false),
+
     /**
      * 当前播放索引
      */
     val currentPlayIndex: MutableState<Int> = mutableStateOf(0),
+
     /**
      * 是否登录
      */
     val isLogin: MutableState<Boolean> = mutableStateOf(true),
+
     /**
      * 当前展示的页面
      */
     val currentRoute: MutableState<String> = mutableStateOf(""),
+
     /**
      * 是否展示音乐详情页
      */
     val isShowSongDetailPage: MutableState<Boolean> = mutableStateOf(false),
+
     /**
      * 是否为第一次初始化页面
      */
     val isInitPage: MutableState<Boolean> = mutableStateOf(true),
+
     val isInitPage2: MutableState<Boolean> = mutableStateOf(true),
     /**
      * 当前音乐播放进度
      */
     val mProgress: MutableState<Float> = mutableStateOf(0f),
+
     /**
      * 当前播放状态
      */
     val mPlayStatus: MutableState<Int> = mutableStateOf(PLAY_STATUS.NOMAL),
+
     /**
      * 是否展示歌词
      */
     val mIsShowLyric: MutableState<Boolean> = mutableStateOf(false),
 
+    /**
+     * 是否重置歌词
+     */
     val mResetLyric: MutableState<Boolean> = mutableStateOf(false),
 
+    /**
+     * 当前歌词展示索引
+     */
     val mCurrentLyricIndex: MutableState<Int> = mutableStateOf(0),
+
+    /**
+     * 当前播放时长
+     */
+    var mCurrentPlayTime: MutableState<Long> = mutableStateOf(0L)
 )
 
 @IntDef(PAGE_TYPE.SPLASH, PAGE_TYPE.LOGIN, PAGE_TYPE.HOME)

@@ -47,12 +47,13 @@ android {
             )
         }
         getByName("release") {
-            isMinifyEnabled = false
-            isShrinkResources = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
@@ -68,7 +69,7 @@ android {
     buildFeatures.dataBinding = true
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.3.2"
+        kotlinCompilerExtensionVersion = "1.4.3"
     }
     packagingOptions {
         resources {
@@ -77,13 +78,13 @@ android {
     }
 }
 
-val composeUiVersion by extra("1.3.3")
+val composeUiVersion by extra("1.4.0")
 
 dependencies {
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
     // Android view
-    implementation("androidx.recyclerview:recyclerview:1.2.1")
+    implementation("androidx.recyclerview:recyclerview:1.3.0")
     implementation("androidx.fragment:fragment:1.5.5")
     implementation("com.google.android.material:material:1.5.0")
     implementation("androidx.appcompat:appcompat:1.0.0")
@@ -101,20 +102,20 @@ dependencies {
     // navigation动画组件
     implementation("com.google.accompanist:accompanist-navigation-animation:0.28.0")
     // viewModel
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
-    implementation("androidx.compose.runtime:runtime-livedata:1.3.3")
-    implementation("androidx.activity:activity-compose:1.6.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+    implementation("androidx.compose.runtime:runtime-livedata:${composeUiVersion}")
+    implementation("androidx.activity:activity-compose:1.7.0")
     implementation("androidx.compose.ui:ui:$composeUiVersion")
     implementation("androidx.compose.ui:ui-tooling-preview:$composeUiVersion")
-    implementation("androidx.compose.material:material:1.3.1")
+    implementation("androidx.compose.material:material:${composeUiVersion}")
     // StarrySky https://github.com/EspoirX/StarrySky
     implementation(project(mapOf("path" to ":starrysky")))
 
     // 第三方
     // Coil https://github.com/coil-kt/coil
-    implementation("io.coil-kt:coil-compose:2.2.2")
+    implementation("io.coil-kt:coil-compose:2.3.0")
     // BRV https://github.com/liangjingkanji/BRV
-    implementation("com.github.liangjingkanji:BRV:1.3.90")
+    implementation("com.github.liangjingkanji:BRV:1.4.1")
     // Android 高性能读写本地数据 https://github.com/liangjingkanji/Serialize
     implementation("com.github.liangjingkanji:Serialize:1.3.2")
     // 状态栏 https://github.com/google/accompanist
@@ -125,6 +126,4 @@ dependencies {
     // GSYVideoPlayer https://github.com/CarGuo/GSYVideoPlayer
     implementation("com.github.CarGuo.GSYVideoPlayer:gsyVideoPlayer-java:v8.3.5-release-jitpack")
     implementation("com.github.CarGuo.GSYVideoPlayer:gsyVideoPlayer-arm64:v8.3.5-release-jitpack")
-    // 深拷贝 https://github.com/bennyhuo/KotlinDeepCopy
-    implementation("com.bennyhuo.kotlin:deepcopy-reflect:1.7.10.0")
 }

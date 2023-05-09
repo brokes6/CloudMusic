@@ -1,31 +1,25 @@
 package com.brookes6.cloudmusic.ui.widget
 
-import android.annotation.SuppressLint
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.action.MainAction
 import com.brookes6.cloudmusic.manager.MusicManager
@@ -39,21 +33,12 @@ import com.lzx.starrysky.control.RepeatMode
  * @Date 2023/1/15 15:53
  * @Description TODO
  */
-@SuppressLint("UnrememberedMutableState")
 @Preview
 @Composable
 fun SongController(
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = viewModel()
 ) {
-    val rotateAnimation by animateFloatAsState(
-        targetValue = if (viewModel.state.mPlayStatus.value == PLAY_STATUS.PLAYING) 360f else 0f,
-        animationSpec = repeatable(
-            iterations = if (viewModel.state.mPlayStatus.value == PLAY_STATUS.PLAYING) 99 else 1,
-            animation = tween(15000, easing = LinearEasing),
-            repeatMode = androidx.compose.animation.core.RepeatMode.Restart
-        )
-    )
     ConstraintLayout(
         modifier = modifier
             .fillMaxWidth()
@@ -69,25 +54,18 @@ fun SongController(
             .padding(4.dp)
     ) {
         val (songImage, songName, songAuthor, songProgress, songPlayType, songPlayStatus) = createRefs()
-        Image(
-            painter = rememberAsyncImagePainter(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(viewModel.song.value?.songCover)
-                    .size(43)
-                    .build()
-            ),
-            stringResource(id = R.string.description),
+        MusicCover(
             modifier = Modifier
-                .size(43.dp)
-                .clip(CircleShape)
-                .rotate(rotateAnimation)
                 .constrainAs(songImage) {
                     top.linkTo(parent.top, 4.dp)
                     bottom.linkTo(parent.bottom, 11.dp)
                     start.linkTo(parent.start, 1.dp)
-                })
+                }, viewModel
+        )
         Text(
-            text = viewModel.song.value?.songName ?: "未知作品", fontSize = 12.sp, color = titleColor,
+            text = viewModel.song.value?.songName ?: "未知作品",
+            fontSize = 12.sp,
+            color = titleColor,
             modifier = Modifier.constrainAs(songName) {
                 top.linkTo(songImage.top)
                 start.linkTo(songImage.end, 7.dp)
@@ -127,12 +105,15 @@ fun SongController(
                 RepeatMode.REPEAT_MODE_NONE -> {
                     R.drawable.icon_song_detail_sequential
                 }
+
                 RepeatMode.REPEAT_MODE_ONE -> {
                     R.drawable.icon_song_detail_circulate
                 }
+
                 RepeatMode.REPEAT_MODE_SHUFFLE -> {
                     R.drawable.icon_song_detail_random
                 }
+
                 else -> {
                     R.drawable.icon_song_detail_sequential
                 }

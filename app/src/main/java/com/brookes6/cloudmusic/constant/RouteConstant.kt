@@ -33,6 +33,9 @@ object RouteConstant {
 
     const val SONG = "SONG"
 
+    /**
+     * 歌单详情页
+     */
     const val SONG_PLAY_LIST = SONG + "songPlayList"
 
 }

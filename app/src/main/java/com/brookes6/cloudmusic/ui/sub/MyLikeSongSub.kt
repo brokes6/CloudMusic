@@ -23,14 +23,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.transform.RoundedCornersTransformation
 import com.brookes6.cloudmusic.R
+import com.brookes6.cloudmusic.constant.AppConstant
 import com.brookes6.cloudmusic.constant.RouteConstant
+import com.brookes6.cloudmusic.extensions.navigateAndArgument
 import com.brookes6.cloudmusic.extensions.paddingStart
 import com.brookes6.cloudmusic.ui.theme.secondaryBackground80Percent
-import com.brookes6.repository.model.PlayListInfo
+import com.brookes6.cloudmusic.vm.MainViewModel
+import com.brookes6.cloudmusic.vm.MyViewModel
 
 /**
  * Author: fuxinbo
@@ -42,15 +46,20 @@ import com.brookes6.repository.model.PlayListInfo
 
 @Composable
 fun MyLikeSongSub(
-    item: PlayListInfo?,
-    onNavController: (String) -> Unit = {}
+    viewModel: MyViewModel,
+    mainVM: MainViewModel,
+    onNavController: NavController
 ) {
     ConstraintLayout(
         modifier = Modifier
             .clickable(interactionSource = remember {
                 MutableInteractionSource()
             }, indication = null) {
-                onNavController.invoke(RouteConstant.SONG_PLAY_LIST + "/${0}")
+                mainVM.state.isShowBottomTab.value = false
+                onNavController.navigateAndArgument(
+                    RouteConstant.SONG_PLAY_LIST,
+                    AppConstant.PLAY_LIST_INFO to viewModel.userLikePlayList.value
+                )
             }
             .padding(20.dp, 20.dp, 20.dp, 0.dp)
             .fillMaxWidth()
@@ -60,7 +69,7 @@ fun MyLikeSongSub(
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .crossfade(true)
-                .data(item?.coverImgUrl)
+                .data(viewModel.userLikePlayList.value?.coverImgUrl)
                 .transformations(RoundedCornersTransformation(20f))
                 .build(),
             contentDescription = stringResource(
@@ -86,7 +95,7 @@ fun MyLikeSongSub(
             }
         )
         Text(
-            text = item?.name ?: "",
+            text = viewModel.userLikePlayList.value?.name ?: "",
             fontSize = 12.sp,
             color = Color.White,
             modifier = Modifier.constrainAs(name) {
@@ -95,7 +104,7 @@ fun MyLikeSongSub(
             }
         )
         Text(
-            text = item?.trackCount.toString() + "首",
+            text = viewModel.userLikePlayList.value?.trackCount.toString() + "首",
             fontSize = 10.sp,
             color = Color.Gray,
             modifier = Modifier.constrainAs(info) {

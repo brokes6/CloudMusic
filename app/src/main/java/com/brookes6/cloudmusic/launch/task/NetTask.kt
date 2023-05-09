@@ -7,10 +7,9 @@ import com.brookes6.cloudmusic.launch.BaseTask
 import com.brookes6.cloudmusic.launch.IBaseTask
 import com.brookes6.cloudmusic.ui.dialog.LoadingDialog
 import com.brookes6.cloudmusic.utils.LogUtils
+import com.brookes6.cloudmusic.vm.TokenViewModel
 import com.brookes6.net.api.Api
 import com.brookes6.repository.converter.SerializationConverter
-import com.brookes6.repository.model.CookieModel
-import com.drake.net.Get
 import com.drake.net.NetConfig
 import com.drake.net.cookie.PersistentCookieJar
 import com.drake.net.interceptor.LogRecordInterceptor
@@ -20,9 +19,7 @@ import com.drake.net.okhttp.setDebug
 import com.drake.net.okhttp.setDialogFactory
 import com.drake.net.okhttp.setRequestInterceptor
 import com.drake.net.request.BaseRequest
-import com.drake.net.utils.scopeNet
 import com.drake.serialize.serialize.deserialize
-import com.drake.serialize.serialize.serialize
 
 /**
  * Author: fuxinbo
@@ -35,6 +32,8 @@ class NetTask(val content: Application) : BaseTask() {
 
     private var mIsRefresh: Boolean = false
 
+    private var mTokenVM: TokenViewModel? = null
+
     override fun dependentTaskList(): MutableList<Class<out IBaseTask>> {
         return mutableListOf(MmkvTask::class.java)
     }
@@ -46,7 +45,7 @@ class NetTask(val content: Application) : BaseTask() {
             setRequestInterceptor(object : RequestInterceptor {
                 override fun interceptor(request: BaseRequest) {
                     val cookie: String? = deserialize(AppConstant.COOKIE)
-                    LogUtils.i("当前使用的cookie --> \n$cookie")
+                    LogUtils.i("当前使用的cookie --> $cookie","Token")
                     if (!cookie.isNullOrEmpty()) {
                         request.param("cookie", cookie, false)
                     } else {
@@ -80,11 +79,11 @@ class NetTask(val content: Application) : BaseTask() {
         }
         mIsRefresh = true
         LogUtils.i("本地Cookie为空，重新获取Cookie")
-        scopeNet {
-            Get<CookieModel>(Api.REFRESH_COOKIE).await().also {
-                serialize(AppConstant.COOKIE to it.cookie)
-                mIsRefresh = false
-            }
-        }
+        mTokenVM?.refreshToken()
+        mIsRefresh = false
+    }
+
+    fun setTokenVM(tokenVM: TokenViewModel) {
+        mTokenVM = tokenVM
     }
 }

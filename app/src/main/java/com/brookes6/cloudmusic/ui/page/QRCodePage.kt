@@ -21,6 +21,7 @@ import com.brookes6.cloudmusic.ui.theme.mainBackground
 import com.brookes6.cloudmusic.ui.theme.mainButtonColor
 import com.brookes6.cloudmusic.ui.theme.secondaryBackground
 import com.brookes6.cloudmusic.vm.LoginViewModel
+import com.brookes6.cloudmusic.vm.TokenViewModel
 
 /**
  * Author: fuxinbo
@@ -31,7 +32,11 @@ import com.brookes6.cloudmusic.vm.LoginViewModel
  */
 @Preview
 @Composable
-fun QRCodePage(viewModel: LoginViewModel = viewModel(), onNavController: (String) -> Unit = {}) {
+fun QRCodePage(
+    viewModel: LoginViewModel = viewModel(),
+    tokenVM: TokenViewModel = viewModel(),
+    onNavController: (String) -> Unit = {}
+) {
     var mQRCodeSrc by remember { mutableStateOf(byteArrayOf()) }
     Box(Modifier.background(mainBackground)) {
         ConstraintLayout(
@@ -93,7 +98,7 @@ fun QRCodePage(viewModel: LoginViewModel = viewModel(), onNavController: (String
                     },
                 colors = ButtonDefaults.buttonColors(mainButtonColor)
             ) {
-                viewModel.dispatch(LoginViewModel.LoginAction.JudgeQRCodeState(onNavController))
+                viewModel.dispatch(LoginViewModel.LoginAction.JudgeQRCodeState(onNavController,tokenVM.token))
             }
         }
     }

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.ViewCompat
+import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import coil.compose.AsyncImage
 import coil.load
@@ -34,15 +36,17 @@ import coil.transform.RoundedCornersTransformation
 import com.brookes6.cloudmusic.MainActivity
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.action.MyAction
+import com.brookes6.cloudmusic.constant.AppConstant
 import com.brookes6.cloudmusic.constant.RouteConstant
+import com.brookes6.cloudmusic.extensions.navigateAndArgument
 import com.brookes6.cloudmusic.ui.sub.MyFunctionSub
 import com.brookes6.cloudmusic.ui.sub.MyLikeSongSub
 import com.brookes6.cloudmusic.ui.sub.MyTopUserSub
 import com.brookes6.cloudmusic.ui.theme.secondaryBackground80Percent
+import com.brookes6.cloudmusic.vm.MainViewModel
 import com.brookes6.cloudmusic.vm.MyViewModel
 import com.brookes6.cloudmusic.vm.UserViewModel
 import com.brookes6.repository.model.PlayListInfo
-import com.brookes6.repository.model.PlayListModel
 import com.drake.brv.utils.linear
 import com.drake.brv.utils.models
 import com.drake.brv.utils.setup
@@ -58,11 +62,16 @@ import com.drake.brv.utils.setup
 @Composable
 fun MyPage(
     viewModel: MyViewModel,
-    userVM : UserViewModel,
-    onNavController: (String) -> Unit = {}
+    userVM: UserViewModel,
+    mainVM: MainViewModel,
+    onNavController: NavController
 ) {
     val state = rememberScrollState()
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .navigationBarsPadding()
+    ) {
         // 背景
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
@@ -83,18 +92,18 @@ fun MyPage(
                 .fillMaxSize()
         ) {
             // 头像部分
-            MyTopUserSub(viewModel, userVM,onNavController)
+            MyTopUserSub(viewModel, userVM, onNavController)
             // 功能区部分
             MyFunctionSub(viewModel, onNavController)
             // 我喜欢的歌单部分
-            MyLikeSongSub(viewModel.userLikePlayList.value, onNavController)
+            MyLikeSongSub(viewModel, mainVM, onNavController)
             Box(
                 modifier = Modifier
                     .padding(20.dp, 20.dp, 20.dp, 0.dp)
                     .fillMaxWidth()
                     .background(secondaryBackground80Percent, RoundedCornerShape(20.dp))
             ) {
-                AndroidMyLikeSongRecyclerView(list = viewModel.playList.value, onNavController)
+                AndroidMyLikeSongRecyclerView(viewModel = viewModel, mainVM, onNavController)
             }
             Spacer(modifier = Modifier.height(150.dp))
         }
@@ -110,7 +119,11 @@ fun MyPage(
 }
 
 @Composable
-fun AndroidMyLikeSongRecyclerView(list: PlayListModel?, onNavController: (String) -> Unit = {}) {
+fun AndroidMyLikeSongRecyclerView(
+    viewModel: MyViewModel,
+    mainVM: MainViewModel,
+    onNavController: NavController
+) {
     AndroidView(
         factory = { context ->
             RecyclerView(context).apply {
@@ -133,7 +146,13 @@ fun AndroidMyLikeSongRecyclerView(list: PlayListModel?, onNavController: (String
                         }
                     }
                     onClick(R.id.roots) {
-                        onNavController.invoke(RouteConstant.SONG_PLAY_LIST + "/${modelPosition}")
+                        getModel<PlayListInfo>(modelPosition).let {
+                            mainVM.state.isShowBottomTab.value = false
+                            onNavController.navigateAndArgument(
+                                RouteConstant.SONG_PLAY_LIST,
+                                AppConstant.PLAY_LIST_INFO to it
+                            )
+                        }
                     }
                 }
             }.also {
@@ -141,7 +160,9 @@ fun AndroidMyLikeSongRecyclerView(list: PlayListModel?, onNavController: (String
             }
         },
         modifier = Modifier.fillMaxSize()
-    ) {
-        it.models = list?.playlist
+    ) { recycler ->
+        viewModel.playList.value?.let {
+            recycler.models = it
+        }
     }
 }

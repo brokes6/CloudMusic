@@ -1,7 +1,8 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
-    id("kotlin-android-extensions")
+    id("kotlin-parcelize")
+    id("kotlin-kapt")
 }
 
 @Suppress("UnstableApiUsage")
@@ -22,8 +23,9 @@ android {
         jvmTarget = "1.8"
     }
 
+    buildFeatures.dataBinding = true
     lint.abortOnError = false
-    androidExtensions.isExperimental = false
+//    androidExtensions.isExperimental = false
 
     buildTypes {
         release {

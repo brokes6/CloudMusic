@@ -5,11 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.scopeNetLife
 import androidx.lifecycle.viewModelScope
 import com.brookes6.cloudmusic.action.HomeAction
-import com.brookes6.cloudmusic.constant.AppConstant.USER_ID
 import com.brookes6.cloudmusic.extensions.checkCookie
-import com.brookes6.cloudmusic.extensions.request
 import com.brookes6.cloudmusic.extensions.scopeDialog
-import com.brookes6.cloudmusic.manager.DataBaseManager
 import com.brookes6.cloudmusic.manager.MusicManager
 import com.brookes6.cloudmusic.state.HomeState
 import com.brookes6.cloudmusic.utils.LogUtils
@@ -18,7 +15,6 @@ import com.brookes6.repository.model.*
 import com.drake.net.Get
 import com.drake.net.Post
 import com.drake.net.utils.withMain
-import com.drake.serialize.serialize.serialize
 import com.lzx.starrysky.SongInfo
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -126,10 +122,10 @@ class HomeViewModel : ViewModel() {
 
     private fun getRecommendMV() {
         if (_mv.value != null) return
-        scopeDialog {
+        scopeNetLife {
             Post<RecommendMvModel>(Api.GET_RECOMMEND_MV).await().also {
                 if (it.code == 200) {
-                    if (it.result.isEmpty()) return@scopeDialog
+                    if (it.result.isEmpty()) return@scopeNetLife
                     getMvUrl(it.result[0])
                 }
             }
@@ -154,7 +150,7 @@ class HomeViewModel : ViewModel() {
 
     private fun getRecordMusic() {
         if (_recordMusic.value.isNotEmpty()) return
-        scopeDialog {
+        scopeNetLife {
             Post<RecordMusicModel>(Api.GET_RECORD_MUSIC) {
                 param("limit", 3)
             }.await().also {

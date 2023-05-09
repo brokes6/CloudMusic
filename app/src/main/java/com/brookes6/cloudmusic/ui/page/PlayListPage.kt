@@ -35,6 +35,7 @@ import com.brookes6.cloudmusic.constant.AppConstant
 import com.brookes6.cloudmusic.extensions.paddingStart
 import com.brookes6.cloudmusic.ui.theme.mainBackground
 import com.brookes6.cloudmusic.ui.widget.*
+import com.brookes6.cloudmusic.utils.LogUtils
 import com.brookes6.cloudmusic.vm.MyViewModel
 import com.brookes6.cloudmusic.vm.PlayListViewModel
 import com.brookes6.repository.model.PlayListInfo
@@ -50,8 +51,8 @@ import com.brookes6.repository.model.PlayListInfo
 @Preview
 @Composable
 fun PlayListPage(
-    playListIndex: Int = 0,
     viewModel: MyViewModel = viewModel(),
+    mPlayListInfo: PlayListInfo? = null,
     onNavController: (String) -> Unit = {}
 ) {
     val mState = rememberLazyListState()
@@ -67,7 +68,7 @@ fun PlayListPage(
                 model.dispatch(
                     PlayListAction.GetPlayListDetail(
                         mRequestIndex.value,
-                        viewModel.getPlayList(playListIndex)?.id ?: 0L,
+                        mPlayListInfo?.id ?: 0L,
                         refreshState
                     )
                 )
@@ -89,7 +90,7 @@ fun PlayListPage(
                         AsyncImage(
                             model = ImageRequest.Builder(LocalContext.current)
                                 .crossfade(true)
-                                .data(viewModel.getPlayList(playListIndex)?.coverImgUrl)
+                                .data(mPlayListInfo?.coverImgUrl)
                                 .build(),
                             contentDescription = stringResource(id = R.string.description),
                             modifier = Modifier
@@ -126,7 +127,7 @@ fun PlayListPage(
                             AsyncImage(
                                 model = ImageRequest.Builder(LocalContext.current)
                                     .crossfade(true)
-                                    .data(viewModel.getPlayList(playListIndex)?.coverImgUrl)
+                                    .data(mPlayListInfo?.coverImgUrl)
                                     .transformations(RoundedCornersTransformation(20f))
                                     .build(),
                                 contentDescription = stringResource(id = R.string.description),
@@ -137,7 +138,7 @@ fun PlayListPage(
                                         start.linkTo(parent.start, 15.dp)
                                     }
                             )
-                            Text(text = viewModel.getPlayList(playListIndex)?.name ?: "未知名称",
+                            Text(text = mPlayListInfo?.name ?: "未知名称",
                                 fontSize = 18.sp,
                                 color = Color.White,
                                 modifier = Modifier.constrainAs(name) {
@@ -147,7 +148,7 @@ fun PlayListPage(
                             )
                             AsyncImage(
                                 model = ImageRequest.Builder(LocalContext.current)
-                                    .data(viewModel.getPlayList(playListIndex)?.creator?.avatarUrl)
+                                    .data(mPlayListInfo?.creator?.avatarUrl)
                                     .transformations(CircleCropTransformation())
                                     .build(),
                                 contentDescription = stringResource(id = R.string.description),
@@ -159,7 +160,7 @@ fun PlayListPage(
                                     }
                             )
                             Text(
-                                text = viewModel.getPlayList(playListIndex)?.creator?.nickname
+                                text = mPlayListInfo?.creator?.nickname
                                     ?: "未知作者",
                                 fontSize = 12.sp,
                                 color = Color.White,
@@ -220,7 +221,7 @@ fun PlayListPage(
                     iconSize = 24.dp
                 )
                 Text(
-                    text = viewModel.getPlayList(playListIndex)?.name ?: "",
+                    text = mPlayListInfo?.name ?: "",
                     color = Color.White,
                     fontSize = 18.sp,
                     modifier = Modifier
@@ -229,11 +230,11 @@ fun PlayListPage(
             }
         }
     }
-    LaunchedEffect(key1 = viewModel.getPlayList(playListIndex)?.id, block = {
+    LaunchedEffect(key1 = mPlayListInfo?.id, block = {
         model.dispatch(
             PlayListAction.GetPlayListDetail(
                 mRequestIndex.value,
-                viewModel.getPlayList(playListIndex)?.id ?: 0L,
+                mPlayListInfo?.id ?: 0L,
                 null
             )
         )
@@ -242,5 +243,3 @@ fun PlayListPage(
         onNavController.invoke(AppConstant.ON_BACK)
     }
 }
-
-fun MyViewModel.getPlayList(index: Int): PlayListInfo? = origin.value?.playlist?.get(index)

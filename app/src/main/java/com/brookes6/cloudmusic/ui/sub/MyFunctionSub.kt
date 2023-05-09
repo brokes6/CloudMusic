@@ -24,7 +24,7 @@ import com.brookes6.cloudmusic.vm.MyViewModel
 @Composable
 fun MyFunctionSub(
     viewModel: MyViewModel,
-    onNavController: (String) -> Unit = {}
+    onNavController: NavController
 ) {
     Column(
         modifier = Modifier

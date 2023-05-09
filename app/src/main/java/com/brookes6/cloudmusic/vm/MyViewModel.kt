@@ -4,7 +4,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.bennyhuo.kotlin.deepcopy.reflect.deepCopy
 import com.brookes6.cloudmusic.action.MyAction
 import com.brookes6.cloudmusic.constant.AppConstant.USER_ID
 import com.brookes6.cloudmusic.extensions.scopeDialog
@@ -30,13 +29,13 @@ class MyViewModel : ViewModel() {
     /**
      * 原始数据
      */
-    val origin: MutableState<PlayListModel?> = mutableStateOf(null)
+    val playInfo: MutableState<PlayListInfo?> = mutableStateOf(null)
 
     /**
      * 用户歌单
      */
-    private val _playList: MutableState<PlayListModel?> = mutableStateOf(null)
-    val playList: State<PlayListModel?> = _playList
+    private val _playList: MutableState<MutableList<PlayListInfo?>?> = mutableStateOf(null)
+    val playList: State<MutableList<PlayListInfo?>?> = _playList
 
     private var _userId: Long? = null
 
@@ -63,10 +62,9 @@ class MyViewModel : ViewModel() {
             Post<PlayListModel>(Api.GET_USER_PLAYLIST) {
                 param("uid", _userId)
             }.await().also {
-                origin.value = it.deepCopy()
                 _userLikePlayList.value = it.playlist.getOrNull(0)
-                _playList.value = it
-                _playList.value?.playlist?.removeAt(0)
+                _playList.value = it.playlist.toMutableList()
+                _playList.value?.removeAt(0)
             }
         }
     }
@@ -83,6 +81,7 @@ class MyViewModel : ViewModel() {
                     true
                 }
             }
+
             else -> {
                 true
             }

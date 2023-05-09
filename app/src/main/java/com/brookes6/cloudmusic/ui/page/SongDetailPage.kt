@@ -140,6 +140,7 @@ fun SongDetailPage(viewModel: MainViewModel = viewModel()) {
             iconSize = 30.dp
         )
         Box(modifier = Modifier
+            .navigationBarsPadding()
             .background(
                 colorResource(id = R.color.search_transparent),
                 RoundedCornerShape(20.dp)

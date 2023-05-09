@@ -1,7 +1,5 @@
 package com.brookes6.repository.model
 
-import com.bennyhuo.kotlin.deepcopy.reflect.DeepCopyable
-
 /**
  * Author: fuxinbo
 
@@ -12,18 +10,18 @@ import com.bennyhuo.kotlin.deepcopy.reflect.DeepCopyable
 @kotlinx.serialization.Serializable
 data class PlayListModel(
     val more: Boolean = false,
-    val playlist: MutableList<PlayListInfo?>,
-) : DeepCopyable
+    val playlist: List<PlayListInfo?>,
+)
 
 @kotlinx.serialization.Serializable
 data class PlayListInfo(
-    val name: String = "",
-    val id: Long = 0,
-    val coverImgUrl: String = "",
+    val name: String? = "",
+    val id: Long? = 0,
+    val coverImgUrl: String? = "",
     val creator: CreatorInfo?,
-    val description: String = "没有留下介绍～",
-    val playCount: Int,
-    val trackCount: Int,
+    val description: String? = "没有留下介绍～",
+    val playCount: Int? = 0,
+    val trackCount: Int? = 0,
 )
 
 @kotlinx.serialization.Serializable

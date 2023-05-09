@@ -19,7 +19,7 @@ interface UserInfoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun install(data: UserModel)
 
-    @Query("SELECT * FROM loginmodel")
+    @Query("SELECT * FROM usermodel")
     fun getUserInfo(): UserModel
 
 }

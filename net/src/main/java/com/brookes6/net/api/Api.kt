@@ -185,4 +185,14 @@ object Api {
      * - 可选参数 : limit : 返回数量 , 默认为 100
      */
     const val GET_RECORD_MUSIC = "/record/recent/song"
+
+    /**
+     * 获取精品歌单
+     *
+     * 说明 : 调用此接口 , 可获取精品歌单
+     * - 可选参数 : cat: tag, 比如 " 华语 "、" 古风 " 、" 欧美 "、" 流行 ", 默认为 "全部"
+     * - limit: 取出歌单数量 , 默认为 50
+     * - before: 分页参数,取上一页最后一个歌单的 updateTime 获取下一页数据
+     */
+    const val GET_BOUTIQUE_PLAYLIST = "/top/playlist/highquality"
 }

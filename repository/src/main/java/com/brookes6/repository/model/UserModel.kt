@@ -24,7 +24,8 @@ data class UserModel(
     val account: AccountInfo? = null,
     val token: String = "",
     val profile: UserInfo? = null,
-    val cookie: String = ""
+    val cookie: String = "",
+    val level: Int = 0,
 ) {
     @Ignore
     constructor() : this(1001)

@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
@@ -33,7 +34,7 @@ import com.brookes6.cloudmusic.vm.UserViewModel
 fun MyTopUserSub(
     viewModel: MyViewModel,
     userVM : UserViewModel,
-    onNavController: (String) -> Unit = {}
+    onNavController: NavController
 ) {
     Box(
         modifier = Modifier

@@ -14,16 +14,14 @@ import androidx.navigation.NavController
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.constant.AppConstant
 import com.brookes6.cloudmusic.constant.RouteConstant
-import com.brookes6.cloudmusic.manager.DataBaseManager
 import com.brookes6.cloudmusic.utils.LogUtils
 import com.brookes6.cloudmusic.vm.MainViewModel
+import com.brookes6.cloudmusic.vm.TokenViewModel
 import com.brookes6.net.api.Api
 import com.brookes6.repository.model.UserModel
 import com.drake.net.Post
 import com.drake.net.utils.scopeNet
 import com.drake.serialize.serialize.serialize
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 /**
  * @Author fuxinbo
@@ -32,7 +30,11 @@ import kotlinx.coroutines.launch
  */
 @Preview(showSystemUi = true)
 @Composable
-fun SplashPage(navController: NavController? = null, viewModel: MainViewModel? = null) {
+fun SplashPage(
+    navController: NavController? = null,
+    mTokenVM: TokenViewModel? = null,
+    viewModel: MainViewModel? = null
+) {
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
             bitmap = ImageBitmap.imageResource(id = R.mipmap.ic_splash_bg), null,
@@ -45,13 +47,12 @@ fun SplashPage(navController: NavController? = null, viewModel: MainViewModel? =
             Post<UserModel>(Api.LOGIN_STATUS) {
                 param("timestamp", System.currentTimeMillis())
             }.await().also {
+                LogUtils.d("当前帐号状态为:${it}")
                 if (it.account?.status == 0) {
-                    LogUtils.d("账号状态为 -> ${it.profile}")
+                    LogUtils.d("账号ID为 -> ${it.account?.id}")
                     // 登录状态为已登录
                     serialize(AppConstant.IS_LOGIN to true)
-                    this@LaunchedEffect.launch(Dispatchers.IO) {
-                        DataBaseManager.db?.userDao?.install(it)
-                    }
+                    serialize(AppConstant.USER_ID to it.account?.id)
                     viewModel?.state?.let { state ->
                         state.isLogin.value = true
                         state.isShowBottomTab.value = true

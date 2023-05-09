@@ -54,10 +54,8 @@ class UserViewModel : ViewModel() {
             Post<UserModel>(Api.GET_USER_INFO) {
                 param("uid", _userId)
             }.await().also {
+                LogUtils.d("用户信息为 --> $it")
                 _user.value = it
-                viewModelScope.launch(Dispatchers.IO) {
-                    DataBaseManager.db?.userDao?.install(it)
-                }
             }
         }
     }

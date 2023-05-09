@@ -8,7 +8,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.scopeNetLife
 import androidx.lifecycle.viewModelScope
-import com.brookes6.cloudmusic.constant.AppConstant.COOKIE
 import com.brookes6.cloudmusic.constant.AppConstant.IS_LOGIN
 import com.brookes6.cloudmusic.constant.RouteConstant
 import com.brookes6.cloudmusic.extensions.toast
@@ -17,9 +16,9 @@ import com.brookes6.cloudmusic.state.LoginState
 import com.brookes6.cloudmusic.utils.LogUtils
 import com.brookes6.net.api.Api
 import com.brookes6.repository.model.CookieModel
-import com.brookes6.repository.model.UserModel
 import com.brookes6.repository.model.QRImageModel
 import com.brookes6.repository.model.QRKeyModel
+import com.brookes6.repository.model.UserModel
 import com.brookes6.repository.model.VerifyQRCodeModel
 import com.drake.net.Post
 import com.drake.serialize.serialize.serialize
@@ -59,7 +58,7 @@ class LoginViewModel : ViewModel() {
 
             is LoginAction.SendPhoneCode -> sendPhoneCode(action.phone)
             is LoginAction.CreateQRCode -> createQRCode(action.onQRCodeCallback)
-            is LoginAction.JudgeQRCodeState -> judgeQRCode(action.onNavController)
+            is LoginAction.JudgeQRCodeState -> judgeQRCode(action.onNavController, action.token)
         }
     }
 
@@ -141,17 +140,17 @@ class LoginViewModel : ViewModel() {
     }
 
     private fun judgeQRCode(
-        onNavController: (String) -> Unit = {}
+        onNavController: (String) -> Unit = {},
+        token: MutableLiveData<CookieModel>,
     ) {
         scopeNetLife {
             Post<VerifyQRCodeModel>(Api.VERIFY_QRCODE) {
                 param("key", mQRCodeKey)
             }.await().also {
                 if (it.code == 803) {
-                    serialize(COOKIE to it.cookie)
-                    getAccountInfo()
+                    token.postValue(CookieModel(cookie = it.cookie))
                     state.mQRCodeStatus.value = true
-                    LogUtils.i("保存的Cookie为:${it.cookie}")
+                    LogUtils.i("保存的Token为:${it.cookie}","Token")
                     onNavController(RouteConstant.HOME_PAGE)
                 } else {
                     toast(it.message)
@@ -193,6 +192,9 @@ class LoginViewModel : ViewModel() {
 
         class CreateQRCode(val onQRCodeCallback: (imgSrc: ByteArray) -> Unit = {}) : LoginAction()
 
-        class JudgeQRCodeState(val onNavController: (String) -> Unit = {}) : LoginAction()
+        class JudgeQRCodeState(
+            val onNavController: (String) -> Unit = {},
+            val token: MutableLiveData<CookieModel>
+        ) : LoginAction()
     }
 }

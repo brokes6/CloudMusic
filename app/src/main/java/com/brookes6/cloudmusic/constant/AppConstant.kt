@@ -28,4 +28,6 @@ object AppConstant {
      * 音乐日志TAG
      */
     const val SONG = "Song"
+
+    const val PLAY_LIST_INFO = "PlayListInfo"
 }

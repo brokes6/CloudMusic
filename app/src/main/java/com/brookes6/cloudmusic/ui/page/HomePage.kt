@@ -8,15 +8,30 @@ import android.widget.ImageView
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,7 +61,6 @@ import com.brookes6.cloudmusic.MainActivity
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.action.HomeAction
 import com.brookes6.cloudmusic.action.MainAction
-import com.brookes6.cloudmusic.constant.AppConstant
 import com.brookes6.cloudmusic.ui.theme.titleColor
 import com.brookes6.cloudmusic.ui.view.FocusLayoutManager
 import com.brookes6.cloudmusic.ui.view.FocusLayoutManager.Companion.dp2px
@@ -76,11 +90,17 @@ fun HomePage(
     navController: NavController? = null,
     viewModel: HomeViewModel = viewModel(),
     mainViewModel: MainViewModel = viewModel(),
-    userVM : UserViewModel = viewModel()
+    userVM: UserViewModel = viewModel()
 ) {
     var searchText by remember { mutableStateOf("") }
-    ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-        val (bg, search, recommendTitle, recommend, videoTitle, video, recentlyMusic, music) = createRefs()
+    val scrollState = rememberScrollState()
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+            .navigationBarsPadding()
+    ) {
+        val (bg, search, recommendTitle, recommend, videoTitle, video, recentlyMusic, music, space) = createRefs()
         // bg
         Image(
             bitmap = ImageBitmap.imageResource(id = R.mipmap.ic_home_top_bg), null,
@@ -205,7 +225,7 @@ fun HomePage(
                     top.linkTo(music.top)
                     bottom.linkTo(music.bottom)
                 })
-        LazyColumn(
+        Column(
             modifier = Modifier.constrainAs(music) {
                 top.linkTo(video.bottom, 46.dp)
                 end.linkTo(parent.end, 20.dp)
@@ -213,12 +233,18 @@ fun HomePage(
                 width = Dimension.fillToConstraints
             },
         ) {
-            itemsIndexed(viewModel.recordMusic.value) { index, item ->
+            viewModel.recordMusic.value.forEachIndexed { index, item ->
                 RecordMusicItem(index, item) {
                     viewModel.getRecordSong(it)
                 }
             }
         }
+        Spacer(modifier = Modifier
+            .height(150.dp)
+            .constrainAs(space) {
+                top.linkTo(music.bottom)
+                start.linkTo(music.start)
+            })
     }
     LaunchedEffect(key1 = mainViewModel.state.isLogin, block = {
         viewModel.dispatch(HomeAction.GetRecommendSong)
@@ -226,9 +252,7 @@ fun HomePage(
         viewModel.dispatch(HomeAction.GetRecordMusic)
     })
     DisposableEffect(Unit) {
-        LogUtils.d("首页首次进入组件树", AppConstant.COMPOSABLE)
         onDispose {
-            LogUtils.d("首页从组件树移除时", AppConstant.COMPOSABLE)
             GSYVideoManager.releaseAllVideos()
         }
     }
@@ -293,7 +317,7 @@ fun AndroidVideoView(
         StandardGSYVideoPlayer(context).apply {
             setIsTouchWiget(false)
             isReleaseWhenLossAudio = true
-             backButton.visibility = View.GONE
+            backButton.visibility = View.GONE
             thumbImageViewLayout.visibility = View.VISIBLE
             fullscreenButton.setOnClickListener {
                 startWindowFullscreen(context, false, true)

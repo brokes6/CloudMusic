@@ -22,11 +22,10 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.action.MainAction
-import com.brookes6.cloudmusic.manager.MusicManager
+import com.brookes6.cloudmusic.bean.type.BottomDialogEnum
 import com.brookes6.cloudmusic.state.PLAY_STATUS
 import com.brookes6.cloudmusic.ui.theme.titleColor
 import com.brookes6.cloudmusic.vm.MainViewModel
-import com.lzx.starrysky.control.RepeatMode
 
 /**
  * @Author fuxinbo
@@ -89,7 +88,7 @@ fun SongController(
                 .constrainAs(songProgress) {
                     top.linkTo(songAuthor.bottom, 9.dp)
                     start.linkTo(songAuthor.start)
-                    end.linkTo(songPlayType.start, 32.dp)
+                    end.linkTo(songPlayStatus.start, 32.dp)
                     width = Dimension.fillToConstraints
                 },
             progress = viewModel.state.mProgress.value,
@@ -99,43 +98,27 @@ fun SongController(
         )
         IconClick(
             onClick = {
-                viewModel.dispatch(MainAction.SwitchPlayModel)
-            },
-            res = when (MusicManager.instance.getCurrentPlayModel()) {
-                RepeatMode.REPEAT_MODE_NONE -> {
-                    R.drawable.icon_song_detail_sequential
-                }
-
-                RepeatMode.REPEAT_MODE_ONE -> {
-                    R.drawable.icon_song_detail_circulate
-                }
-
-                RepeatMode.REPEAT_MODE_SHUFFLE -> {
-                    R.drawable.icon_song_detail_random
-                }
-
-                else -> {
-                    R.drawable.icon_song_detail_sequential
-                }
-            },
-            modifier = Modifier.constrainAs(songPlayType) {
-                top.linkTo(songPlayStatus.top)
-                bottom.linkTo(songPlayStatus.bottom)
-                end.linkTo(songPlayStatus.start, 10.dp)
-            },
-            iconSize = 24.dp
-        )
-        IconClick(
-            onClick = {
                 viewModel.dispatch(MainAction.PlayOrPauseSong)
             },
             res = if (viewModel.state.mPlayStatus.value != PLAY_STATUS.PLAYING) R.drawable.icon_song_detail_play else R.drawable.icon_song_detail_pause,
             modifier = Modifier.constrainAs(songPlayStatus) {
+                top.linkTo(songPlayType.top)
+                bottom.linkTo(songPlayType.bottom)
+                end.linkTo(songPlayType.start, 10.dp)
+            },
+            iconSize = 30.dp
+        )
+        IconClick(
+            onClick = {
+                viewModel.dispatch(MainAction.ShowMusicDialog(BottomDialogEnum.PLAY_LIST_DIALOG))
+            },
+            res = R.drawable.icon_play_list,
+            modifier = Modifier.constrainAs(songPlayType) {
                 top.linkTo(songImage.top)
                 bottom.linkTo(songImage.bottom)
                 end.linkTo(parent.end, 14.dp)
             },
-            iconSize = 30.dp
+            iconSize = 24.dp
         )
     }
     LaunchedEffect(key1 = viewModel.state.currentPlayIndex.value) {

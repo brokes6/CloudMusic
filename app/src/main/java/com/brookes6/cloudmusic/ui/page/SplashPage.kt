@@ -45,7 +45,7 @@ fun SplashPage(
     LaunchedEffect(true) {
         scopeNet {
             Post<UserModel>(Api.LOGIN_STATUS) {
-                param("timestamp", System.currentTimeMillis())
+//                param("timestamp", System.currentTimeMillis())
             }.await().also {
                 LogUtils.d("当前帐号状态为:${it}")
                 if (it.account?.status == 0) {

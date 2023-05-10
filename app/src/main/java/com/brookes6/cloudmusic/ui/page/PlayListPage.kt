@@ -7,12 +7,25 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -20,7 +33,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -30,13 +42,17 @@ import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import coil.transform.RoundedCornersTransformation
 import com.brookes6.cloudmusic.R
+import com.brookes6.cloudmusic.action.MainAction
 import com.brookes6.cloudmusic.action.PlayListAction
 import com.brookes6.cloudmusic.constant.AppConstant
 import com.brookes6.cloudmusic.extensions.paddingStart
 import com.brookes6.cloudmusic.ui.theme.mainBackground
-import com.brookes6.cloudmusic.ui.widget.*
-import com.brookes6.cloudmusic.utils.LogUtils
-import com.brookes6.cloudmusic.vm.MyViewModel
+import com.brookes6.cloudmusic.ui.widget.IconClick
+import com.brookes6.cloudmusic.ui.widget.MyRefreshFooter
+import com.brookes6.cloudmusic.ui.widget.PlayListItem
+import com.brookes6.cloudmusic.ui.widget.SmartSwipeRefresh
+import com.brookes6.cloudmusic.ui.widget.rememberSmartSwipeRefreshState
+import com.brookes6.cloudmusic.vm.MainViewModel
 import com.brookes6.cloudmusic.vm.PlayListViewModel
 import com.brookes6.repository.model.PlayListInfo
 
@@ -48,10 +64,9 @@ import com.brookes6.repository.model.PlayListInfo
  * Description:
  */
 
-@Preview
 @Composable
 fun PlayListPage(
-    viewModel: MyViewModel = viewModel(),
+    mainVM: MainViewModel = viewModel(),
     mPlayListInfo: PlayListInfo? = null,
     onNavController: (String) -> Unit = {}
 ) {
@@ -187,6 +202,7 @@ fun PlayListPage(
                     item.id
                 }) { index, item ->
                     PlayListItem(index = index, item = item) { position ->
+                        mainVM.dispatch(MainAction.ChangerSongDetailPage)
                         model.dispatch(PlayListAction.PlaySong(position))
                     }
                 }

@@ -17,7 +17,10 @@ class MediaSourceProvider {
         get() {
             val list = mutableListOf<SongInfo>()
             songSources.forEach {
-                list.add(it.value)
+                // 获取当前播放列表的时候，再进行一次检查，若当前音乐ID为空，则不返回出去
+                if (it.value.songId.isNotEmpty()){
+                    list.add(it.value)
+                }
             }
             return list
         }

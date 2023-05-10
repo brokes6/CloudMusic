@@ -25,7 +25,6 @@ import kotlinx.serialization.json.Json
 fun NavGraphBuilder.songGraph(
     navController: NavController,
     mainViewModel: MainViewModel,
-    viewModel: MyViewModel,
 ) {
     navigation(startDestination = RouteConstant.SONG_PLAY_LIST, route = RouteConstant.SONG) {
         composable(RouteConstant.SONG_PLAY_LIST) {
@@ -33,7 +32,7 @@ fun NavGraphBuilder.songGraph(
             if (json.isNullOrEmpty()) return@composable
             val mPlayListInfo: PlayListInfo = Json.decodeFromString(json)
             PlayListPage(
-                viewModel,
+                mainViewModel,
                 mPlayListInfo,
                 onNavController = { page ->
                     when (page) {

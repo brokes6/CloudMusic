@@ -15,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -24,9 +25,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.brookes6.cloudmusic.action.MainAction
 import com.brookes6.cloudmusic.action.MyAction
+import com.brookes6.cloudmusic.bean.type.BottomDialogEnum
 import com.brookes6.cloudmusic.constant.AppConstant
 import com.brookes6.cloudmusic.constant.RouteConstant
 import com.brookes6.cloudmusic.state.PLAY_STATUS
+import com.brookes6.cloudmusic.ui.dialog.PlayListBottomDialog
 import com.brookes6.cloudmusic.ui.navgraph.homeGraph
 import com.brookes6.cloudmusic.ui.navgraph.loginGraph
 import com.brookes6.cloudmusic.ui.navgraph.songGraph
@@ -109,7 +112,7 @@ class MainActivity : FragmentActivity() {
                         .background(mainBackground)
                         .fillMaxSize()
                 ) {
-                    val (content, bottomTab) = createRefs()
+                    val (content, bottomTab, dialog) = createRefs()
                     AnimatedNavHost(
                         navController = navController,
                         startDestination = RouteConstant.SPLASH_PAGE,
@@ -131,8 +134,15 @@ class MainActivity : FragmentActivity() {
                             )
                         }
                         loginGraph(navController, mTokenVM, viewModel, loginViewModel)
-                        homeGraph(navController, mUserVM, homeViewModel, viewModel, myViewModel,songPageVM)
-                        songGraph(navController, viewModel, myViewModel)
+                        homeGraph(
+                            navController,
+                            mUserVM,
+                            homeViewModel,
+                            viewModel,
+                            myViewModel,
+                            songPageVM
+                        )
+                        songGraph(navController, viewModel)
                     }
                     Column(
                         Modifier
@@ -176,6 +186,34 @@ class MainActivity : FragmentActivity() {
                                     }
                                 }
                             }
+                        }
+                    }
+                    // BottomDialog
+                    AnimatedContent(
+                        targetState = viewModel.state.mShowDialogType.value,
+                        modifier = Modifier
+                            .navigationBarsPadding()
+                            .constrainAs(dialog) {
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                                bottom.linkTo(parent.bottom)
+                                width = Dimension.fillToConstraints
+                            },
+                        transitionSpec = {
+                            slideInVertically { it } with slideOut(targetOffset = {
+                                IntOffset(
+                                    it.width,
+                                    -it.height
+                                )
+                            })
+                        },
+                    ) {
+                        when (it) {
+                            BottomDialogEnum.PLAY_LIST_DIALOG -> {
+                                PlayListBottomDialog(viewModel)
+                            }
+
+                            else -> {}
                         }
                     }
                 }

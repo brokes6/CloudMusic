@@ -1,5 +1,6 @@
 package com.brookes6.cloudmusic.action
 
+import com.brookes6.cloudmusic.bean.type.BottomDialogEnum
 import com.lzx.starrysky.SongInfo
 
 /**
@@ -17,7 +18,6 @@ sealed class MainAction {
      *
      * @property index 播放歌曲所在的索引未知
      * @property list 当前歌曲所在的列表
-     * @constructor Create empty Play song
      */
     class PlaySong(val index: Int, val list: MutableList<SongInfo>) : MainAction()
 
@@ -63,4 +63,9 @@ sealed class MainAction {
      * @property id 音乐ID
      */
     object GetCurrentLyric : MainAction()
+
+    /**
+     * 展示音乐相关弹窗
+     */
+    class ShowMusicDialog(val type: BottomDialogEnum) : MainAction()
 }

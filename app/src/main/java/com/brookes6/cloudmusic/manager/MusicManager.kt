@@ -20,6 +20,9 @@ class MusicManager private constructor() {
         val instance: MusicManager by lazy { MusicManager() }
     }
 
+    /**
+     * 播放指定列表的指定音乐，若指定音乐处于暂停状态，则重新播放
+     */
     fun play(songInfo: MutableList<SongInfo>, index: Int) {
         StarrySky.with()?.let {
             if (it.isPaused()) {
@@ -39,27 +42,45 @@ class MusicManager private constructor() {
         StarrySky.with()?.playMusicByIndex(index)
     }
 
+    /**
+     * 播放指定音乐
+     */
     fun playMusicForInfo(info: SongInfo) {
         StarrySky.with()?.prepareByInfo(info)
         StarrySky.with()?.playMusicByInfo(info)
     }
 
+    /**
+     * 播放指定列表的指定音乐
+     */
     fun playMusicByIndex(list: MutableList<SongInfo>, index: Int) {
         StarrySky.with()?.playMusic(list, index)
     }
 
+    /**
+     * 暂停播放
+     */
     fun pause() {
         StarrySky.with()?.pauseMusic()
     }
 
+    /**
+     * 停止播放
+     */
     fun stop() {
         StarrySky.with()?.stopMusic()
     }
 
+    /**
+     * 跳转进度
+     */
     fun seekTo(time: Long) {
         StarrySky.with()?.seekTo(time)
     }
 
+    /**
+     * 上一首
+     */
     fun next(notNextCallback: () -> Unit = {}) {
         StarrySky.with()?.let {
             if (it.isSkipToNextEnabled()) {
@@ -70,6 +91,9 @@ class MusicManager private constructor() {
         }
     }
 
+    /**
+     * 下一首
+     */
     fun pre(notPreCallback: () -> Unit = {}) {
         StarrySky.with()?.let {
             if (it.isSkipToPreviousEnabled()) {
@@ -80,10 +104,16 @@ class MusicManager private constructor() {
         }
     }
 
+    /**
+     * 设置指定的播放模式
+     */
     fun switchPlayModel(repeatMode: Int, isLoop: Boolean) {
         StarrySky.with()?.setRepeatMode(repeatMode, isLoop)
     }
 
+    /**
+     * 设置播放列表
+     */
     fun setPlayList(songList: MutableList<SongInfo>) {
         StarrySky.with()?.let {
             it.clearPlayList()
@@ -91,6 +121,9 @@ class MusicManager private constructor() {
         }
     }
 
+    /**
+     * 设置播放列表并播放第一个音乐
+     */
     fun setPlayListAndPlay(index: Int, songList: MutableList<SongInfo>) {
         StarrySky.with()?.let {
             it.clearPlayList()
@@ -99,6 +132,11 @@ class MusicManager private constructor() {
         }
     }
 
+    /**
+     * 切换播放模式
+     *
+     * 单曲循环 -> 随机播放 -> 顺序播放
+     */
     fun switchPlayModel() {
         StarrySky.with()?.let {
             when (it.getRepeatMode().repeatMode) {
@@ -118,11 +156,17 @@ class MusicManager private constructor() {
         }
     }
 
+    /**
+     * 获取当前播放索引
+     */
     fun getPlayPosition(): Int {
         LogUtils.i("当前播放索引为 --> ${StarrySky.with()?.getNowIndex()}", "Song")
         return StarrySky.with()?.getNowIndex() ?: 0
     }
 
+    /**
+     * 获取当前播放模式
+     */
     fun getCurrentPlayModel(): Int =
         StarrySky.with()?.getRepeatMode()?.repeatMode ?: RepeatMode.REPEAT_MODE_NONE
 
@@ -131,12 +175,18 @@ class MusicManager private constructor() {
      *
      * @return MutableList<SongInfo>
      */
-    fun getPlayList(): MutableList<SongInfo>? = StarrySky.with()?.getPlayList()
+    fun getPlayList(): MutableList<SongInfo> = StarrySky.with()?.getPlayList() ?: mutableListOf()
 
+    /**
+     * 清除播放列表
+     */
     fun clearPlayList() {
         StarrySky.with()?.clearPlayList()
     }
 
+    /**
+     * 设置播放声音大小
+     */
     fun setVolume() {
 
     }

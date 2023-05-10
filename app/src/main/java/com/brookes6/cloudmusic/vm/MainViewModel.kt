@@ -1,24 +1,27 @@
 package com.brookes6.cloudmusic.vm
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.scopeNetLife
 import androidx.lifecycle.viewModelScope
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.action.MainAction
 import com.brookes6.cloudmusic.bean.BottomTabBean
+import com.brookes6.cloudmusic.bean.type.BottomDialogEnum
 import com.brookes6.cloudmusic.constant.RouteConstant
 import com.brookes6.cloudmusic.extensions.toast
 import com.brookes6.cloudmusic.manager.MusicManager
 import com.brookes6.cloudmusic.state.MainState
-import com.brookes6.cloudmusic.state.PAGE_TYPE
 import com.brookes6.cloudmusic.utils.LogUtils
 import com.brookes6.cloudmusic.utils.TimeUtils
 import com.brookes6.net.api.Api
 import com.brookes6.repository.model.LyricModel
 import com.brookes6.repository.model.Lyrics
 import com.drake.net.Get
-import com.drake.net.utils.scopeNet
 import com.lzx.starrysky.SongInfo
 import com.lzx.starrysky.StarrySky
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -57,6 +60,7 @@ class MainViewModel : ViewModel() {
             is MainAction.PlayOrPauseSong -> playOrPause()
             is MainAction.GetCurrentLyric -> getCurrentLyric()
             is MainAction.SwitchPlayModel -> switchPlayModel()
+            is MainAction.ShowMusicDialog -> showMusicDialog(action.type)
         }
     }
 
@@ -105,7 +109,7 @@ class MainViewModel : ViewModel() {
 
     private fun playSong(index: Int, list: MutableList<SongInfo>) {
         viewModelScope.launch {
-            MusicManager.instance.getPlayList()?.let { musicList ->
+            MusicManager.instance.getPlayList().let { musicList ->
                 if (list.size != musicList.size) return@let
                 if (list.zip(musicList).all {
                         it.first.id == it.second.id
@@ -181,5 +185,9 @@ class MainViewModel : ViewModel() {
 
     private fun switchPlayModel() {
         MusicManager.instance.switchPlayModel()
+    }
+
+    private fun showMusicDialog(type : BottomDialogEnum){
+        state.mShowDialogType.value = type
     }
 }

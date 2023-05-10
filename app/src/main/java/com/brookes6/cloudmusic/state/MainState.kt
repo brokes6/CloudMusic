@@ -3,6 +3,7 @@ package com.brookes6.cloudmusic.state
 import androidx.annotation.IntDef
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import com.brookes6.cloudmusic.bean.type.BottomDialogEnum
 
 
 /**
@@ -18,6 +19,11 @@ data class MainState(
      * 是否展示底部导航栏
      */
     val isShowBottomTab: MutableState<Boolean> = mutableStateOf(false),
+
+    /**
+     * 需要展示的弹窗类型
+     */
+    val mShowDialogType: MutableState<BottomDialogEnum> = mutableStateOf(BottomDialogEnum.NORMAL),
 
     /**
      * 当前展示的tab索引
@@ -55,6 +61,7 @@ data class MainState(
     val isInitPage: MutableState<Boolean> = mutableStateOf(true),
 
     val isInitPage2: MutableState<Boolean> = mutableStateOf(true),
+
     /**
      * 当前音乐播放进度
      */

@@ -25,7 +25,7 @@ class DataBaseManager private constructor() {
             val dataBase = Room.databaseBuilder(
                 context,
                 AppDataBase::class.java,
-                "CloudMusic"
+                "CloudMusic.db"
             ).build()
             db = dataBase
             db

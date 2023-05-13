@@ -10,6 +10,8 @@
     <color name="white_70">#B3FFFFFF</color>
 
     <color name="mainBackground">#FF262345</color>
+    <color name="search_bg">#FF383676</color>
+    <color name="search_button_bg">#FFE8BCD3</color>
     <color name="forget_password">#FF465180</color>
     <color name="bottomTabSelect">#FFE8BCD3</color>
     <color name="song_controller">#1D1C35</color>

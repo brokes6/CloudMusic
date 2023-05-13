@@ -1,6 +1,6 @@
 package com.brookes6.cloudmusic.action
 
-import com.brookes6.cloudmusic.bean.type.BottomDialogEnum
+import com.brookes6.cloudmusic.bean.enum.BottomDialogEnum
 import com.lzx.starrysky.SongInfo
 
 /**

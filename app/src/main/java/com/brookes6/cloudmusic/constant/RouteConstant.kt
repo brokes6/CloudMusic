@@ -33,6 +33,18 @@ object RouteConstant {
 
     const val SONG = "SONG"
 
+    const val SEARCH = "search"
+
+    /**
+     * 热门搜索页面
+     */
+    const val SEARCH_HOT_PAGE = SEARCH + "hotPage"
+
+    /**
+     * 具体搜索页面
+     */
+    const val SEARCH_DETAIL_PAGE = SEARCH + "detailPage"
+
     /**
      * 歌单详情页
      */

@@ -3,7 +3,7 @@ package com.brookes6.cloudmusic.state
 import androidx.annotation.IntDef
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.brookes6.cloudmusic.bean.type.BottomDialogEnum
+import com.brookes6.cloudmusic.bean.enum.BottomDialogEnum
 
 
 /**
@@ -23,7 +23,7 @@ data class MainState(
     /**
      * 需要展示的弹窗类型
      */
-    val mShowDialogType: MutableState<BottomDialogEnum> = mutableStateOf(BottomDialogEnum.NORMAL),
+    val mShowDialogType: MutableState<Int> = mutableStateOf(BottomDialogEnum.NORMAL.ordinal),
 
     /**
      * 当前展示的tab索引

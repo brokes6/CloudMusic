@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "e0715f1523e787954b0de4cdb323b4b9",
+    "identityHash": "2a3112f1cd929830d5f696f896e535c5",
     "entities": [
       {
         "tableName": "UserModel",
@@ -71,12 +71,38 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "SearchHistoryModel",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`searchId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `searchText` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "searchId",
+            "columnName": "searchId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "searchText",
+            "columnName": "searchText",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "searchId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e0715f1523e787954b0de4cdb323b4b9')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2a3112f1cd929830d5f696f896e535c5')"
     ]
   }
 }

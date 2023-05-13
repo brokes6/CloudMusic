@@ -195,4 +195,22 @@ object Api {
      * - before: 分页参数,取上一页最后一个歌单的 updateTime 获取下一页数据
      */
     const val GET_BOUTIQUE_PLAYLIST = "/top/playlist/highquality"
+
+    /**
+     * 热搜列表(详细)
+     *
+     * 说明 : 调用此接口,可获取热门搜索列表
+     */
+    const val GET_SEARCH_HOT_DETAIL = "/search/hot/detail"
+
+    /**
+     * 搜索
+     *
+     * 说明 : 调用此接口 , 传入搜索关键词可以搜索该音乐 / 专辑 / 歌手 / 歌单 / 用户 ,
+     * 关键词可以多个 , 以空格隔开 , 如 " 周杰伦 搁浅 "( 不需要登录 ), 可通过 /song/url 接口传入歌曲 id 获取具体的播放链接
+     *
+     * - 必选参数 : keywords : 关键词 type : 搜索类型
+     * - 可选参数 : limit : 返回数量 , 默认为 30
+     */
+    const val SEARCH = "/cloudsearch"
 }

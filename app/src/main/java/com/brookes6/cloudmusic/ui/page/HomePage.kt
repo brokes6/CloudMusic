@@ -8,6 +8,7 @@ import android.widget.ImageView
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,17 +22,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,7 +38,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,6 +56,8 @@ import com.brookes6.cloudmusic.MainActivity
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.action.HomeAction
 import com.brookes6.cloudmusic.action.MainAction
+import com.brookes6.cloudmusic.constant.RouteConstant
+import com.brookes6.cloudmusic.extensions.paddingStart
 import com.brookes6.cloudmusic.ui.theme.titleColor
 import com.brookes6.cloudmusic.ui.view.FocusLayoutManager
 import com.brookes6.cloudmusic.ui.view.FocusLayoutManager.Companion.dp2px
@@ -92,7 +89,6 @@ fun HomePage(
     mainViewModel: MainViewModel = viewModel(),
     userVM: UserViewModel = viewModel()
 ) {
-    var searchText by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
     ConstraintLayout(
         modifier = Modifier
@@ -113,52 +109,43 @@ fun HomePage(
             contentScale = ContentScale.Crop
         )
         // search
-        BasicTextField(
-            value = searchText,
-            onValueChange = {
-                searchText = it
-            },
+        Row(
             modifier = Modifier
+                .clickable {
+                    navController?.navigate(RouteConstant.HOME_SEARCH_PAGE)
+                }
+                .background(
+                    colorResource(id = R.color.search_transparent),
+                    RoundedCornerShape(20.dp)
+                )
                 .constrainAs(search) {
                     top.linkTo(parent.top, 42.dp)
                     start.linkTo(parent.start, 20.dp)
                     end.linkTo(parent.end, 20.dp)
                     width = Dimension.fillToConstraints
                 },
-            textStyle = TextStyle(fontSize = 20.sp, color = titleColor),
-            maxLines = 1
-        ) { innerTextField ->
-            Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
                 modifier = Modifier
-                    .background(
-                        colorResource(id = R.color.search_transparent),
-                        RoundedCornerShape(20.dp)
-                    )
-                    .fillMaxWidth()
-                    .padding(20.dp, 0.dp, 24.dp, 0.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .paddingStart(20.dp)
+                    .weight(1f)
             ) {
-                Box(modifier = Modifier.weight(1f)) {
-                    if (searchText.isEmpty()) {
-                        Text(text = "搜索歌曲", fontSize = 20.sp, color = titleColor)
-                    } else {
-                        innerTextField()
-                    }
-                }
-                Image(
-                    painter = rememberAsyncImagePainter(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(userVM.user.observeAsState().value?.profile?.avatarUrl)
-                            .size(Size(32, 32))
-                            .build()
-                    ),
-                    stringResource(id = R.string.description),
-                    modifier = Modifier
-                        .padding(0.dp, 20.dp, 0.dp, 20.dp)
-                        .clip(CircleShape)
-                        .size(32.dp)
-                )
+                Text(text = "搜索歌曲", fontSize = 20.sp, color = titleColor)
             }
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(userVM.user.observeAsState().value?.profile?.avatarUrl)
+                        .size(Size(32, 32))
+                        .build()
+                ),
+                stringResource(id = R.string.description),
+                modifier = Modifier
+                    .padding(0.dp, 20.dp, 24.dp, 20.dp)
+                    .clip(CircleShape)
+                    .size(32.dp)
+            )
         }
         Text(
             "每日推荐",

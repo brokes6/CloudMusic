@@ -22,7 +22,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.action.MainAction
-import com.brookes6.cloudmusic.bean.type.BottomDialogEnum
+import com.brookes6.cloudmusic.bean.enum.BottomDialogEnum
 import com.brookes6.cloudmusic.state.PLAY_STATUS
 import com.brookes6.cloudmusic.ui.theme.titleColor
 import com.brookes6.cloudmusic.vm.MainViewModel

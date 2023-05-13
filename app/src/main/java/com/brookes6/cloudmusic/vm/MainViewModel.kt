@@ -11,7 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.action.MainAction
 import com.brookes6.cloudmusic.bean.BottomTabBean
-import com.brookes6.cloudmusic.bean.type.BottomDialogEnum
+import com.brookes6.cloudmusic.bean.enum.BottomDialogEnum
 import com.brookes6.cloudmusic.constant.RouteConstant
 import com.brookes6.cloudmusic.extensions.toast
 import com.brookes6.cloudmusic.manager.MusicManager
@@ -188,6 +188,6 @@ class MainViewModel : ViewModel() {
     }
 
     private fun showMusicDialog(type : BottomDialogEnum){
-        state.mShowDialogType.value = type
+        state.mShowDialogType.value = type.ordinal
     }
 }

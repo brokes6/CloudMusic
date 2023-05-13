@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.action.MainAction
-import com.brookes6.cloudmusic.bean.type.BottomDialogEnum
+import com.brookes6.cloudmusic.bean.enum.BottomDialogEnum
 import com.brookes6.cloudmusic.extensions.paddingEnd
 import com.brookes6.cloudmusic.manager.MusicManager
 import com.brookes6.cloudmusic.ui.theme.secondaryBackground
@@ -38,7 +38,7 @@ fun PlayListBottomDialog(mainVM: MainViewModel) {
     Column(
         modifier = Modifier
             .padding(16.dp, 0.dp, 16.dp, 16.dp)
-            .height(350.dp)
+            .height(450.dp)
             .background(secondaryBackground, RoundedCornerShape(20.dp))
     ) {
         Row(

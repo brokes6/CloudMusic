@@ -121,9 +121,11 @@ dependencies {
     // 状态栏 https://github.com/google/accompanist
     implementation("com.google.accompanist:accompanist-insets:0.28.0")
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.28.0")
-    //Lottie http://airbnb.io/lottie/#/android-compose
+    // Lottie http://airbnb.io/lottie/#/android-compose
     implementation("com.airbnb.android:lottie:6.0.0")
     // GSYVideoPlayer https://github.com/CarGuo/GSYVideoPlayer
     implementation("com.github.CarGuo.GSYVideoPlayer:gsyVideoPlayer-java:v8.3.5-release-jitpack")
     implementation("com.github.CarGuo.GSYVideoPlayer:gsyVideoPlayer-arm64:v8.3.5-release-jitpack")
+    // Compose自定义View https://github.com/ltttttttttttt/ComposeViews
+    implementation("io.github.ltttttttttttt:ComposeViews:1.4.0.2")
 }

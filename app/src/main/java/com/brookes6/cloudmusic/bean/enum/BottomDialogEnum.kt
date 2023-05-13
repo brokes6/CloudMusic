@@ -1,4 +1,4 @@
-package com.brookes6.cloudmusic.bean.type
+package com.brookes6.cloudmusic.bean.enum
 
 /**
  * Author: Sakura

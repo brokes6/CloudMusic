@@ -121,7 +121,9 @@ class LoginViewModel : ViewModel() {
      */
     private fun createQRCode(onQRCodeCallback: (imgSrc: ByteArray) -> Unit = {}) {
         scopeNetLife {
-            Post<QRKeyModel>(Api.GENERATE_RQCODE_KEY).await().also {
+            Post<QRKeyModel>(Api.GENERATE_RQCODE_KEY) {
+                param("timestamp", System.currentTimeMillis())
+            }.await().also {
                 Post<QRImageModel>(Api.CREATE_RQCODE) {
                     if (it.code != 200) {
                         toast("二维码生成失败，请重试~")
@@ -129,7 +131,8 @@ class LoginViewModel : ViewModel() {
                     }
                     mQRCodeKey = it.unikey
                     param("key", it.unikey)
-                    param("qrimg", 1)
+                    param("qrimg", true)
+                    param("timestamp", System.currentTimeMillis())
                 }.await().also {
                     val decodedString: ByteArray =
                         Base64.decode(it.qrimg.split(",")[1], Base64.DEFAULT)
@@ -150,7 +153,7 @@ class LoginViewModel : ViewModel() {
                 if (it.code == 803) {
                     token.postValue(CookieModel(cookie = it.cookie))
                     state.mQRCodeStatus.value = true
-                    LogUtils.i("保存的Token为:${it.cookie}","Token")
+                    LogUtils.i("保存的Token为:${it.cookie}", "Token")
                     onNavController(RouteConstant.HOME_PAGE)
                 } else {
                     toast(it.message)

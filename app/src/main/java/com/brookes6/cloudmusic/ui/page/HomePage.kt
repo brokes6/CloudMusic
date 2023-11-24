@@ -313,7 +313,6 @@ fun AndroidVideoView(
     }, modifier = Modifier.fillMaxSize(),
         update = {
             mv?.let { mv ->
-                LogUtils.d("视频组件加载数据", "DATA")
                 it.setUpLazy(mv.url, true, null, null, null)
                 it.clearThumbImageView()
                 it.thumbImageView = ImageView(MainActivity.content).apply {

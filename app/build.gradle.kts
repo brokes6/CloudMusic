@@ -69,7 +69,7 @@ android {
     buildFeatures.dataBinding = true
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
+        kotlinCompilerExtensionVersion = "1.5.4"
     }
     packagingOptions {
         resources {
@@ -78,7 +78,7 @@ android {
     }
 }
 
-val composeUiVersion by extra("1.4.0")
+val composeUiVersion by extra("1.5.4")
 
 dependencies {
     implementation("androidx.core:core-ktx:1.9.0")
@@ -104,7 +104,7 @@ dependencies {
     // viewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
     implementation("androidx.compose.runtime:runtime-livedata:${composeUiVersion}")
-    implementation("androidx.activity:activity-compose:1.7.0")
+    implementation("androidx.activity:activity-compose:1.8.1")
     implementation("androidx.compose.ui:ui:$composeUiVersion")
     implementation("androidx.compose.ui:ui-tooling-preview:$composeUiVersion")
     implementation("androidx.compose.material:material:${composeUiVersion}")
@@ -113,19 +113,19 @@ dependencies {
 
     // 第三方
     // Coil https://github.com/coil-kt/coil
-    implementation("io.coil-kt:coil-compose:2.3.0")
+    implementation("io.coil-kt:coil-compose:2.5.0")
     // BRV https://github.com/liangjingkanji/BRV
-    implementation("com.github.liangjingkanji:BRV:1.4.1")
+    implementation("com.github.liangjingkanji:BRV:1.5.6")
     // Android 高性能读写本地数据 https://github.com/liangjingkanji/Serialize
     implementation("com.github.liangjingkanji:Serialize:1.3.2")
     // 状态栏 https://github.com/google/accompanist
     implementation("com.google.accompanist:accompanist-insets:0.28.0")
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.28.0")
     // Lottie http://airbnb.io/lottie/#/android-compose
-    implementation("com.airbnb.android:lottie:6.0.0")
+    implementation("com.airbnb.android:lottie:6.1.0")
     // GSYVideoPlayer https://github.com/CarGuo/GSYVideoPlayer
-    implementation("com.github.CarGuo.GSYVideoPlayer:gsyVideoPlayer-java:v8.3.5-release-jitpack")
-    implementation("com.github.CarGuo.GSYVideoPlayer:gsyVideoPlayer-arm64:v8.3.5-release-jitpack")
+    implementation("com.github.CarGuo.GSYVideoPlayer:gsyVideoPlayer-java:v8.5.0-release-jitpack")
+    implementation("com.github.CarGuo.GSYVideoPlayer:gsyVideoPlayer-arm64:v8.5.0-release-jitpack")
     // Compose自定义View https://github.com/ltttttttttttt/ComposeViews
     implementation("io.github.ltttttttttttt:ComposeViews:1.4.0.2")
 }

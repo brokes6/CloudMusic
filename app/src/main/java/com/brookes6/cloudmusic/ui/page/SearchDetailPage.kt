@@ -37,7 +37,6 @@ import com.brookes6.cloudmusic.extensions.paddingStart
 import com.brookes6.cloudmusic.extensions.paddingTop
 import com.brookes6.cloudmusic.ui.widget.IconClick
 import com.brookes6.cloudmusic.ui.widget.PagerIndicator
-import com.brookes6.cloudmusic.utils.LogUtils
 import com.brookes6.cloudmusic.vm.SearchViewModel
 import com.brookes6.repository.model.SearchResultAlbums
 import com.brookes6.repository.model.SearchResultArtists

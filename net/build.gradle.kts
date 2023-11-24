@@ -29,5 +29,5 @@ dependencies {
     // 要求OkHttp4以上
     api("com.squareup.okhttp3:okhttp:4.10.0")
     // net https://github.com/liangjingkanji/Net
-    api("com.github.liangjingkanji:Net:3.5.3")
+    api("com.github.liangjingkanji:Net:3.6.4")
 }

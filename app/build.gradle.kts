@@ -7,12 +7,12 @@ plugins {
 @Suppress("UnstableApiUsage")
 android {
     namespace = "com.brookes6.cloudmusic"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.brookes6.cloudmusic"
         minSdk = 21
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -57,12 +57,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 
     buildFeatures.compose = true
@@ -98,9 +98,7 @@ dependencies {
     // 约束布局
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
     // navigation
-    implementation("androidx.navigation:navigation-compose:2.5.3")
-    // navigation动画组件
-    implementation("com.google.accompanist:accompanist-navigation-animation:0.28.0")
+    implementation("androidx.navigation:navigation-compose:2.7.6")
     // viewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
     implementation("androidx.compose.runtime:runtime-livedata:${composeUiVersion}")

@@ -22,7 +22,7 @@ fun NavController.navigateAndArgument(
     navigatorExtras: Navigator.Extras? = null
 ) {
     navigate(route = route, navOptions = navOptions, navigatorExtras = navigatorExtras)
-    val bundle = backQueue.lastOrNull()?.arguments
+    val bundle = currentBackStackEntry?.arguments
     if (args.second == null) {
         LogUtils.e("bundle.putParcelable value is null")
         return

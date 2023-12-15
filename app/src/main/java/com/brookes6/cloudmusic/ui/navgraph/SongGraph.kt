@@ -3,14 +3,13 @@ package com.brookes6.cloudmusic.ui.navgraph
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
+import androidx.navigation.navigation
 import com.brookes6.cloudmusic.constant.AppConstant
 import com.brookes6.cloudmusic.constant.RouteConstant
 import com.brookes6.cloudmusic.ui.page.PlayListPage
 import com.brookes6.cloudmusic.vm.MainViewModel
-import com.brookes6.cloudmusic.vm.MyViewModel
 import com.brookes6.repository.model.PlayListInfo
-import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.animation.navigation
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
@@ -21,7 +20,6 @@ import kotlinx.serialization.json.Json
 
  * Description:
  */
-@OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.songGraph(
     navController: NavController,
     mainViewModel: MainViewModel,

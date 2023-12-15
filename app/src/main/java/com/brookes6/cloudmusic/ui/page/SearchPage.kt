@@ -33,6 +33,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.brookes6.cloudmusic.R
 import com.brookes6.cloudmusic.action.HotSearchAction
 import com.brookes6.cloudmusic.constant.RouteConstant
@@ -45,9 +48,6 @@ import com.brookes6.cloudmusic.ui.widget.SearchHistoryItem
 import com.brookes6.cloudmusic.vm.MainViewModel
 import com.brookes6.cloudmusic.vm.SearchViewModel
 import com.brookes6.repository.model.SearchHotDetailInfo
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 
 /**
  * @Author fuxinbo
@@ -63,7 +63,7 @@ fun SearchPage(
     nav: NavController? = null,
     mSearchVM: SearchViewModel = viewModel()
 ) {
-    val navController = rememberAnimatedNavController()
+    val navController = rememberNavController()
     Column(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -139,7 +139,7 @@ fun SearchPage(
                 }
             }
         }
-        AnimatedNavHost(
+        NavHost(
             navController = navController,
             startDestination = RouteConstant.SEARCH_HOT_PAGE,
             modifier = Modifier

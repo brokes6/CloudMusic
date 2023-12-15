@@ -1,8 +1,9 @@
 package com.brookes6.cloudmusic.ui.navgraph
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
+import androidx.navigation.navigation
 import com.brookes6.cloudmusic.constant.RouteConstant
 import com.brookes6.cloudmusic.ui.page.LoginPage
 import com.brookes6.cloudmusic.ui.page.PhoneCodePage
@@ -11,8 +12,6 @@ import com.brookes6.cloudmusic.ui.page.QRCodePage
 import com.brookes6.cloudmusic.vm.LoginViewModel
 import com.brookes6.cloudmusic.vm.MainViewModel
 import com.brookes6.cloudmusic.vm.TokenViewModel
-import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.animation.navigation
 
 /**
  * Author: Sakura
@@ -21,7 +20,6 @@ import com.google.accompanist.navigation.animation.navigation
 
  * Description: 登陆页导航图
  */
-@OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.loginGraph(
     navController: NavController,
     mTokenVM: TokenViewModel,

@@ -23,6 +23,9 @@ import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.brookes6.cloudmusic.action.MainAction
 import com.brookes6.cloudmusic.action.MyAction
 import com.brookes6.cloudmusic.bean.enum.BottomDialogEnum
@@ -48,9 +51,6 @@ import com.brookes6.cloudmusic.vm.UserViewModel
 import com.drake.brv.utils.BRV
 import com.drake.serialize.serialize.deserialize
 import com.drake.serialize.serialize.serialize
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.lzx.starrysky.OnPlayProgressListener
 import com.lzx.starrysky.StarrySky
@@ -97,7 +97,7 @@ class MainActivity : FragmentActivity() {
             val myViewModel: MyViewModel = viewModel()
             val songPageVM: SongPageViewModel = viewModel()
 
-            val navController = rememberAnimatedNavController()
+            val navController = rememberNavController()
             val state = rememberBottomSheetScaffoldState()
             BottomSheetScaffold(
                 sheetContent = {
@@ -113,7 +113,7 @@ class MainActivity : FragmentActivity() {
                         .fillMaxSize()
                 ) {
                     val (content, bottomTab, dialog) = createRefs()
-                    AnimatedNavHost(
+                    NavHost(
                         navController = navController,
                         startDestination = RouteConstant.SPLASH_PAGE,
                         modifier = Modifier
